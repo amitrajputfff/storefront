@@ -24,12 +24,18 @@ const COMMENT_TEMPLATES = [
   "A little pricier than alternatives but the difference in quality is noticeable immediately.",
   "This is my third order from ZEEVARA and the consistency in quality keeps me coming back.",
   "Simple, well-designed, and genuinely useful — not just decorative.",
-  "Quality bahut acchi hai, bilkul photos jaisa hi laga. Packaging bhi kaafi careful thi.",
-  "Delivery time pe ho gayi aur product use karke laga paisa vasool hai.",
+  "Obsessed with this 😍 easily one of my best online orders this year!",
+  "Arrived earlier than expected and the quality is 🔥 no complaints at all.",
+  "Was a bit skeptical but wow, exceeded expectations 👏 will be ordering again.",
+  "Packaging was so nice I almost didn't want to open it 😅 product's even better.",
+  "Quality bahut acchi hai, bilkul photos jaisa hi laga 😍 Packaging bhi kaafi careful thi.",
+  "Delivery time pe ho gayi aur product use karke laga paisa vasool hai 👍",
   "Pehle thoda doubt tha online order karne mein, par yeh quality dekh ke sab clear ho gaya.",
-  "Roz use karti hoon, ek dum sturdy hai aur dekhne mein bhi premium lagta hai.",
-  "Gift ke liye liya tha par ab khud ke liye bhi order kar diya — itna acha nikla.",
-  "Thoda expensive laga pehle, par jab hath mein aaya toh samajh aaya kyun.",
+  "Roz use karti hoon, ek dum sturdy hai aur dekhne mein bhi premium lagta hai ✨",
+  "Gift ke liye liya tha par ab khud ke liye bhi order kar diya — itna acha nikla 😄",
+  "Thoda expensive laga pehle, par jab hath mein aaya toh samajh aaya kyun 💯",
+  "Bilkul mast quality hai bhai, dosto ko bhi recommend kar diya 🙌",
+  "Ekdum sahi laga, expect se better nikla — phir se order karunga 🔥",
 ];
 
 const TITLE_TEMPLATES = [
@@ -52,19 +58,51 @@ function seededIndex(seed: string, salt: number, mod: number): number {
   return Math.abs(hash) % mod;
 }
 
-/** The number of individual review cards actually rendered in the list — kept small
- * regardless of the displayed total, so the page doesn't try to render hundreds of cards. */
-function getRenderedReviewCount(product: Product): number {
-  return Math.min(Math.max(Math.round(product.reviewCount / 20), 5), 8);
+/** The number of individual review cards actually rendered (with "Show more"
+ * revealing them progressively) — around 20, independent of the displayed total. */
+function getRenderedReviewCount(): number {
+  return 18;
 }
 
-/** The displayed review total (rating stars, "N reviews", JSON-LD) — always at least 200. */
+/** The displayed review total (rating stars, "N reviews", JSON-LD) — seeded per
+ * product so it looks organically randomized, but always above 200. */
 export function getReviewCount(product: Product): number {
-  return Math.max(product.reviewCount, 200);
+  return 210 + seededIndex(product.handle, 900, 440); // 210-649
+}
+
+/** Star-level weights that sum to 1, skewed by the product's average rating,
+ * with a little seeded jitter per product so distributions aren't identical. */
+function getRatingWeights(product: Product): Record<1 | 2 | 3 | 4 | 5, number> {
+  const avg = product.rating;
+  const base: Record<1 | 2 | 3 | 4 | 5, number> =
+    avg >= 4.7
+      ? { 5: 0.78, 4: 0.15, 3: 0.04, 2: 0.02, 1: 0.01 }
+      : avg >= 4.3
+        ? { 5: 0.64, 4: 0.23, 3: 0.07, 2: 0.04, 1: 0.02 }
+        : avg >= 4.0
+          ? { 5: 0.53, 4: 0.28, 3: 0.11, 2: 0.05, 1: 0.03 }
+          : { 5: 0.42, 4: 0.3, 3: 0.16, 2: 0.07, 1: 0.05 };
+
+  const jitter = (seededIndex(product.handle, 950, 7) - 3) / 100; // ±0.03
+  const weights = {
+    5: Math.max(0.01, base[5] + jitter),
+    4: Math.max(0.01, base[4] - jitter / 2),
+    3: base[3],
+    2: base[2],
+    1: base[1],
+  };
+  const sum = weights[1] + weights[2] + weights[3] + weights[4] + weights[5];
+  return {
+    1: weights[1] / sum,
+    2: weights[2] / sum,
+    3: weights[3] / sum,
+    4: weights[4] / sum,
+    5: weights[5] / sum,
+  };
 }
 
 export function getReviewsForProduct(product: Product): Review[] {
-  const count = getRenderedReviewCount(product);
+  const count = getRenderedReviewCount();
   const reviews: Review[] = [];
 
   for (let i = 0; i < count; i++) {
@@ -103,14 +141,22 @@ export function getReviewsForProduct(product: Product): Review[] {
 }
 
 export function getRatingBreakdown(product: Product): RatingBreakdown {
-  const reviews = getReviewsForProduct(product);
-  const counts: RatingBreakdown["counts"] = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
-  for (const review of reviews) {
-    counts[review.rating] += 1;
-  }
+  const total = getReviewCount(product);
+  const weights = getRatingWeights(product);
+
+  const counts: RatingBreakdown["counts"] = {
+    1: Math.round(weights[1] * total),
+    2: Math.round(weights[2] * total),
+    3: Math.round(weights[3] * total),
+    4: Math.round(weights[4] * total),
+    5: 0,
+  };
+  // Assign the 5-star bucket the remainder so counts always sum exactly to total.
+  counts[5] = total - (counts[1] + counts[2] + counts[3] + counts[4]);
+
   return {
     average: product.rating,
-    total: getReviewCount(product),
+    total,
     counts,
   };
 }

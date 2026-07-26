@@ -17,10 +17,14 @@ import {
 import { RatingStars } from "@/components/product/rating-stars";
 import { ReviewForm } from "@/components/product/review-form";
 
+const PAGE_SIZE = 5;
+
 export function Reviews({ product }: { product: Product }) {
   const [formOpen, setFormOpen] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const reviews = getReviewsForProduct(product);
   const breakdown = getRatingBreakdown(product);
+  const visibleReviews = reviews.slice(0, visibleCount);
 
   return (
     <section className="flex flex-col gap-8">
@@ -58,7 +62,7 @@ export function Reviews({ product }: { product: Product }) {
       <Separator />
 
       <div className="flex flex-col gap-6">
-        {reviews.map((review) => (
+        {visibleReviews.map((review) => (
           <div key={review.id} className="flex flex-col gap-1.5">
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium">{review.author}</span>
@@ -82,6 +86,16 @@ export function Reviews({ product }: { product: Product }) {
           </div>
         ))}
       </div>
+
+      {visibleCount < reviews.length && (
+        <Button
+          variant="outline"
+          className="self-center"
+          onClick={() => setVisibleCount((c) => c + PAGE_SIZE)}
+        >
+          <span>Show more reviews</span>
+        </Button>
+      )}
 
       <Dialog open={formOpen} onOpenChange={setFormOpen}>
         <DialogContent className={cn("sm:max-w-md")}>
