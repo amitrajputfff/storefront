@@ -91,13 +91,13 @@ export function AddToCartButton({
         >
           <div className="flex w-full items-center justify-between gap-3">
             <div className="min-w-0 text-left">
-              <span className="inline-flex items-center gap-2 text-sm font-semibold">
+              <span className="inline-flex items-center gap-2 text-sm font-bold">
                 {buying && <Loader2 className="size-4 animate-spin" />}
-                {buying ? "Processing…" : "Buy Now"}
+                {buying ? "Processing…" : "Buy Now - Cash on Delivery"}
               </span>
               {!buying && (
                 <span className="mt-0.5 block text-[11px] font-normal opacity-80">
-                  UPI, cards, wallets or Cash on Delivery
+                  Pay via UPI, cards & wallets
                 </span>
               )}
             </div>
