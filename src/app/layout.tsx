@@ -8,6 +8,7 @@ import { SiteFooter } from "@/components/layout/site-footer";
 import { CartDrawer } from "@/components/cart/cart-drawer";
 import { QuickViewDialog } from "@/components/product/quick-view-dialog";
 import { RecentPurchaseToastMounter } from "@/components/shared/recent-purchase-toast-mounter";
+import { ChatWidget } from "@/components/chat/chat-widget";
 import { JsonLd, buildOrganizationJsonLd } from "@/lib/jsonld";
 import { getNavMenu } from "@/lib/nav-menu";
 import { getAllProducts } from "@/mock/products";
@@ -74,6 +75,7 @@ export default async function RootLayout({
           <CartDrawer />
           <QuickViewDialog />
           <RecentPurchaseToastMounter productTitles={productTitles} />
+          <ChatWidget />
         </AppProviders>
       </body>
     </html>
