@@ -44,7 +44,7 @@ export default function CartPage() {
         <EmptyCart />
       ) : (
         <div className="space-y-8">
-          <FreeShippingProgress subtotal={subtotal} />
+          <FreeShippingProgress />
 
           <div className="divide-y border-y">
             <AnimatePresence initial={false}>

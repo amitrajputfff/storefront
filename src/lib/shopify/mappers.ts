@@ -139,6 +139,7 @@ export function mapShopifyProduct(node: ShopifyProductNode): Product {
     isTrending: tags.includes("trending"),
     isNewArrival,
     isFeatured: tags.includes("featured"),
+    isLimitedTimeOffer: tags.includes("limited-time"),
     totalInventory: node.totalInventory,
     createdAt: node.createdAt,
     materialsLine: metafieldString(node.materialsLine, ""),
@@ -146,9 +147,9 @@ export function mapShopifyProduct(node: ShopifyProductNode): Product {
     careInstructions: metafieldString(node.careInstructions, ""),
     shippingReturnsNote: metafieldString(
       node.shippingReturnsNote,
-      "Ships in 1-2 business days. Free returns within 30 days.",
+      "Ships in 1-2 business days. Free returns within 7 days.",
     ),
-    minDeliveryDays: metafieldNumber(node.minDeliveryDays, 4),
-    maxDeliveryDays: metafieldNumber(node.maxDeliveryDays, 7),
+    minDeliveryDays: metafieldNumber(node.minDeliveryDays, 2),
+    maxDeliveryDays: metafieldNumber(node.maxDeliveryDays, 5),
   };
 }

@@ -10,8 +10,8 @@ const VALUES = [
   },
   {
     icon: RotateCcw,
-    title: "30-Day Returns, No Questions",
-    description: "Free returns within 30 days on unused items — simple, no fine print.",
+    title: "7-Day Returns, No Questions",
+    description: "Free returns within 7 days on unused items — simple, no fine print.",
   },
   {
     icon: Leaf,

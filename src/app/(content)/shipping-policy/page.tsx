@@ -1,6 +1,5 @@
 import { Metadata } from "next";
-import { SITE_NAME, FREE_SHIPPING_THRESHOLD, CONTACT_EMAIL } from "@/constants/site";
-import { formatPrice } from "@/lib/format";
+import { SITE_NAME, CONTACT_EMAIL } from "@/constants/site";
 
 export const metadata: Metadata = {
   title: `Shipping Policy | ${SITE_NAME}`,
@@ -36,11 +35,9 @@ export default function ShippingPolicyPage() {
         </section>
 
         <section>
-          <h2 className="mb-3 text-lg font-medium">Shipping Costs &amp; Free Shipping Threshold</h2>
+          <h2 className="mb-3 text-lg font-medium">Shipping Costs</h2>
           <p className="text-muted-foreground">
-            Orders over {formatPrice(FREE_SHIPPING_THRESHOLD)} ship free across India. Orders
-            below this amount carry a flat shipping fee, calculated and shown at checkout
-            before you pay.
+            Every order ships free across India, with no minimum order value.
           </p>
         </section>
 

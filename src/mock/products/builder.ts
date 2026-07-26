@@ -49,6 +49,7 @@ export function buildProduct(authored: AuthoredProduct, index: number): Product 
   if (authored.isBestseller) tags.add("bestseller");
   if (authored.isTrending) tags.add("trending");
   if (authored.isNewArrival) tags.add("new");
+  if (authored.isLimitedTimeOffer) tags.add("limited-time");
   if (compareAtPrices.length > 0) tags.add("sale");
 
   return {
@@ -78,6 +79,7 @@ export function buildProduct(authored: AuthoredProduct, index: number): Product 
     isTrending: authored.isTrending ?? false,
     isNewArrival: authored.isNewArrival ?? false,
     isFeatured: authored.isFeatured ?? false,
+    isLimitedTimeOffer: authored.isLimitedTimeOffer ?? false,
     totalInventory: variants.reduce((sum, v) => sum + v.inventoryQuantity, 0),
     createdAt: authored.createdAt,
     materialsLine: authored.materialsLine,
@@ -85,8 +87,8 @@ export function buildProduct(authored: AuthoredProduct, index: number): Product 
     careInstructions: authored.careInstructions,
     shippingReturnsNote:
       authored.shippingReturnsNote ??
-      "Ships in 1-2 business days. Free returns within 30 days.",
-    minDeliveryDays: 4,
-    maxDeliveryDays: 7,
+      "Ships in 1-2 business days. Free returns within 7 days.",
+    minDeliveryDays: 2,
+    maxDeliveryDays: 5,
   };
 }

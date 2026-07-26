@@ -55,6 +55,9 @@ function getBadge(product: Product): { label: string; className?: string } | nul
   if (product.totalInventory === 0) {
     return { label: "Out of Stock", className: "bg-muted text-muted-foreground" };
   }
+  if (product.isLimitedTimeOffer) {
+    return { label: "Limited Time Offer", className: "bg-destructive text-white" };
+  }
   const hasDiscount =
     product.compareAtPriceRange &&
     product.compareAtPriceRange.min.amount > product.priceRange.min.amount;
@@ -187,13 +190,7 @@ export function ProductCard({ product }: { product: Product }) {
         <StockBadge quantity={product.totalInventory} />
 
         {socialProof && (
-          <p className="text-muted-foreground text-[0.7rem]">
-            {socialProof.soldLabel}
-            <span aria-hidden className="mx-1 opacity-60">
-              •
-            </span>
-            {socialProof.visitorCount} Visitors
-          </p>
+          <p className="text-muted-foreground text-[0.7rem]">{socialProof.soldLabel}</p>
         )}
 
         <div className="mt-auto flex items-center gap-2 pt-1">

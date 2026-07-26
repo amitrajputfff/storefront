@@ -1,8 +1,9 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { ShieldCheck, RotateCcw, Truck, MessageCircle, CreditCard } from "lucide-react";
+import { ShieldCheck, RotateCcw, Truck, CreditCard, Zap } from "lucide-react";
 import { Product } from "@/types";
+import { RETURN_WINDOW_DAYS } from "@/constants/site";
 import { PriceDisplay } from "@/components/shared/price-display";
 import { RatingStars } from "@/components/product/rating-stars";
 import { VariantSelector } from "@/components/product/variant-selector";
@@ -57,20 +58,19 @@ export function BuyBox({ product }: { product: Product }) {
               </span>
             </>
           )}
-          {socialProof && (
-            <>
-              <span>{socialProof.soldLabel}</span>
-              <span aria-hidden className="opacity-60">
-                •
-              </span>
-              <span>{socialProof.visitorCount} Visitors</span>
-            </>
-          )}
+          {socialProof && <span>{socialProof.soldLabel}</span>}
         </p>
         <a href="#reviews" className="mt-2 inline-flex items-center gap-2">
           <RatingStars rating={product.rating} reviewCount={product.reviewCount} />
         </a>
       </div>
+
+      {product.isLimitedTimeOffer && (
+        <span className="bg-destructive inline-flex w-fit items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium text-white">
+          <Zap className="size-3.5 shrink-0" />
+          Limited Time Offer
+        </span>
+      )}
 
       <PriceDisplay price={price} compareAtPrice={compareAtPrice} size="lg" />
 
@@ -89,8 +89,7 @@ export function BuyBox({ product }: { product: Product }) {
       <div className="flex flex-wrap gap-2">
         {[
           { icon: Truck, label: "Fast Delivery" },
-          { icon: MessageCircle, label: "Quick Response" },
-          { icon: RotateCcw, label: "Easy Returns" },
+          { icon: RotateCcw, label: `${RETURN_WINDOW_DAYS} Day Easy Returns` },
           { icon: ShieldCheck, label: "Secure Payments" },
           { icon: CreditCard, label: "Cash on Delivery" },
         ].map(({ icon: Icon, label }) => (

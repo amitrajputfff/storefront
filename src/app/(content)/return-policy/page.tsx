@@ -17,7 +17,7 @@ export default function ReturnPolicyPage() {
           <h2 className="mb-3 text-lg font-medium">Our Promise</h2>
           <p className="text-muted-foreground">
             If something you ordered doesn&apos;t work out, we want to make it right. We
-            accept returns on eligible items within 30 days of delivery, no complicated
+            accept returns on eligible items within 7 days of delivery, no complicated
             reasons required.
           </p>
         </section>
@@ -25,7 +25,7 @@ export default function ReturnPolicyPage() {
         <section>
           <h2 className="mb-3 text-lg font-medium">Eligibility Window</h2>
           <p className="text-muted-foreground">
-            Returns are accepted within 30 days of the delivery date shown on your tracking
+            Returns are accepted within 7 days of the delivery date shown on your tracking
             confirmation. Items must be unused, in their original packaging, and in resellable
             condition. Products showing signs of use, damage not caused by shipping, or missing
             original packaging may not be eligible for a full refund.

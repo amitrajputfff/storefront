@@ -39,7 +39,7 @@ export function addBusinessDays(date: Date, days: number): Date {
   return result;
 }
 
-export function estimatedDeliveryLabel(fromDate: Date, minDays = 4, maxDays = 7): string {
+export function estimatedDeliveryLabel(fromDate: Date, minDays = 2, maxDays = 5): string {
   const min = addBusinessDays(fromDate, minDays);
   const max = addBusinessDays(fromDate, maxDays);
   return `Arrives ${formatShortDate(min)} – ${formatShortDate(max)}`;

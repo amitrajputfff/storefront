@@ -21,8 +21,7 @@ import { ThemeToggle } from "@/components/shared/theme-toggle";
 import { SearchCommand } from "@/components/shared/search-command";
 import { useUiStore } from "@/stores/ui-store";
 import { routes } from "@/constants/routes";
-import { FREE_SHIPPING_THRESHOLD } from "@/constants/site";
-import { formatPrice } from "@/lib/format";
+import { RETURN_WINDOW_DAYS } from "@/constants/site";
 import { NavMenu } from "@/types";
 
 export function MobileNav({ navMenu }: { navMenu: NavMenu }) {
@@ -119,11 +118,11 @@ export function MobileNav({ navMenu }: { navMenu: NavMenu }) {
             <div className="flex flex-col gap-2 text-xs text-muted-foreground">
               <div className="flex items-center gap-2">
                 <Truck className="size-4" />
-                Free shipping over {formatPrice(FREE_SHIPPING_THRESHOLD)}
+                Free shipping on every order
               </div>
               <div className="flex items-center gap-2">
                 <RotateCcw className="size-4" />
-                30-day returns
+                {RETURN_WINDOW_DAYS}-day returns
               </div>
             </div>
           </SheetFooter>

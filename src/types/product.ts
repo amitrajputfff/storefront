@@ -64,6 +64,7 @@ export interface Product {
   isTrending: boolean;
   isNewArrival: boolean;
   isFeatured: boolean;
+  isLimitedTimeOffer: boolean;
   totalInventory: number;
   createdAt: string;
   materialsLine: string;
@@ -89,6 +90,7 @@ export interface AuthoredProduct {
   isTrending?: boolean;
   isNewArrival?: boolean;
   isFeatured?: boolean;
+  isLimitedTimeOffer?: boolean;
   createdAt: string;
   materialsLine: string;
   recentPurchases?: number;

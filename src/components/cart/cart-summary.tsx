@@ -1,6 +1,5 @@
 import { ShieldCheck } from "lucide-react";
 import { Money } from "@/types";
-import { FREE_SHIPPING_THRESHOLD } from "@/constants/site";
 import { formatMoney } from "@/lib/format";
 import { Separator } from "@/components/ui/separator";
 
@@ -16,7 +15,6 @@ export function CartSummary({
     amount: Math.max(subtotal.amount - discountAmount, 0),
     currencyCode: subtotal.currencyCode,
   };
-  const freeShipping = subtotal.amount >= FREE_SHIPPING_THRESHOLD;
 
   return (
     <div className="space-y-3 px-6 py-4">
@@ -37,7 +35,7 @@ export function CartSummary({
 
         <div className="flex items-center justify-between">
           <span className="text-muted-foreground">Shipping</span>
-          <span>{freeShipping ? "Free" : "Calculated at checkout"}</span>
+          <span>Free</span>
         </div>
       </div>
 

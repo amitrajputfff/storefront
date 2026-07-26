@@ -21,12 +21,12 @@ const FAQ_CATEGORIES = [
       {
         question: "How long does delivery take?",
         answer:
-          "Most orders are processed within 1-2 business days and delivered within 4-7 business days, depending on your location. Metro cities typically see faster delivery, while remote areas may take a day or two longer.",
+          "Most orders are processed within 1-2 business days and delivered within 2-5 business days, depending on your location. Metro cities typically see faster delivery, while remote areas may take a day or two longer.",
       },
       {
         question: "Do you offer free shipping?",
         answer:
-          "Yes — orders over ₹2,999 ship free across India. Orders below that threshold have a flat shipping fee calculated at checkout.",
+          "Yes — every order ships free across India, with no minimum order value.",
       },
       {
         question: "Can I track my order?",
@@ -51,7 +51,7 @@ const FAQ_CATEGORIES = [
       {
         question: "What is your return policy?",
         answer:
-          "We accept returns within 30 days of delivery on unused items in their original packaging. See our full Return Policy page for the complete process and exceptions.",
+          "We accept returns within 7 days of delivery on unused items in their original packaging. See our full Return Policy page for the complete process and exceptions.",
       },
       {
         question: "How do I start a return?",

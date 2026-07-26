@@ -87,7 +87,7 @@ export function CartDrawer() {
         </SheetHeader>
 
         <div className="flex-1 overflow-y-auto">
-          <FreeShippingProgress subtotal={subtotal} />
+          <FreeShippingProgress />
           <Separator />
 
           {items.length === 0 ? (

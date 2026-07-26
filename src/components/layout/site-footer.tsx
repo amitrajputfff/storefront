@@ -2,14 +2,13 @@ import Link from "next/link";
 import { BadgeCheck, RotateCcw, ShieldCheck, Truck } from "lucide-react";
 import { routes } from "@/constants/routes";
 import { NavMenu } from "@/types";
-import { CONTACT_EMAIL, CONTACT_HOURS, FREE_SHIPPING_THRESHOLD, SITE_NAME } from "@/constants/site";
-import { formatPrice } from "@/lib/format";
+import { CONTACT_EMAIL, CONTACT_HOURS, RETURN_WINDOW_DAYS, SITE_NAME } from "@/constants/site";
 import { NewsletterForm } from "./newsletter-form";
 import { ZeevaraWordmark } from "@/components/shared/zeevara-wordmark";
 
 const trustItems = [
-  { icon: Truck, label: `Free shipping over ${formatPrice(FREE_SHIPPING_THRESHOLD)}` },
-  { icon: RotateCcw, label: "30-day returns" },
+  { icon: Truck, label: "Free shipping on every order" },
+  { icon: RotateCcw, label: `${RETURN_WINDOW_DAYS}-day returns` },
   { icon: ShieldCheck, label: "Secure checkout" },
   { icon: BadgeCheck, label: "Considered, quality-checked" },
 ];
