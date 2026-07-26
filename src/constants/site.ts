@@ -11,6 +11,7 @@ export const CONTACT_HOURS = "Mon–Sat, 10am–6pm IST";
 
 export const ANNOUNCEMENT_MESSAGES = [
   "Free shipping across India on every order",
+  "Get an extra 10% off on prepaid orders",
   "7-day hassle-free returns on every order",
   "New arrivals: The Monsoon Edit is live",
   "Discover more everyday — loved by 50,000+ customers",
