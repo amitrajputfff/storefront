@@ -24,6 +24,12 @@ const COMMENT_TEMPLATES = [
   "A little pricier than alternatives but the difference in quality is noticeable immediately.",
   "This is my third order from ZEEVARA and the consistency in quality keeps me coming back.",
   "Simple, well-designed, and genuinely useful — not just decorative.",
+  "Quality bahut acchi hai, bilkul photos jaisa hi laga. Packaging bhi kaafi careful thi.",
+  "Delivery time pe ho gayi aur product use karke laga paisa vasool hai.",
+  "Pehle thoda doubt tha online order karne mein, par yeh quality dekh ke sab clear ho gaya.",
+  "Roz use karti hoon, ek dum sturdy hai aur dekhne mein bhi premium lagta hai.",
+  "Gift ke liye liya tha par ab khud ke liye bhi order kar diya — itna acha nikla.",
+  "Thoda expensive laga pehle, par jab hath mein aaya toh samajh aaya kyun.",
 ];
 
 const TITLE_TEMPLATES = [
@@ -46,14 +52,19 @@ function seededIndex(seed: string, salt: number, mod: number): number {
   return Math.abs(hash) % mod;
 }
 
-/** The actual number of reviews getReviewsForProduct() will generate — use this
- * anywhere a review count is displayed so it never mismatches what's rendered. */
+/** The number of individual review cards actually rendered in the list — kept small
+ * regardless of the displayed total, so the page doesn't try to render hundreds of cards. */
+function getRenderedReviewCount(product: Product): number {
+  return Math.min(Math.max(Math.round(product.reviewCount / 20), 5), 8);
+}
+
+/** The displayed review total (rating stars, "N reviews", JSON-LD) — always at least 200. */
 export function getReviewCount(product: Product): number {
-  return Math.min(Math.max(Math.round(product.reviewCount / 20), 3), 8);
+  return Math.max(product.reviewCount, 200);
 }
 
 export function getReviewsForProduct(product: Product): Review[] {
-  const count = getReviewCount(product);
+  const count = getRenderedReviewCount(product);
   const reviews: Review[] = [];
 
   for (let i = 0; i < count; i++) {

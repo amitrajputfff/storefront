@@ -88,7 +88,9 @@ export function SiteFooter({ navMenu }: { navMenu: NavMenu }) {
               ))}
             </ul>
             <p className="mt-4 text-xs text-muted-foreground">
-              {CONTACT_EMAIL}
+              <a href={`mailto:${CONTACT_EMAIL}`} className="hover:text-foreground hover:underline">
+                {CONTACT_EMAIL}
+              </a>
               <br />
               {CONTACT_HOURS}
             </p>

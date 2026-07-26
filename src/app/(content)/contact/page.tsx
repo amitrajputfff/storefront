@@ -27,7 +27,12 @@ export default function ContactPage() {
             <Mail className="text-muted-foreground mt-0.5 size-4 shrink-0" />
             <div>
               <p className="text-sm font-medium">Email</p>
-              <p className="text-muted-foreground text-sm">{CONTACT_EMAIL}</p>
+              <a
+                href={`mailto:${CONTACT_EMAIL}`}
+                className="text-muted-foreground text-sm hover:text-foreground hover:underline"
+              >
+                {CONTACT_EMAIL}
+              </a>
             </div>
           </div>
           <div className="flex gap-3">
