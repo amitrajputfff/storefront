@@ -13,7 +13,6 @@ import { Reviews } from "@/components/product/reviews";
 import { RelatedProducts } from "@/components/product/related-products";
 import { RecentlyViewed } from "@/components/product/recently-viewed";
 import { RecentlyViewedRecorder } from "@/components/product/recently-viewed-recorder";
-import { RecentPurchaseToastMounter } from "@/components/shared/recent-purchase-toast-mounter";
 import { Bundle } from "@/components/product/bundle";
 import { JsonLd, buildBreadcrumbJsonLd, buildProductJsonLd } from "@/lib/jsonld";
 import {
@@ -66,7 +65,6 @@ export default async function ProductPage({
   return (
     <main className="mx-auto max-w-7xl px-6 py-10 md:py-16">
       <RecentlyViewedRecorder handle={product.handle} />
-      <RecentPurchaseToastMounter productTitles={[product.title]} />
       <JsonLd data={buildProductJsonLd(product)} />
       <JsonLd
         data={buildBreadcrumbJsonLd([

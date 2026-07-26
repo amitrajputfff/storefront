@@ -23,7 +23,7 @@ export const testimonials: Testimonial[] = [
     location: "Kochi",
     rating: 4,
     quote:
-      "Shipping was quicker than expected and the return process for a size exchange was genuinely painless.",
+      "Delivery bhi time pe aa gayi aur return process bhi bahut smooth tha — size exchange karne mein koi dikkat nahi hui.",
   },
   {
     id: "t4",
@@ -39,7 +39,7 @@ export const testimonials: Testimonial[] = [
     location: "Pune",
     rating: 5,
     quote:
-      "Discovered ZEEVARA through a friend's kitchen and now I can't stop finding reasons to order more.",
+      "Ek friend ke ghar pe dekha tha, ab main bhi order karti rehti hoon. Quality bilkul photos jaisi hi hai, paisa vasool.",
   },
   {
     id: "t6",

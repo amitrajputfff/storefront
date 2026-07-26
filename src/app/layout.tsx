@@ -7,8 +7,10 @@ import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { CartDrawer } from "@/components/cart/cart-drawer";
 import { QuickViewDialog } from "@/components/product/quick-view-dialog";
+import { RecentPurchaseToastMounter } from "@/components/shared/recent-purchase-toast-mounter";
 import { JsonLd, buildOrganizationJsonLd } from "@/lib/jsonld";
 import { getNavMenu } from "@/lib/nav-menu";
+import { getAllProducts } from "@/mock/products";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_TAGLINE, SITE_URL } from "@/constants/site";
 
 const geistSans = Geist({
@@ -53,7 +55,8 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const navMenu = await getNavMenu();
+  const [navMenu, products] = await Promise.all([getNavMenu(), getAllProducts()]);
+  const productTitles = products.map((p) => p.title);
 
   return (
     <html
@@ -70,6 +73,7 @@ export default async function RootLayout({
           <SiteFooter navMenu={navMenu} />
           <CartDrawer />
           <QuickViewDialog />
+          <RecentPurchaseToastMounter productTitles={productTitles} />
         </AppProviders>
       </body>
     </html>
