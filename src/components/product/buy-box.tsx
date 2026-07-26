@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, type RefObject } from "react";
-import { ShieldCheck, RotateCcw, Truck, CreditCard, Zap } from "lucide-react";
+import { ShieldCheck, RotateCcw, Truck, CreditCard, Zap, BadgePercent } from "lucide-react";
 import { Product, Variant } from "@/types";
 import { RETURN_WINDOW_DAYS } from "@/constants/site";
 import { PriceDisplay } from "@/components/shared/price-display";
@@ -102,6 +102,11 @@ export function BuyBox({
       )}
 
       <QuantityPacks quantity={quantity} onChange={onQuantityChange} maxQuantity={maxQty} />
+
+      <div className="bg-success/10 text-success flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium">
+        <BadgePercent className="size-4 shrink-0" />
+        Get an extra 10% off when you pay online instead of Cash on Delivery
+      </div>
 
       <div className="flex flex-wrap gap-2">
         {[

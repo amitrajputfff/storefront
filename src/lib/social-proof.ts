@@ -29,7 +29,19 @@ export function getRecentPurchaseCount(seed: string): number {
   for (let i = 0; i < seed.length; i++) {
     hash = (hash * 31 + seed.charCodeAt(i)) >>> 0;
   }
-  return 40 + (hash % 180); // stable per product, 40-219
+  return 1000 + (hash % 1500); // stable per product, always above 1000: 1000-2499
+}
+
+/**
+ * Purely decorative fallback for products without a real reviewCount metafield —
+ * seeded from the product id so it stays stable across refreshes, roughly 180-260.
+ */
+export function getFallbackReviewCount(seed: string): number {
+  let hash = 0;
+  for (let i = 0; i < seed.length; i++) {
+    hash = (hash * 37 + seed.charCodeAt(i)) >>> 0;
+  }
+  return 180 + (hash % 81);
 }
 
 const INDIAN_CITIES = [

@@ -1,4 +1,5 @@
 import { Product, ProductCategory, ProductImage, SelectedOption, Variant } from "@/types";
+import { getFallbackReviewCount } from "@/lib/social-proof";
 
 const CATEGORY_TAGS: ProductCategory[] = [
   "home-decor",
@@ -134,7 +135,9 @@ export function mapShopifyProduct(node: ShopifyProductNode): Product {
         }
       : undefined,
     rating: metafieldNumber(node.rating, 4.5),
-    reviewCount: metafieldNumber(node.reviewCount, 0),
+    reviewCount: node.reviewCount
+      ? metafieldNumber(node.reviewCount, getFallbackReviewCount(node.handle))
+      : getFallbackReviewCount(node.handle),
     isBestseller: tags.includes("bestseller"),
     isTrending: tags.includes("trending"),
     isNewArrival,

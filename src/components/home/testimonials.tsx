@@ -15,7 +15,7 @@ export function Testimonials() {
   return (
     <section className="py-16 md:py-24">
       <div className="mx-auto max-w-7xl px-6">
-        <SectionHeading eyebrow="Social proof" title="What customers say" align="center" className="mb-10" />
+        <SectionHeading eyebrow="Social proof" title="What our customers say about us" align="center" className="mb-10" />
       </div>
       <Marquee className="[--duration:45s]">
         {testimonials.map((t) => (
