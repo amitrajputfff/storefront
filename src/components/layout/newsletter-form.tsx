@@ -5,8 +5,10 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Check } from "lucide-react";
+import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { subscribeToNewsletter } from "@/lib/newsletter";
 
 const newsletterSchema = z.object({
   email: z.string().email("Enter a valid email address"),
@@ -25,9 +27,13 @@ export function NewsletterForm() {
     defaultValues: { email: "" },
   });
 
-  async function onSubmit() {
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    setSubmitted(true);
+  async function onSubmit(values: NewsletterValues) {
+    const result = await subscribeToNewsletter(values.email);
+    if (result.success) {
+      setSubmitted(true);
+    } else {
+      toast.error(result.error ?? "Something went wrong — please try again.");
+    }
   }
 
   if (submitted) {
