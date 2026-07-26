@@ -72,7 +72,7 @@ export function ChatWidget() {
   }
 
   return (
-    <div className="fixed right-4 bottom-4 z-40 md:right-6 md:bottom-6">
+    <div className="fixed right-4 bottom-20 z-50 md:right-6 md:bottom-6">
       <AnimatePresence>
         {open && (
           <motion.div
@@ -148,7 +148,7 @@ export function ChatWidget() {
         size="icon-lg"
         aria-label={open ? "Close support chat" : "Open support chat"}
         onClick={() => setOpen((o) => !o)}
-        className="size-12 rounded-full shadow-soft-lg"
+        className="size-10 rounded-full shadow-soft-lg md:size-12"
       >
         <AnimatePresence mode="wait" initial={false}>
           <motion.span
