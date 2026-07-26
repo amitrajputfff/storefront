@@ -6,9 +6,8 @@ import { toast } from "sonner";
 import { Product, Variant } from "@/types";
 import { useCart } from "@/hooks/use-cart";
 import { useBuyNow } from "@/hooks/use-buy-now";
-import { useUiStore } from "@/stores/ui-store";
 import { Button } from "@/components/ui/button";
-import { PaymentIconBadge, PaymentIconGroup } from "@/components/product/payment-icon-badge";
+import { PaymentIconGroup } from "@/components/product/payment-icon-badge";
 import { cn } from "@/lib/utils";
 
 type Status = "idle" | "loading" | "success";
@@ -32,12 +31,10 @@ export function AddToCartButton({
   showBuyNow?: boolean;
 }) {
   const { addItem } = useCart();
-  const openCart = useUiStore((s) => s.openCart);
   const [status, setStatus] = useState<Status>("idle");
-  const [codLoading, setCodLoading] = useState(false);
   const { buyNow, buying } = useBuyNow(variant, quantity);
 
-  const disabled = !variant || !variant.availableForSale || status === "loading" || buying || codLoading;
+  const disabled = !variant || !variant.availableForSale || status === "loading" || buying;
 
   function addToCart() {
     if (!variant) return;
@@ -65,17 +62,6 @@ export function AddToCartButton({
     }, 500);
   }
 
-  function handleCod() {
-    if (!variant || !variant.availableForSale) return;
-    setCodLoading(true);
-    setTimeout(() => {
-      addToCart();
-      setCodLoading(false);
-      toast.success("Cash on Delivery selected");
-      openCart();
-    }, 500);
-  }
-
   const label = !variant
     ? "Select options"
     : !variant.availableForSale
@@ -97,29 +83,27 @@ export function AddToCartButton({
       </Button>
 
       {showBuyNow && (
-        <>
-          <Button
-            size="lg"
-            className="h-auto w-full px-4 py-3 shadow-sm"
-            disabled={disabled}
-            onClick={buyNow}
-          >
-            <div className="flex w-full items-center justify-between gap-3">
-              <div className="min-w-0 text-left">
-                <span className="inline-flex items-center gap-2 text-sm font-semibold">
-                  {buying && <Loader2 className="size-4 animate-spin" />}
-                  {buying ? "Processing…" : "Buy Now"}
+        <Button
+          size="lg"
+          className="h-auto w-full px-4 py-3 shadow-sm"
+          disabled={disabled}
+          onClick={buyNow}
+        >
+          <div className="flex w-full items-center justify-between gap-3">
+            <div className="min-w-0 text-left">
+              <span className="inline-flex items-center gap-2 text-sm font-semibold">
+                {buying && <Loader2 className="size-4 animate-spin" />}
+                {buying ? "Processing…" : "Buy Now"}
+              </span>
+              {!buying && (
+                <span className="mt-0.5 block text-[11px] font-normal opacity-80">
+                  UPI, cards, wallets or Cash on Delivery
                 </span>
-                {!buying && (
-                  <span className="mt-0.5 block text-[11px] font-normal opacity-80">
-                    Pay via UPI, cards & wallets
-                  </span>
-                )}
-              </div>
-              {!buying && <PaymentIconGroup icons={upiPaymentMethods} size={32} overlap={9} />}
+              )}
             </div>
-          </Button>
-        </>
+            {!buying && <PaymentIconGroup icons={upiPaymentMethods} size={32} overlap={9} />}
+          </div>
+        </Button>
       )}
     </div>
   );
