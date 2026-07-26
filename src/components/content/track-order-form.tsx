@@ -15,7 +15,7 @@ import { formatFullDate } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
 const trackSchema = z.object({
-  confirmationNumber: z.string().min(1, "Enter your order number"),
+  orderNumber: z.string().min(1, "Enter your order number"),
   email: z.string().email("Enter a valid email address"),
 });
 
@@ -33,7 +33,7 @@ export function TrackOrderForm() {
   async function onSubmit(values: TrackValues) {
     setNotFoundError(null);
     setOrder(null);
-    const result = await trackOrder(values.confirmationNumber, values.email);
+    const result = await trackOrder(values.orderNumber, values.email);
     if (result.success && result.order) {
       setOrder(result.order);
     } else {
@@ -137,15 +137,15 @@ export function TrackOrderForm() {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
       <div className="space-y-2">
-        <Label htmlFor="confirmationNumber">Order number</Label>
+        <Label htmlFor="orderNumber">Order number</Label>
         <Input
-          id="confirmationNumber"
-          placeholder="e.g. GK5W0IWED"
-          aria-invalid={!!errors.confirmationNumber}
-          {...register("confirmationNumber")}
+          id="orderNumber"
+          placeholder="e.g. Zeevara-1014"
+          aria-invalid={!!errors.orderNumber}
+          {...register("orderNumber")}
         />
-        {errors.confirmationNumber && (
-          <p className="text-error text-xs">{errors.confirmationNumber.message}</p>
+        {errors.orderNumber && (
+          <p className="text-error text-xs">{errors.orderNumber.message}</p>
         )}
       </div>
 

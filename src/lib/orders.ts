@@ -57,23 +57,23 @@ interface ShopifyOrderNode {
 }
 
 export async function trackOrder(
-  confirmationNumberInput: string,
+  orderNumberInput: string,
   emailInput: string,
 ): Promise<TrackOrderResult> {
   if (!isShopifyAdminConfigured()) {
     return { success: false, error: "Order tracking is not configured yet." };
   }
 
-  const confirmationNumber = confirmationNumberInput.trim().toUpperCase().replace(/^#/, "");
+  const orderNumber = orderNumberInput.replace(/\D/g, "");
   const email = emailInput.trim().toLowerCase();
 
-  if (!confirmationNumber || !email) {
+  if (!orderNumber || !email) {
     return { success: false, error: "Enter both your order number and email." };
   }
 
   try {
     const data = await adminFetch<{ orders: { nodes: ShopifyOrderNode[] } }>(ORDER_QUERY, {
-      query: `confirmation_number:${confirmationNumber} email:${email}`,
+      query: `name:${orderNumber} email:${email}`,
     });
 
     const node = data.orders.nodes[0];
