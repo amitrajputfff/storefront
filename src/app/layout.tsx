@@ -12,6 +12,7 @@ import { ChatWidget } from "@/components/chat/chat-widget";
 import { JsonLd, buildOrganizationJsonLd } from "@/lib/jsonld";
 import { getNavMenu } from "@/lib/nav-menu";
 import { getAllProducts } from "@/mock/products";
+import { getActivePromoCodes } from "@/lib/shopify/discounts";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_TAGLINE, SITE_URL } from "@/constants/site";
 
 const geistSans = Geist({
@@ -56,7 +57,11 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [navMenu, products] = await Promise.all([getNavMenu(), getAllProducts()]);
+  const [navMenu, products, promoCodes] = await Promise.all([
+    getNavMenu(),
+    getAllProducts(),
+    getActivePromoCodes(),
+  ]);
   const productTitles = products.map((p) => p.title);
 
   return (
@@ -68,7 +73,7 @@ export default async function RootLayout({
       <body className="flex min-h-full flex-col">
         <JsonLd data={buildOrganizationJsonLd()} />
         <AppProviders>
-          <AnnouncementBar />
+          <AnnouncementBar promoCodes={promoCodes} />
           <SiteHeader navMenu={navMenu} />
           <div className="flex-1">{children}</div>
           <SiteFooter navMenu={navMenu} />

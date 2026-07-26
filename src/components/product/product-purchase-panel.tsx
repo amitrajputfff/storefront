@@ -5,8 +5,15 @@ import { Product } from "@/types";
 import { BuyBox, defaultSelectedOptions, getActiveVariant } from "@/components/product/buy-box";
 import { StickyBuyBar } from "@/components/product/sticky-buy-bar";
 import { useInViewport } from "@/hooks/use-in-viewport";
+import { PromoCode } from "@/lib/shopify/discounts";
 
-export function ProductPurchasePanel({ product }: { product: Product }) {
+export function ProductPurchasePanel({
+  product,
+  promoCodes,
+}: {
+  product: Product;
+  promoCodes: PromoCode[];
+}) {
   const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>(() =>
     defaultSelectedOptions(product),
   );
@@ -23,6 +30,7 @@ export function ProductPurchasePanel({ product }: { product: Product }) {
     <>
       <BuyBox
         product={product}
+        promoCodes={promoCodes}
         selectedOptions={selectedOptions}
         onSelectedOptionsChange={(name, value) =>
           setSelectedOptions((prev) => ({ ...prev, [name]: value }))

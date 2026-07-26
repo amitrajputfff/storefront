@@ -2,13 +2,24 @@
 
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { MessageCircle, Send, X } from "lucide-react";
+import { Bot, Send, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 
 interface ChatMessage {
   role: "user" | "assistant";
   content: string;
+}
+
+function renderContent(content: string) {
+  return content.split(/(\*\*[^*]+\*\*)/g).map((part, i) =>
+    part.startsWith("**") && part.endsWith("**") ? (
+      <strong key={i}>{part.slice(2, -2)}</strong>
+    ) : (
+      <span key={i}>{part}</span>
+    ),
+  );
 }
 
 const WELCOME_MESSAGE: ChatMessage = {
@@ -83,9 +94,16 @@ export function ChatWidget() {
             className="shadow-soft-lg bg-background absolute right-0 bottom-16 flex h-[70vh] max-h-[560px] w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-2xl border sm:w-96"
           >
             <div className="flex items-center justify-between border-b px-4 py-3">
-              <div>
-                <p className="text-sm font-semibold">ZEEVARA Support</p>
-                <p className="text-muted-foreground text-xs">Usually replies in a few minutes</p>
+              <div className="flex items-center gap-2.5">
+                <Avatar size="sm">
+                  <AvatarFallback className="bg-foreground text-background">
+                    <Bot className="size-3.5" />
+                  </AvatarFallback>
+                </Avatar>
+                <div>
+                  <p className="text-sm font-semibold">ZEEVARA Support</p>
+                  <p className="text-muted-foreground text-xs">Usually replies in a few minutes</p>
+                </div>
               </div>
               <Button
                 variant="ghost"
@@ -101,22 +119,37 @@ export function ChatWidget() {
               {messages.map((m, i) => (
                 <div
                   key={i}
-                  className={cn("flex", m.role === "user" ? "justify-end" : "justify-start")}
+                  className={cn(
+                    "flex items-end gap-2",
+                    m.role === "user" ? "justify-end" : "justify-start",
+                  )}
                 >
+                  {m.role === "assistant" && (
+                    <Avatar size="sm" className="mb-0.5 shrink-0">
+                      <AvatarFallback className="bg-foreground text-background">
+                        <Bot className="size-3.5" />
+                      </AvatarFallback>
+                    </Avatar>
+                  )}
                   <div
                     className={cn(
-                      "max-w-[85%] rounded-xl px-3 py-2 text-sm leading-relaxed whitespace-pre-wrap",
+                      "max-w-[80%] rounded-xl px-3 py-2 text-sm leading-relaxed whitespace-pre-wrap",
                       m.role === "user"
                         ? "bg-foreground text-background"
                         : "bg-muted text-foreground",
                     )}
                   >
-                    {m.content}
+                    {renderContent(m.content)}
                   </div>
                 </div>
               ))}
               {loading && (
-                <div className="flex justify-start">
+                <div className="flex items-end justify-start gap-2">
+                  <Avatar size="sm" className="mb-0.5 shrink-0">
+                    <AvatarFallback className="bg-foreground text-background">
+                      <Bot className="size-3.5" />
+                    </AvatarFallback>
+                  </Avatar>
                   <div className="bg-muted text-muted-foreground rounded-xl px-3 py-2 text-sm">
                     Typing…
                   </div>
@@ -158,7 +191,7 @@ export function ChatWidget() {
             exit={{ opacity: 0, rotate: 45 }}
             transition={{ duration: 0.15 }}
           >
-            {open ? <X className="size-5" /> : <MessageCircle className="size-5" />}
+            {open ? <X className="size-5" /> : <Bot className="size-5" />}
           </motion.span>
         </AnimatePresence>
       </Button>

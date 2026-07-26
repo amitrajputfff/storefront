@@ -21,6 +21,7 @@ import {
   getRelatedProducts,
 } from "@/mock/products";
 import { getCategoryByHandle } from "@/mock/categories";
+import { getActivePromoCodes } from "@/lib/shopify/discounts";
 import { routes } from "@/constants/routes";
 import { SITE_NAME, SITE_URL } from "@/constants/site";
 
@@ -60,7 +61,10 @@ export default async function ProductPage({
   if (!product) notFound();
 
   const category = getCategoryByHandle(product.category);
-  const related = await getRelatedProducts(product, 8);
+  const [related, promoCodes] = await Promise.all([
+    getRelatedProducts(product, 8),
+    getActivePromoCodes(),
+  ]);
 
   return (
     <main className="mx-auto max-w-7xl px-6 py-10 md:py-16">
@@ -89,7 +93,7 @@ export default async function ProductPage({
       <div className="grid gap-10 lg:grid-cols-2 lg:gap-16">
         <Gallery images={product.images} />
         <div className="lg:sticky lg:top-24 lg:self-start">
-          <ProductPurchasePanel product={product} />
+          <ProductPurchasePanel product={product} promoCodes={promoCodes} />
         </div>
       </div>
 

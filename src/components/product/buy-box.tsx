@@ -11,9 +11,11 @@ import { VariantSelector } from "@/components/product/variant-selector";
 import { QuantityPacks } from "@/components/product/quantity-packs";
 import { AddToCartButton } from "@/components/product/add-to-cart-button";
 import { RecentPurchasesBadge } from "@/components/product/recent-purchases-badge";
+import { PromoCodeChips } from "@/components/product/promo-code-chips";
 import { estimatedDeliveryLabel } from "@/lib/format";
 import { getFlashSaleEndsAt } from "@/lib/urgency";
 import { getReviewCount } from "@/mock/reviews";
+import { PromoCode } from "@/lib/shopify/discounts";
 
 export function defaultSelectedOptions(product: Product): Record<string, string> {
   const firstAvailable =
@@ -36,6 +38,7 @@ export function getActiveVariant(
 
 export function BuyBox({
   product,
+  promoCodes,
   selectedOptions,
   onSelectedOptionsChange,
   quantity,
@@ -44,6 +47,7 @@ export function BuyBox({
   ctaRef,
 }: {
   product: Product;
+  promoCodes: PromoCode[];
   selectedOptions: Record<string, string>;
   onSelectedOptionsChange: (name: string, value: string) => void;
   quantity: number;
@@ -103,10 +107,14 @@ export function BuyBox({
 
       <QuantityPacks quantity={quantity} onChange={onQuantityChange} maxQuantity={maxQty} />
 
-      <div className="bg-success/10 text-success flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium">
-        <BadgePercent className="size-4 shrink-0" />
-        Get an extra 10% off when you pay online instead of Cash on Delivery
-      </div>
+      {promoCodes.length > 0 ? (
+        <PromoCodeChips codes={promoCodes} />
+      ) : (
+        <div className="bg-success/10 text-success flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium">
+          <BadgePercent className="size-4 shrink-0" />
+          Get an extra 10% off when you pay online instead of Cash on Delivery
+        </div>
+      )}
 
       <div className="flex flex-wrap gap-2">
         {[
