@@ -3,20 +3,15 @@ import { shopifyFetch } from "./client";
 import { mapShopifyProduct, ShopifyProductNode } from "./mappers";
 import { ALL_PRODUCTS_QUERY, PRODUCT_BY_HANDLE_QUERY, SEARCH_PRODUCTS_QUERY } from "./queries";
 
-let cachedProducts: Product[] | null = null;
-let cachedAt = 0;
-const CACHE_TTL_MS = 60_000;
-
 async function fetchAllProducts(): Promise<Product[]> {
-  if (cachedProducts && Date.now() - cachedAt < CACHE_TTL_MS) return cachedProducts;
-
+  // Caching is handled entirely by Next.js's fetch cache (see shopifyFetch) —
+  // tagged "shopify-products" and revalidated instantly by the Shopify
+  // webhook, with a 1hr time-based fallback. No separate in-memory cache here.
   const data = await shopifyFetch<{ products: { edges: { node: ShopifyProductNode }[] } }>({
     query: ALL_PRODUCTS_QUERY,
   });
 
-  cachedProducts = data.products.edges.map((e) => mapShopifyProduct(e.node));
-  cachedAt = Date.now();
-  return cachedProducts;
+  return data.products.edges.map((e) => mapShopifyProduct(e.node));
 }
 
 export async function getAllProducts(): Promise<Product[]> {

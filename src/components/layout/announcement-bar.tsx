@@ -3,9 +3,11 @@
 import { useEffect, useState } from "react";
 import { Marquee } from "@/components/ui/marquee";
 import { ANNOUNCEMENT_MESSAGES } from "@/constants/site";
+import { useReportHeight } from "@/hooks/use-report-height";
 
 export function AnnouncementBar() {
   const [reducedMotion, setReducedMotion] = useState(false);
+  const ref = useReportHeight<HTMLDivElement>("--announcement-height");
 
   useEffect(() => {
     const query = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -16,7 +18,7 @@ export function AnnouncementBar() {
   }, []);
 
   return (
-    <div className="sticky top-0 z-40 w-full overflow-hidden bg-foreground text-background">
+    <div ref={ref} className="sticky top-0 z-40 w-full overflow-hidden bg-foreground text-background">
       <div className="mx-auto flex h-9 max-w-[1400px] items-center px-4">
         {reducedMotion ? (
           <span className="mx-auto text-xs font-medium tracking-wide">

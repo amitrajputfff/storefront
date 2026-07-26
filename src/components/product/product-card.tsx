@@ -8,6 +8,7 @@ import { Product } from "@/types";
 import { routes } from "@/constants/routes";
 import { cn } from "@/lib/utils";
 import { useSocialProof } from "@/hooks/use-social-proof";
+import { getReviewCount } from "@/mock/reviews";
 import { useCart } from "@/hooks/use-cart";
 import { useUiStore } from "@/stores/ui-store";
 import { Badge } from "@/components/ui/badge";
@@ -79,7 +80,7 @@ export function ProductCard({ product }: { product: Product }) {
   const swatchValues = colorOption?.values ?? [];
   const visibleSwatches = swatchValues.slice(0, 5);
   const overflowCount = swatchValues.length - visibleSwatches.length;
-  const socialProof = useSocialProof();
+  const socialProof = useSocialProof(product.id);
 
   const singleVariant = product.variants.length <= 1 ? product.variants[0] : undefined;
 
@@ -159,7 +160,7 @@ export function ProductCard({ product }: { product: Product }) {
       </div>
 
       <div className="mt-3 flex flex-1 flex-col gap-1">
-        <RatingStars rating={product.rating} reviewCount={product.reviewCount} size="sm" />
+        <RatingStars rating={product.rating} reviewCount={getReviewCount(product)} size="sm" />
         <Link
           href={routes.product(product.handle)}
           className="truncate text-sm font-medium hover:underline"

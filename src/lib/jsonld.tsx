@@ -1,6 +1,7 @@
 import { Product } from "@/types";
 import { ORGANIZATION_JSONLD } from "@/constants/seo";
 import { SITE_URL } from "@/constants/site";
+import { getReviewCount } from "@/mock/reviews";
 
 export function buildOrganizationJsonLd() {
   return ORGANIZATION_JSONLD;
@@ -25,14 +26,11 @@ export function buildProductJsonLd(product: Product) {
           : "https://schema.org/OutOfStock",
       url: `${SITE_URL}/products/${product.handle}`,
     },
-    aggregateRating:
-      product.reviewCount > 0
-        ? {
-            "@type": "AggregateRating",
-            ratingValue: product.rating,
-            reviewCount: product.reviewCount,
-          }
-        : undefined,
+    aggregateRating: {
+      "@type": "AggregateRating",
+      ratingValue: product.rating,
+      reviewCount: getReviewCount(product),
+    },
   };
 }
 

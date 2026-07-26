@@ -5,6 +5,7 @@ import { Check, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Product, Variant } from "@/types";
 import { useCart } from "@/hooks/use-cart";
+import { useBuyNow } from "@/hooks/use-buy-now";
 import { useUiStore } from "@/stores/ui-store";
 import { Button } from "@/components/ui/button";
 import { PaymentIconBadge, PaymentIconGroup } from "@/components/product/payment-icon-badge";
@@ -33,8 +34,8 @@ export function AddToCartButton({
   const { addItem } = useCart();
   const openCart = useUiStore((s) => s.openCart);
   const [status, setStatus] = useState<Status>("idle");
-  const [buying, setBuying] = useState(false);
   const [codLoading, setCodLoading] = useState(false);
+  const { buyNow, buying } = useBuyNow(variant, quantity);
 
   const disabled = !variant || !variant.availableForSale || status === "loading" || buying || codLoading;
 
@@ -61,16 +62,6 @@ export function AddToCartButton({
       toast.success("Added to cart");
       setStatus("success");
       setTimeout(() => setStatus("idle"), 1500);
-    }, 500);
-  }
-
-  function handleBuyNow() {
-    if (!variant || !variant.availableForSale) return;
-    setBuying(true);
-    setTimeout(() => {
-      addToCart();
-      setBuying(false);
-      openCart();
     }, 500);
   }
 
@@ -111,7 +102,7 @@ export function AddToCartButton({
             size="lg"
             className="h-auto w-full px-4 py-3 shadow-sm"
             disabled={disabled}
-            onClick={handleBuyNow}
+            onClick={buyNow}
           >
             <div className="flex w-full items-center justify-between gap-3">
               <div className="min-w-0 text-left">

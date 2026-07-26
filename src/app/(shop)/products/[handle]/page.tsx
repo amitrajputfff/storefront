@@ -8,11 +8,12 @@ import {
   AccordionContent,
 } from "@/components/ui/accordion";
 import { Gallery } from "@/components/product/gallery";
-import { BuyBox } from "@/components/product/buy-box";
+import { ProductPurchasePanel } from "@/components/product/product-purchase-panel";
 import { Reviews } from "@/components/product/reviews";
 import { RelatedProducts } from "@/components/product/related-products";
 import { RecentlyViewed } from "@/components/product/recently-viewed";
 import { RecentlyViewedRecorder } from "@/components/product/recently-viewed-recorder";
+import { RecentPurchaseToastMounter } from "@/components/shared/recent-purchase-toast-mounter";
 import { Bundle } from "@/components/product/bundle";
 import { JsonLd, buildBreadcrumbJsonLd, buildProductJsonLd } from "@/lib/jsonld";
 import {
@@ -65,6 +66,7 @@ export default async function ProductPage({
   return (
     <main className="mx-auto max-w-7xl px-6 py-10 md:py-16">
       <RecentlyViewedRecorder handle={product.handle} />
+      <RecentPurchaseToastMounter productTitles={[product.title]} />
       <JsonLd data={buildProductJsonLd(product)} />
       <JsonLd
         data={buildBreadcrumbJsonLd([
@@ -89,7 +91,7 @@ export default async function ProductPage({
       <div className="grid gap-10 lg:grid-cols-2 lg:gap-16">
         <Gallery images={product.images} />
         <div className="lg:sticky lg:top-24 lg:self-start">
-          <BuyBox product={product} />
+          <ProductPurchasePanel product={product} />
         </div>
       </div>
 

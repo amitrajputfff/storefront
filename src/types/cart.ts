@@ -11,6 +11,7 @@ export interface CartItem {
   price: Money;
   quantity: number;
   maxQuantity: number;
+  addedAt: number;
 }
 
 export interface Cart {

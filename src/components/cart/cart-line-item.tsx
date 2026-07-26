@@ -8,6 +8,7 @@ import { CartItem } from "@/types";
 import { routes } from "@/constants/routes";
 import { formatMoney } from "@/lib/format";
 import { useCart } from "@/hooks/use-cart";
+import { StockBadge } from "@/components/product/stock-badge";
 
 export function CartLineItem({ item }: { item: CartItem }) {
   const { updateQuantity, removeItem } = useCart();
@@ -53,6 +54,7 @@ export function CartLineItem({ item }: { item: CartItem }) {
         </div>
 
         <p className="text-xs text-muted-foreground">{item.variantTitle}</p>
+        <StockBadge quantity={item.maxQuantity} />
 
         <div className="mt-auto flex items-center justify-between pt-1">
           <div className="flex items-center rounded-full border border-border">

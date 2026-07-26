@@ -1,3 +1,5 @@
+"use server";
+
 import { Product } from "@/types";
 import { buildProduct } from "./builder";
 import { isShopifyConfigured } from "@/lib/shopify/client";
@@ -63,6 +65,19 @@ export async function getRelatedProducts(product: Product, limit = 8): Promise<P
   return allProducts
     .filter((p) => p.category === product.category && p.id !== product.id)
     .slice(0, limit);
+}
+
+/** Category handles that actually have real products right now, ranked by how many. */
+export async function getPopulatedCategoryHandles(limit = 4): Promise<string[]> {
+  const products = await getAllProducts();
+  const counts = new Map<string, number>();
+  for (const p of products) {
+    counts.set(p.category, (counts.get(p.category) ?? 0) + 1);
+  }
+  return Array.from(counts.entries())
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, limit)
+    .map(([category]) => category);
 }
 
 export async function searchProducts(query: string): Promise<Product[]> {

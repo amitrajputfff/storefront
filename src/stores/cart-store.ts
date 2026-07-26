@@ -4,7 +4,7 @@ import { CartItem, Money } from "@/types";
 
 interface CartState {
   items: CartItem[];
-  addItem: (item: Omit<CartItem, "id">) => void;
+  addItem: (item: Omit<CartItem, "id" | "addedAt">) => void;
   removeItem: (lineId: string) => void;
   updateQuantity: (lineId: string, quantity: number) => void;
   clearCart: () => void;
@@ -30,10 +30,11 @@ export const useCartStore = create<CartState>()(
               ),
             };
           }
+          const now = Date.now();
           return {
             items: [
               ...state.items,
-              { ...item, id: `${item.variantId}-${Date.now()}` },
+              { ...item, id: `${item.variantId}-${now}`, addedAt: now },
             ],
           };
         }),

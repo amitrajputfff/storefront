@@ -7,10 +7,18 @@ export function isShopifyConfigured(): boolean {
 interface ShopifyFetchOptions {
   query: string;
   variables?: Record<string, unknown>;
+  /** Safety-net revalidation window in seconds — instant updates come from the
+   * Shopify webhook calling revalidateTag("shopify-products") instead. */
   revalidate?: number;
+  tags?: string[];
 }
 
-export async function shopifyFetch<T>({ query, variables, revalidate = 60 }: ShopifyFetchOptions): Promise<T> {
+export async function shopifyFetch<T>({
+  query,
+  variables,
+  revalidate = 3600,
+  tags = ["shopify-products"],
+}: ShopifyFetchOptions): Promise<T> {
   const domain = process.env.SHOPIFY_STORE_DOMAIN;
   const token = process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN;
 
@@ -27,7 +35,7 @@ export async function shopifyFetch<T>({ query, variables, revalidate = 60 }: Sho
       "Shopify-Storefront-Private-Token": token,
     },
     body: JSON.stringify({ query, variables }),
-    next: { revalidate },
+    next: { revalidate, tags },
   });
 
   if (!res.ok) {

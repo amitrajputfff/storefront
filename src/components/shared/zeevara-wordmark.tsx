@@ -1,24 +1,32 @@
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 
-const SIZES = {
-  sm: { z: "text-[1.75rem]", rest: "text-[10px] tracking-[0.2em]" },
-  md: { z: "text-[2.25rem]", rest: "text-[11px] tracking-[0.22em]" },
-  lg: { z: "text-[2.75rem]", rest: "text-xs tracking-[0.24em]" },
+const MARK_ASPECT_RATIO = 902 / 338;
+
+const HEIGHTS = {
+  sm: 34,
+  md: 42,
+  lg: 52,
 } as const;
 
 export function ZeevaraWordmark({
   size = "md",
   className,
 }: {
-  size?: keyof typeof SIZES;
+  size?: keyof typeof HEIGHTS;
   className?: string;
 }) {
-  const s = SIZES[size];
+  const height = HEIGHTS[size];
+  const width = Math.round(height * MARK_ASPECT_RATIO);
 
   return (
-    <span className={cn("inline-flex items-baseline text-foreground", className)}>
-      <span className={cn(s.z, "font-serif leading-none")}>Z</span>
-      <span className={cn(s.rest, "font-sans font-normal uppercase")}>EEVARA</span>
-    </span>
+    <Image
+      src="/logo/zeevara-mark.png"
+      alt="ZEEVARA"
+      width={width}
+      height={height}
+      className={cn("dark:invert", className)}
+      priority
+    />
   );
 }

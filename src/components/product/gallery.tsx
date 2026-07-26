@@ -86,24 +86,30 @@ export function Gallery({ images }: { images: ProductImage[] }) {
       </div>
 
       <Dialog open={lightboxOpen} onOpenChange={setLightboxOpen}>
-        <DialogContent className="flex h-screen max-h-screen w-screen max-w-none items-center justify-center rounded-none bg-background/95 p-0 sm:max-w-none">
+        <DialogContent
+          className="flex h-screen max-h-screen w-screen max-w-none cursor-zoom-out items-center justify-center rounded-none bg-background/95 p-0 sm:max-w-none"
+          onClick={() => setLightboxOpen(false)}
+        >
           <DialogTitle className="sr-only">{active.altText}</DialogTitle>
-          <div className="relative h-full w-full">
-            <Image
-              src={active.url}
-              alt={active.altText}
-              fill
-              sizes="100vw"
-              className="object-contain"
-            />
-          </div>
+          <Image
+            src={active.url}
+            alt={active.altText}
+            width={active.width}
+            height={active.height}
+            sizes="90vw"
+            className="max-h-[90vh] max-w-[90vw] cursor-default object-contain"
+            onClick={(e) => e.stopPropagation()}
+          />
           {images.length > 1 && (
             <>
               <Button
                 variant="ghost"
                 size="icon-lg"
                 aria-label="Previous image"
-                onClick={goPrev}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  goPrev();
+                }}
                 className="absolute top-1/2 left-4 -translate-y-1/2"
               >
                 <ChevronLeft className="size-6" />
@@ -112,7 +118,10 @@ export function Gallery({ images }: { images: ProductImage[] }) {
                 variant="ghost"
                 size="icon-lg"
                 aria-label="Next image"
-                onClick={goNext}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  goNext();
+                }}
                 className="absolute top-1/2 right-4 -translate-y-1/2"
               >
                 <ChevronRight className="size-6" />

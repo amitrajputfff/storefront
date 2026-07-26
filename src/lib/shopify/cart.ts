@@ -40,3 +40,10 @@ export async function createCheckoutUrl(lines: CartLineInput[]): Promise<string>
 
   return cart.checkoutUrl;
 }
+
+export async function createBuyNowCheckoutUrl(
+  variantId: string,
+  quantity: number,
+): Promise<string> {
+  return createCheckoutUrl([{ variantId, quantity }]);
+}

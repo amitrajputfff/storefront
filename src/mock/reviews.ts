@@ -46,8 +46,14 @@ function seededIndex(seed: string, salt: number, mod: number): number {
   return Math.abs(hash) % mod;
 }
 
+/** The actual number of reviews getReviewsForProduct() will generate — use this
+ * anywhere a review count is displayed so it never mismatches what's rendered. */
+export function getReviewCount(product: Product): number {
+  return Math.min(Math.max(Math.round(product.reviewCount / 20), 3), 8);
+}
+
 export function getReviewsForProduct(product: Product): Review[] {
-  const count = Math.min(Math.max(Math.round(product.reviewCount / 20), 3), 8);
+  const count = getReviewCount(product);
   const reviews: Review[] = [];
 
   for (let i = 0; i < count; i++) {
@@ -93,7 +99,7 @@ export function getRatingBreakdown(product: Product): RatingBreakdown {
   }
   return {
     average: product.rating,
-    total: product.reviewCount,
+    total: getReviewCount(product),
     counts,
   };
 }

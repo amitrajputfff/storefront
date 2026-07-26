@@ -56,7 +56,7 @@ const FAQ_CATEGORIES = [
       {
         question: "How do I start a return?",
         answer:
-          "Contact support@zeevara.com with your order number and reason for return. We'll send a prepaid return label for eligible items and process your refund once the item passes inspection.",
+          "Contact support@zeevara.in with your order number and reason for return. We'll send a prepaid return label for eligible items and process your refund once the item passes inspection.",
       },
       {
         question: "How long do refunds take?",
@@ -121,7 +121,7 @@ export default function FaqPage() {
       <SectionHeading
         eyebrow="Support"
         title="Frequently Asked Questions"
-        description="Can't find what you're looking for? Reach out at support@zeevara.com."
+        description="Can't find what you're looking for? Reach out at support@zeevara.in."
         align="center"
         className="mb-12"
       />

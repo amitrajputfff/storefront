@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Minus, Plus } from "lucide-react";
 import { Product } from "@/types";
 import { getProductByHandle } from "@/mock/products";
+import { getReviewCount } from "@/mock/reviews";
 import { routes } from "@/constants/routes";
 import { useUiStore } from "@/stores/ui-store";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
@@ -106,7 +107,7 @@ export function QuickViewDialog() {
 
             <div className="flex flex-col gap-3">
               <DialogTitle className="text-lg font-medium">{product.title}</DialogTitle>
-              <RatingStars rating={product.rating} reviewCount={product.reviewCount} />
+              <RatingStars rating={product.rating} reviewCount={getReviewCount(product)} />
               <PriceDisplay
                 price={product.priceRange.min}
                 compareAtPrice={product.compareAtPriceRange?.min}

@@ -4,17 +4,16 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion, useMotionValueEvent, useScroll } from "motion/react";
-import { Heart, Menu, Search, ShoppingBag, User } from "lucide-react";
+import { Menu, Search, ShoppingBag } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ThemeToggle } from "@/components/shared/theme-toggle";
 import { SearchCommand } from "@/components/shared/search-command";
 import { ZeevaraLockup } from "@/components/shared/zeevara-lockup";
 import { MegaMenu } from "./mega-menu";
 import { MobileNav } from "./mobile-nav";
 import { useUiStore } from "@/stores/ui-store";
 import { useCart } from "@/hooks/use-cart";
-import { useWishlist } from "@/hooks/use-wishlist";
 import { useMounted } from "@/hooks/use-mounted";
+import { useReportHeight } from "@/hooks/use-report-height";
 import { PRIMARY_NAV } from "@/constants/nav";
 import { routes } from "@/constants/routes";
 import { cn } from "@/lib/utils";
@@ -38,12 +37,13 @@ export function SiteHeader({ navMenu }: { navMenu: NavMenu }) {
   const toggleMobileNav = useUiStore((s) => s.toggleMobileNav);
   const openCart = useUiStore((s) => s.openCart);
   const { totalQuantity } = useCart();
-  const { items: wishlistItems } = useWishlist();
   const mounted = useMounted();
+  const headerRef = useReportHeight<HTMLElement>("--header-height");
 
   return (
     <>
       <header
+        ref={headerRef}
         className={cn(
           "sticky top-9 z-30 w-full transition-colors duration-300",
           transparent
@@ -81,28 +81,6 @@ export function SiteHeader({ navMenu }: { navMenu: NavMenu }) {
             >
               <Search className="size-4" />
             </Button>
-
-            <Button
-              variant="ghost"
-              size="icon"
-              aria-label="Wishlist"
-              className="relative"
-              render={<Link href={routes.wishlist()} />}
-              nativeButton={false}
-            >
-              <Heart className="size-4" />
-              {mounted && wishlistItems.length > 0 && (
-                <span className="absolute -top-1 -right-1 flex size-4 items-center justify-center rounded-full bg-foreground text-[10px] font-medium text-background">
-                  {wishlistItems.length}
-                </span>
-              )}
-            </Button>
-
-            <Button variant="ghost" size="icon" aria-label="Account">
-              <User className="size-4" />
-            </Button>
-
-            <ThemeToggle />
 
             <Button
               variant="ghost"

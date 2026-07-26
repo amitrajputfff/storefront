@@ -13,16 +13,15 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
-import { searchProducts } from "@/mock/products";
-import { categories, getCategoryByHandle } from "@/mock/categories";
+import { searchProducts, getPopulatedCategoryHandles } from "@/mock/products";
+import { getCategoryByHandle } from "@/mock/categories";
 import { routes } from "@/constants/routes";
 import { formatMoney } from "@/lib/format";
-import type { Product } from "@/types";
+import type { CategoryDef, Product } from "@/types";
 
 const RECENT_SEARCHES_KEY = "zeevara-recent-searches";
 const MAX_RECENT_SEARCHES = 5;
 const MAX_RESULTS_SHOWN = 6;
-const POPULAR_CATEGORY_HANDLES = ["home-decor", "kitchen", "travel", "accessories"];
 
 interface SearchCommandProps {
   open: boolean;
@@ -34,6 +33,7 @@ export function SearchCommand({ open, onOpenChange }: SearchCommandProps) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<Product[]>([]);
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
+  const [popularCategories, setPopularCategories] = useState<CategoryDef[]>([]);
   const debouncedQuery = useDebouncedValue(query, 150);
 
   useEffect(() => {
@@ -44,6 +44,20 @@ export function SearchCommand({ open, onOpenChange }: SearchCommandProps) {
     } catch {
       setRecentSearches([]);
     }
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+    let cancelled = false;
+    getPopulatedCategoryHandles().then((handles) => {
+      if (cancelled) return;
+      setPopularCategories(
+        handles.map((h) => getCategoryByHandle(h)).filter((c): c is CategoryDef => Boolean(c)),
+      );
+    });
+    return () => {
+      cancelled = true;
+    };
   }, [open]);
 
   useEffect(() => {
@@ -108,7 +122,7 @@ export function SearchCommand({ open, onOpenChange }: SearchCommandProps) {
   }
 
   const hasQuery = query.trim().length > 0;
-  const suggestions = categories.slice(0, 3);
+  const suggestions = popularCategories.slice(0, 3);
 
   return (
     <CommandDialog
@@ -147,21 +161,19 @@ export function SearchCommand({ open, onOpenChange }: SearchCommandProps) {
                   ))}
                 </CommandGroup>
               )}
-              <CommandGroup heading="Popular right now">
-                {POPULAR_CATEGORY_HANDLES.map((handle) => {
-                  const category = getCategoryByHandle(handle);
-                  if (!category) return null;
-                  return (
+              {popularCategories.length > 0 && (
+                <CommandGroup heading="Popular right now">
+                  {popularCategories.map((category) => (
                     <CommandItem
-                      key={handle}
+                      key={category.handle}
                       value={category.name}
                       onSelect={() => navigateTo(routes.collection(category.handle))}
                     >
                       {category.name}
                     </CommandItem>
-                  );
-                })}
-              </CommandGroup>
+                  ))}
+                </CommandGroup>
+              )}
             </>
           )}
 

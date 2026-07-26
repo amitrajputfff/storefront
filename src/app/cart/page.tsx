@@ -9,6 +9,7 @@ import { CartLineItem } from "@/components/cart/cart-line-item";
 import { CartSummary } from "@/components/cart/cart-summary";
 import { EmptyCart } from "@/components/cart/empty-cart";
 import { FreeShippingProgress } from "@/components/cart/free-shipping-progress";
+import { ReservationBanner } from "@/components/cart/reservation-banner";
 import { PromoCodeInput } from "@/components/cart/promo-code-input";
 import { Button } from "@/components/ui/button";
 import { createCheckoutUrl } from "@/lib/shopify/cart";
@@ -44,6 +45,7 @@ export default function CartPage() {
         <EmptyCart />
       ) : (
         <div className="space-y-8">
+          <ReservationBanner items={items} />
           <FreeShippingProgress />
 
           <div className="divide-y border-y">
