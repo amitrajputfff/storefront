@@ -18,10 +18,11 @@ import { useMounted } from "@/hooks/use-mounted";
 import { PRIMARY_NAV } from "@/constants/nav";
 import { routes } from "@/constants/routes";
 import { cn } from "@/lib/utils";
+import { NavMenu } from "@/types";
 
 const TRANSPARENT_SCROLL_THRESHOLD = 80;
 
-export function SiteHeader() {
+export function SiteHeader({ navMenu }: { navMenu: NavMenu }) {
   const pathname = usePathname();
   const isHome = pathname === "/";
   const [scrolled, setScrolled] = useState(false);
@@ -58,7 +59,7 @@ export function SiteHeader() {
           <nav aria-label="Primary" className="flex items-center justify-center gap-1">
             {PRIMARY_NAV.map((item) =>
               item.hasMegaMenu ? (
-                <MegaMenu key="mega-menu" />
+                <MegaMenu key="mega-menu" navMenu={navMenu} />
               ) : (
                 <Link
                   key={item.label}
@@ -170,7 +171,7 @@ export function SiteHeader() {
         </div>
       </header>
 
-      <MobileNav />
+      <MobileNav navMenu={navMenu} />
       <SearchCommand open={searchOpen} onOpenChange={setSearchOpen} />
     </>
   );

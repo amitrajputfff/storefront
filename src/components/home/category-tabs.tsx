@@ -16,11 +16,15 @@ const FEATURED_HANDLES = [
 ];
 
 export async function CategoryTabs() {
-  const featured = categories.filter((c) => FEATURED_HANDLES.includes(c.handle));
-
-  const productsByCategory = await Promise.all(
-    featured.map((c) => getProductsByCategory(c.handle)),
+  const candidates = categories.filter((c) => FEATURED_HANDLES.includes(c.handle));
+  const productsByCandidate = await Promise.all(
+    candidates.map((c) => getProductsByCategory(c.handle)),
   );
+
+  const featured = candidates.filter((_, index) => productsByCandidate[index].length > 0);
+  const productsByCategory = productsByCandidate.filter((products) => products.length > 0);
+
+  if (featured.length === 0) return null;
 
   return (
     <section className="mx-auto max-w-7xl px-6 py-16 md:py-24">

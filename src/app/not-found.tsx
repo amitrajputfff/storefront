@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { SearchBar } from "@/components/collection/search-bar";
-import { categories } from "@/mock/categories";
+import { getActiveCategories } from "@/lib/categories-with-products";
 import { routes } from "@/constants/routes";
 
-export default function NotFound() {
-  const popular = categories.slice(0, 3);
+export default async function NotFound() {
+  const popular = (await getActiveCategories()).slice(0, 3);
 
   return (
     <main className="mx-auto flex max-w-lg flex-col items-center px-6 py-24 text-center">

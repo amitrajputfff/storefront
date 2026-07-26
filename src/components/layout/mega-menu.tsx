@@ -6,13 +6,13 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { navMenu } from "@/mock/nav-menu";
 import { routes } from "@/constants/routes";
+import { NavMenu } from "@/types";
 
 const OPEN_DELAY_MS = 150;
 const CLOSE_DELAY_MS = 250;
 
-export function MegaMenu() {
+export function MegaMenu({ navMenu }: { navMenu: NavMenu }) {
   const [open, setOpen] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -64,6 +64,8 @@ export function MegaMenu() {
       document.removeEventListener("keydown", handleKeyDown);
     };
   }, [open]);
+
+  if (navMenu.columns.length === 0) return null;
 
   return (
     <div

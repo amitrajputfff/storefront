@@ -1,5 +1,7 @@
 import { Product } from "@/types";
 import { buildProduct } from "./builder";
+import { isShopifyConfigured } from "@/lib/shopify/client";
+import * as shopify from "@/lib/shopify/products";
 
 import { products as homeDecor } from "./home-decor";
 import { products as kitchen } from "./kitchen";
@@ -29,30 +31,43 @@ const allProducts: Product[] = authoredProducts.map((authored, index) =>
   buildProduct(authored, index),
 );
 
+/**
+ * Reads from the live Shopify Storefront API once SHOPIFY_STORE_DOMAIN and
+ * SHOPIFY_STOREFRONT_ACCESS_TOKEN are set (see .env.local.example), otherwise
+ * falls back to the local mock catalog so the app keeps running unconfigured.
+ */
+
 export async function getAllProducts(): Promise<Product[]> {
+  if (isShopifyConfigured()) return shopify.getAllProducts();
   return allProducts;
 }
 
 export async function getProductByHandle(handle: string): Promise<Product | undefined> {
+  if (isShopifyConfigured()) return shopify.getProductByHandle(handle);
   return allProducts.find((p) => p.handle === handle);
 }
 
 export async function getProductsByCategory(category: string): Promise<Product[]> {
+  if (isShopifyConfigured()) return shopify.getProductsByCategory(category);
   return allProducts.filter((p) => p.category === category);
 }
 
 export async function getProductsByHandles(handles: string[]): Promise<Product[]> {
+  if (isShopifyConfigured()) return shopify.getProductsByHandles(handles);
   const set = new Set(handles);
   return allProducts.filter((p) => set.has(p.handle));
 }
 
 export async function getRelatedProducts(product: Product, limit = 8): Promise<Product[]> {
+  if (isShopifyConfigured()) return shopify.getRelatedProducts(product, limit);
   return allProducts
     .filter((p) => p.category === product.category && p.id !== product.id)
     .slice(0, limit);
 }
 
 export async function searchProducts(query: string): Promise<Product[]> {
+  if (isShopifyConfigured()) return shopify.searchProducts(query);
+
   const q = query.trim().toLowerCase();
   if (!q) return [];
 

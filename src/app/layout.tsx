@@ -8,6 +8,7 @@ import { SiteFooter } from "@/components/layout/site-footer";
 import { CartDrawer } from "@/components/cart/cart-drawer";
 import { QuickViewDialog } from "@/components/product/quick-view-dialog";
 import { JsonLd, buildOrganizationJsonLd } from "@/lib/jsonld";
+import { getNavMenu } from "@/lib/nav-menu";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_TAGLINE, SITE_URL } from "@/constants/site";
 
 const geistSans = Geist({
@@ -47,11 +48,13 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const navMenu = await getNavMenu();
+
   return (
     <html
       lang="en"
@@ -62,9 +65,9 @@ export default function RootLayout({
         <JsonLd data={buildOrganizationJsonLd()} />
         <AppProviders>
           <AnnouncementBar />
-          <SiteHeader />
+          <SiteHeader navMenu={navMenu} />
           <div className="flex-1">{children}</div>
-          <SiteFooter />
+          <SiteFooter navMenu={navMenu} />
           <CartDrawer />
           <QuickViewDialog />
         </AppProviders>

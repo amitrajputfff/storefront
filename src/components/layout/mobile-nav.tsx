@@ -20,12 +20,12 @@ import {
 import { ThemeToggle } from "@/components/shared/theme-toggle";
 import { SearchCommand } from "@/components/shared/search-command";
 import { useUiStore } from "@/stores/ui-store";
-import { navMenu } from "@/mock/nav-menu";
 import { routes } from "@/constants/routes";
 import { FREE_SHIPPING_THRESHOLD } from "@/constants/site";
 import { formatPrice } from "@/lib/format";
+import { NavMenu } from "@/types";
 
-export function MobileNav() {
+export function MobileNav({ navMenu }: { navMenu: NavMenu }) {
   const isMobileNavOpen = useUiStore((s) => s.isMobileNavOpen);
   const toggleMobileNav = useUiStore((s) => s.toggleMobileNav);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -49,28 +49,30 @@ export function MobileNav() {
           </SheetHeader>
 
           <div className="flex-1 overflow-y-auto p-4">
-            <Accordion>
-              {navMenu.columns.map((column) => (
-                <AccordionItem key={column.categoryHandle} value={column.categoryHandle}>
-                  <AccordionTrigger>{column.heading}</AccordionTrigger>
-                  <AccordionContent>
-                    <ul className="flex flex-col gap-2">
-                      {column.links.map((link) => (
-                        <li key={link.href}>
-                          <Link
-                            href={link.href}
-                            onClick={closeNav}
-                            className="block py-1 text-sm text-muted-foreground hover:text-foreground"
-                          >
-                            {link.label}
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
+            {navMenu.columns.length > 0 && (
+              <Accordion>
+                {navMenu.columns.map((column) => (
+                  <AccordionItem key={column.categoryHandle} value={column.categoryHandle}>
+                    <AccordionTrigger>{column.heading}</AccordionTrigger>
+                    <AccordionContent>
+                      <ul className="flex flex-col gap-2">
+                        {column.links.map((link) => (
+                          <li key={link.href}>
+                            <Link
+                              href={link.href}
+                              onClick={closeNav}
+                              className="block py-1 text-sm text-muted-foreground hover:text-foreground"
+                            >
+                              {link.label}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    </AccordionContent>
+                  </AccordionItem>
+                ))}
+              </Accordion>
+            )}
 
             <div className="mt-4 flex flex-col gap-1 border-t border-border pt-4">
               <button

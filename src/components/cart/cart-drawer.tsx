@@ -3,8 +3,9 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { CheckCircle2, Plus } from "lucide-react";
-import { AnimatePresence, motion } from "motion/react";
+import { Loader2, Plus } from "lucide-react";
+import { AnimatePresence } from "motion/react";
+import { toast } from "sonner";
 import {
   Sheet,
   SheetContent,
@@ -15,6 +16,7 @@ import { Separator } from "@/components/ui/separator";
 import { useUiStore } from "@/stores/ui-store";
 import { useCart } from "@/hooks/use-cart";
 import { getAllProducts, getProductsByCategory } from "@/mock/products";
+import { createCheckoutUrl } from "@/lib/shopify/cart";
 import { Money, Product } from "@/types";
 import { routes } from "@/constants/routes";
 import { formatMoney } from "@/lib/format";
@@ -28,14 +30,27 @@ export function CartDrawer() {
   const { isCartOpen, closeCart } = useUiStore();
   const { items, subtotal, totalQuantity, addItem } = useCart();
   const [discount, setDiscount] = useState<Money | null>(null);
-  const [checkoutConfirmed, setCheckoutConfirmed] = useState(false);
+  const [checkingOut, setCheckingOut] = useState(false);
   const [recommended, setRecommended] = useState<Product[]>([]);
 
   useEffect(() => {
     if (!isCartOpen) {
-      setCheckoutConfirmed(false);
+      setCheckingOut(false);
     }
   }, [isCartOpen]);
+
+  async function handleCheckout() {
+    setCheckingOut(true);
+    try {
+      const checkoutUrl = await createCheckoutUrl(
+        items.map((item) => ({ variantId: item.variantId, quantity: item.quantity })),
+      );
+      window.location.href = checkoutUrl;
+    } catch {
+      toast.error("Checkout isn't connected to Shopify yet.");
+      setCheckingOut(false);
+    }
+  }
 
   useEffect(() => {
     let active = true;
@@ -160,33 +175,15 @@ export function CartDrawer() {
           <div className="mt-auto border-t border-border">
             <CartSummary subtotal={subtotal} discount={discount ?? undefined} />
             <div className="px-6 pb-6">
-              {checkoutConfirmed ? (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="flex flex-col items-center gap-2 rounded-lg bg-muted px-4 py-5 text-center"
-                >
-                  <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                  >
-                    <CheckCircle2 className="size-6 text-success" />
-                  </motion.div>
-                  <p className="text-sm text-muted-foreground">
-                    This is a demo storefront — checkout will connect to
-                    Shopify at launch.
-                  </p>
-                </motion.div>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => setCheckoutConfirmed(true)}
-                  className="flex w-full items-center justify-center rounded-lg bg-foreground px-4 py-3 text-sm font-medium text-background transition-opacity hover:opacity-90"
-                >
-                  Checkout — {formatMoney(total)}
-                </button>
-              )}
+              <button
+                type="button"
+                disabled={checkingOut}
+                onClick={handleCheckout}
+                className="flex w-full items-center justify-center gap-2 rounded-lg bg-foreground px-4 py-3 text-sm font-medium text-background transition-opacity hover:opacity-90 disabled:opacity-70"
+              >
+                {checkingOut && <Loader2 className="size-4 animate-spin" />}
+                <span>{checkingOut ? "Redirecting to checkout…" : `Checkout — ${formatMoney(total)}`}</span>
+              </button>
             </div>
           </div>
         )}

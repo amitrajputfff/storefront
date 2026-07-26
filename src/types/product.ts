@@ -70,6 +70,8 @@ export interface Product {
   recentPurchases?: number;
   careInstructions: string;
   shippingReturnsNote: string;
+  minDeliveryDays: number;
+  maxDeliveryDays: number;
 }
 
 export interface AuthoredProduct {

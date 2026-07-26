@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { BadgeCheck, RotateCcw, ShieldCheck, Truck } from "lucide-react";
 import { routes } from "@/constants/routes";
-import { categories } from "@/mock/categories";
+import { NavMenu } from "@/types";
 import { CONTACT_EMAIL, CONTACT_HOURS, FREE_SHIPPING_THRESHOLD, SITE_NAME } from "@/constants/site";
 import { formatPrice } from "@/lib/format";
 import { NewsletterForm } from "./newsletter-form";
@@ -13,10 +13,6 @@ const trustItems = [
   { icon: ShieldCheck, label: "Secure checkout" },
   { icon: BadgeCheck, label: "Considered, quality-checked" },
 ];
-
-const shopLinks = categories
-  .slice(0, 5)
-  .map((category) => ({ label: category.name, href: routes.collection(category.handle) }));
 
 const helpLinks = [
   { label: "FAQ", href: routes.faq() },
@@ -39,7 +35,11 @@ const legalLinks = [
 
 const paymentMethods = ["Visa", "Mastercard", "UPI", "RuPay"];
 
-export function SiteFooter() {
+export function SiteFooter({ navMenu }: { navMenu: NavMenu }) {
+  const shopLinks = navMenu.columns
+    .slice(0, 5)
+    .map((column) => ({ label: column.heading, href: routes.collection(column.categoryHandle) }));
+
   return (
     <footer className="border-t border-border bg-background">
       <div className="mx-auto grid max-w-[1400px] grid-cols-2 gap-6 border-b border-border px-6 py-8 sm:grid-cols-4">
@@ -62,18 +62,20 @@ export function SiteFooter() {
             <NewsletterForm />
           </div>
 
-          <div>
-            <h3 className="text-sm font-medium text-foreground">Shop</h3>
-            <ul className="mt-4 flex flex-col gap-2">
-              {shopLinks.map((link) => (
-                <li key={link.href}>
-                  <Link href={link.href} className="text-sm text-muted-foreground hover:text-foreground">
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+          {shopLinks.length > 0 && (
+            <div>
+              <h3 className="text-sm font-medium text-foreground">Shop</h3>
+              <ul className="mt-4 flex flex-col gap-2">
+                {shopLinks.map((link) => (
+                  <li key={link.href}>
+                    <Link href={link.href} className="text-sm text-muted-foreground hover:text-foreground">
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
 
           <div>
             <h3 className="text-sm font-medium text-foreground">Help</h3>

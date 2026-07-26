@@ -9,7 +9,7 @@ import { VariantSelector } from "@/components/product/variant-selector";
 import { QuantityPacks } from "@/components/product/quantity-packs";
 import { AddToCartButton } from "@/components/product/add-to-cart-button";
 import { estimatedDeliveryLabel } from "@/lib/format";
-import { getSocialProofStats } from "@/lib/social-proof";
+import { useSocialProof } from "@/hooks/use-social-proof";
 
 function defaultSelectedOptions(product: Product): Record<string, string> {
   const firstAvailable =
@@ -39,7 +39,7 @@ export function BuyBox({ product }: { product: Product }) {
   const compareAtPrice = activeVariant?.compareAtPrice;
   const inventory = activeVariant?.inventoryQuantity ?? product.totalInventory;
   const maxQty = Math.max(1, Math.min(inventory, 10));
-  const socialProof = getSocialProofStats(product.id);
+  const socialProof = useSocialProof();
 
   return (
     <div className="flex flex-col gap-6">
@@ -57,11 +57,15 @@ export function BuyBox({ product }: { product: Product }) {
               </span>
             </>
           )}
-          <span>{socialProof.soldLabel}</span>
-          <span aria-hidden className="opacity-60">
-            •
-          </span>
-          <span>{socialProof.visitorCount} Visitors</span>
+          {socialProof && (
+            <>
+              <span>{socialProof.soldLabel}</span>
+              <span aria-hidden className="opacity-60">
+                •
+              </span>
+              <span>{socialProof.visitorCount} Visitors</span>
+            </>
+          )}
         </p>
         <a href="#reviews" className="mt-2 inline-flex items-center gap-2">
           <RatingStars rating={product.rating} reviewCount={product.reviewCount} />
@@ -102,7 +106,7 @@ export function BuyBox({ product }: { product: Product }) {
 
       <div className="flex items-center gap-2 text-sm">
         <Truck className="size-4 shrink-0" />
-        <span>{estimatedDeliveryLabel(new Date())}</span>
+        <span>{estimatedDeliveryLabel(new Date(), product.minDeliveryDays, product.maxDeliveryDays)}</span>
       </div>
 
       <AddToCartButton

@@ -86,5 +86,7 @@ export function buildProduct(authored: AuthoredProduct, index: number): Product 
     shippingReturnsNote:
       authored.shippingReturnsNote ??
       "Ships in 1-2 business days. Free returns within 30 days.",
+    minDeliveryDays: 4,
+    maxDeliveryDays: 7,
   };
 }

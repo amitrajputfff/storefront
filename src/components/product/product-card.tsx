@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { Product } from "@/types";
 import { routes } from "@/constants/routes";
 import { cn } from "@/lib/utils";
-import { getSocialProofStats } from "@/lib/social-proof";
+import { useSocialProof } from "@/hooks/use-social-proof";
 import { useCart } from "@/hooks/use-cart";
 import { useUiStore } from "@/stores/ui-store";
 import { Badge } from "@/components/ui/badge";
@@ -76,7 +76,7 @@ export function ProductCard({ product }: { product: Product }) {
   const swatchValues = colorOption?.values ?? [];
   const visibleSwatches = swatchValues.slice(0, 5);
   const overflowCount = swatchValues.length - visibleSwatches.length;
-  const socialProof = getSocialProofStats(product.id);
+  const socialProof = useSocialProof();
 
   const singleVariant = product.variants.length <= 1 ? product.variants[0] : undefined;
 
@@ -186,13 +186,15 @@ export function ProductCard({ product }: { product: Product }) {
 
         <StockBadge quantity={product.totalInventory} />
 
-        <p className="text-muted-foreground text-[0.7rem]">
-          {socialProof.soldLabel}
-          <span aria-hidden className="mx-1 opacity-60">
-            •
-          </span>
-          {socialProof.visitorCount} Visitors
-        </p>
+        {socialProof && (
+          <p className="text-muted-foreground text-[0.7rem]">
+            {socialProof.soldLabel}
+            <span aria-hidden className="mx-1 opacity-60">
+              •
+            </span>
+            {socialProof.visitorCount} Visitors
+          </p>
+        )}
 
         <div className="mt-auto flex items-center gap-2 pt-1">
           {outOfStock ? (
