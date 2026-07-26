@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, type RefObject } from "react";
+import { useState, type RefObject } from "react";
 import { ShieldCheck, RotateCcw, Truck, CreditCard, Zap, BadgePercent } from "lucide-react";
 import { Product, Variant } from "@/types";
 import { RETURN_WINDOW_DAYS } from "@/constants/site";
@@ -59,7 +59,7 @@ export function BuyBox({
   const compareAtPrice = activeVariant?.compareAtPrice;
   const inventory = activeVariant?.inventoryQuantity ?? product.totalInventory;
   const maxQty = Math.max(1, Math.min(inventory, 10));
-  const flashSaleEndsAt = useMemo(() => getFlashSaleEndsAt(), []);
+  const [flashSaleEndsAt, setFlashSaleEndsAt] = useState(() => getFlashSaleEndsAt());
 
   return (
     <div className="flex flex-col gap-6">
@@ -78,7 +78,11 @@ export function BuyBox({
             <Zap className="size-3.5 shrink-0" />
             Limited Time Offer
           </span>
-          <CountdownTimer endsAt={flashSaleEndsAt} size="sm" />
+          <CountdownTimer
+            endsAt={flashSaleEndsAt}
+            size="sm"
+            onExpire={() => setFlashSaleEndsAt(getFlashSaleEndsAt())}
+          />
         </div>
       )}
 
