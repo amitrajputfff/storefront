@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { HelpCircle, Mail, RotateCcw, Search, Truck } from "lucide-react";
+import { HelpCircle, Mail, Package, RotateCcw, Search, Truck } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -82,6 +82,14 @@ export function MobileNav({ navMenu }: { navMenu: NavMenu }) {
                 <Search className="size-4" />
                 Search
               </button>
+              <Link
+                href={routes.trackOrder()}
+                onClick={closeNav}
+                className="flex items-center gap-2 py-2 text-sm font-medium text-foreground"
+              >
+                <Package className="size-4" />
+                Track Order
+              </Link>
               <Link
                 href={routes.contact()}
                 onClick={closeNav}

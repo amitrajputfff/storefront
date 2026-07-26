@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion, useMotionValueEvent, useScroll } from "motion/react";
-import { Menu, Search, ShoppingBag } from "lucide-react";
+import { Menu, Search, ShoppingBag, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SearchCommand } from "@/components/shared/search-command";
 import { ZeevaraLockup } from "@/components/shared/zeevara-lockup";
@@ -80,6 +80,16 @@ export function SiteHeader({ navMenu }: { navMenu: NavMenu }) {
               onClick={() => setSearchOpen(true)}
             >
               <Search className="size-4" />
+            </Button>
+
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label="Track your order"
+              render={<Link href={routes.trackOrder()} />}
+              nativeButton={false}
+            >
+              <User className="size-4" />
             </Button>
 
             <Button
