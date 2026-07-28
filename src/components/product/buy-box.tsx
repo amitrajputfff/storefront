@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type RefObject } from "react";
-import { ShieldCheck, RotateCcw, Truck, CreditCard, Zap, BadgePercent } from "lucide-react";
+import { ShieldCheck, RotateCcw, Truck, CreditCard, Zap, BadgePercent, TriangleAlert } from "lucide-react";
 import { Product, Variant } from "@/types";
 import { RETURN_WINDOW_DAYS } from "@/constants/site";
 import { PriceDisplay } from "@/components/shared/price-display";
@@ -11,6 +11,7 @@ import { VariantSelector } from "@/components/product/variant-selector";
 import { QuantityPacks } from "@/components/product/quantity-packs";
 import { AddToCartButton } from "@/components/product/add-to-cart-button";
 import { RecentPurchasesBadge } from "@/components/product/recent-purchases-badge";
+import { StockProgressBar } from "@/components/product/stock-progress-bar";
 import { PromoCodeChips } from "@/components/product/promo-code-chips";
 import { estimatedDeliveryLabel } from "@/lib/format";
 import { getFlashSaleEndsAt } from "@/lib/urgency";
@@ -73,31 +74,28 @@ export function BuyBox({
       <PriceDisplay price={price} compareAtPrice={compareAtPrice} size="lg" />
 
       {product.isLimitedTimeOffer && (
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="bg-destructive inline-flex w-fit items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium text-white">
+        <div className="bg-foreground text-background flex items-center justify-between gap-3 rounded-lg px-3.5 py-2.5">
+          <span className="inline-flex items-center gap-1.5 text-xs font-semibold">
             <Zap className="size-3.5 shrink-0" />
             Limited Time Offer
           </span>
           <CountdownTimer
             endsAt={flashSaleEndsAt}
             size="sm"
+            className="bg-background text-foreground"
             onExpire={() => setFlashSaleEndsAt(getFlashSaleEndsAt())}
           />
         </div>
       )}
 
+      {inventory <= 5 && (
+        <div className="bg-gold/10 border-gold/30 text-foreground flex items-center gap-1.5 rounded-lg border px-3 py-2 text-xs font-medium">
+          <TriangleAlert className="text-gold size-3.5 shrink-0" />
+          Only {inventory} left in stock — order soon
+        </div>
+      )}
+
       <p className="text-muted-foreground flex flex-wrap items-center gap-x-1.5 text-xs">
-        {inventory <= 5 && (
-          <>
-            <span className="flex items-center gap-1.5">
-              <span className="bg-muted-foreground size-1 rounded-full" />
-              Only {inventory} left
-            </span>
-            <span aria-hidden className="opacity-60">
-              •
-            </span>
-          </>
-        )}
         <RecentPurchasesBadge product={product} />
       </p>
 
@@ -145,6 +143,8 @@ export function BuyBox({
           showBuyNow
         />
       </div>
+
+      <StockProgressBar productId={product.id} />
     </div>
   );
 }

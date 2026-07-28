@@ -51,10 +51,12 @@
   --color-success-foreground: var(--success-foreground);
   --color-error: var(--error);
   --color-error-foreground: var(--error-foreground);
+  --color-gold: #f2b705;
   --shadow-soft: 0 2px 10px rgb(0 0 0 / 0.06);
   --shadow-soft-lg: 0 12px 32px rgb(0 0 0 / 0.08);
   --animate-marquee: marquee var(--duration) infinite linear;
   --animate-marquee-vertical: marquee-vertical var(--duration) linear infinite;
+  --animate-pulse-glow: pulse-glow 2.4s ease-in-out infinite;
   @keyframes marquee {
   from {
     transform: translateX(0);
@@ -69,6 +71,14 @@
     }
   to {
     transform: translateY(calc(-100% - var(--gap)));
+    }
+  }
+  @keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 0 0 color-mix(in oklch, var(--primary) 35%, transparent);
+    }
+  50% {
+    box-shadow: 0 0 0 7px color-mix(in oklch, var(--primary) 0%, transparent);
     }
   }
 }

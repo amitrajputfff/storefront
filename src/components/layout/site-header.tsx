@@ -144,6 +144,15 @@ export function SiteHeader({ navMenu }: { navMenu: NavMenu }) {
             <Button
               variant="ghost"
               size="icon"
+              aria-label="Track your order"
+              render={<Link href={routes.trackOrder()} />}
+              nativeButton={false}
+            >
+              <User className="size-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
               aria-label="Open cart"
               className="relative"
               onClick={openCart}

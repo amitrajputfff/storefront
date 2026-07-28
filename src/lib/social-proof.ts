@@ -44,6 +44,18 @@ export function getFallbackReviewCount(seed: string): number {
   return 180 + (hash % 81);
 }
 
+/**
+ * Purely decorative "selling out" stock bar — seeded from the product id so it stays
+ * stable across refreshes, roughly 70-92% claimed.
+ */
+export function getSellingOutPercent(seed: string): number {
+  let hash = 0;
+  for (let i = 0; i < seed.length; i++) {
+    hash = (hash * 41 + seed.charCodeAt(i)) >>> 0;
+  }
+  return 70 + (hash % 23);
+}
+
 const INDIAN_CITIES = [
   "Mumbai",
   "Bengaluru",

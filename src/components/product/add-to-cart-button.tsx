@@ -85,7 +85,10 @@ export function AddToCartButton({
       {showBuyNow && (
         <Button
           size="lg"
-          className="h-auto w-full px-4 py-3 shadow-sm"
+          className={cn(
+            "h-auto w-full px-4 py-3 shadow-sm",
+            !disabled && "animate-pulse-glow",
+          )}
           disabled={disabled}
           onClick={buyNow}
         >

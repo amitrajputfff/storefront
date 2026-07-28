@@ -22,7 +22,7 @@ export function RatingStars({
             className={cn(
               starSize,
               i < rounded
-                ? "fill-foreground text-foreground"
+                ? "fill-gold text-gold"
                 : "fill-transparent text-muted-foreground/40",
             )}
           />

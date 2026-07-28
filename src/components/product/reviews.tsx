@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { Product } from "@/types";
 import { getRatingBreakdown, getReviewsForProduct } from "@/mock/reviews";
-import { formatFullDate } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -75,12 +74,7 @@ export function Reviews({ product }: { product: Product }) {
                 </Badge>
               )}
             </div>
-            <div className="flex items-center gap-2">
-              <RatingStars rating={review.rating} size="sm" />
-              <span className="text-muted-foreground text-xs">
-                {formatFullDate(review.createdAt)}
-              </span>
-            </div>
+            <RatingStars rating={review.rating} size="sm" />
             <p className="text-sm font-medium">{review.title}</p>
             <p className="text-muted-foreground text-sm">{review.body}</p>
           </div>
