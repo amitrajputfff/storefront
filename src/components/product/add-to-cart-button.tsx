@@ -93,18 +93,22 @@ export function AddToCartButton({
           onClick={buyNow}
         >
           <div className="flex w-full items-center justify-between gap-3">
-            <div className="min-w-0 text-left">
-              <span className="inline-flex items-center gap-2 text-sm font-bold">
+            <div className="min-w-0 flex-1 text-left">
+              <span className="inline-flex flex-wrap items-center gap-2 text-sm font-bold whitespace-normal">
                 {buying && <Loader2 className="size-4 animate-spin" />}
                 {buying ? "Processing…" : "Buy Now - Cash on Delivery"}
               </span>
               {!buying && (
-                <span className="mt-0.5 block text-[11px] font-normal opacity-80">
+                <span className="mt-0.5 block text-[11px] font-normal whitespace-normal opacity-80">
                   Pay via UPI, cards & wallets
                 </span>
               )}
             </div>
-            {!buying && <PaymentIconGroup icons={upiPaymentMethods} size={32} overlap={9} />}
+            {!buying && (
+              <div className="hidden shrink-0 sm:block">
+                <PaymentIconGroup icons={upiPaymentMethods} size={32} overlap={9} />
+              </div>
+            )}
           </div>
         </Button>
       )}
