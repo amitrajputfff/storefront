@@ -9,10 +9,21 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 
 const MAX_VISIBLE_THUMBNAILS = 5;
-const MAX_DOTS = 8;
+const DOT_WINDOW_SIZE = 5;
 const MIN_ASPECT_RATIO = 3 / 4;
 const MAX_ASPECT_RATIO = 4 / 3;
 const SWIPE_THRESHOLD_PX = 40;
+
+/** Always shows a small sliding window of dots (never one-per-image for
+ * large galleries) — the window shifts to keep the active dot inside it. */
+function getDotWindow(activeIndex: number, total: number): number[] {
+  if (total <= DOT_WINDOW_SIZE) return Array.from({ length: total }, (_, i) => i);
+  const half = Math.floor(DOT_WINDOW_SIZE / 2);
+  let start = Math.max(0, activeIndex - half);
+  const end = Math.min(total, start + DOT_WINDOW_SIZE);
+  start = Math.max(0, end - DOT_WINDOW_SIZE);
+  return Array.from({ length: end - start }, (_, i) => start + i);
+}
 
 export function Gallery({ images }: { images: ProductImage[] }) {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -130,24 +141,18 @@ export function Gallery({ images }: { images: ProductImage[] }) {
 
       {images.length > 1 && (
         <div className="flex items-center justify-center gap-1.5 sm:hidden">
-          {images.length <= MAX_DOTS ? (
-            images.map((image, index) => (
-              <button
-                key={image.id}
-                type="button"
-                aria-label={`Show image ${index + 1}`}
-                onClick={() => setActiveIndex(index)}
-                className={cn(
-                  "size-1.5 rounded-full transition-colors",
-                  index === activeIndex ? "bg-foreground" : "bg-muted-foreground/30",
-                )}
-              />
-            ))
-          ) : (
-            <span className="text-muted-foreground text-xs tabular-nums">
-              {activeIndex + 1} / {images.length}
-            </span>
-          )}
+          {getDotWindow(activeIndex, images.length).map((index) => (
+            <button
+              key={images[index].id}
+              type="button"
+              aria-label={`Show image ${index + 1}`}
+              onClick={() => setActiveIndex(index)}
+              className={cn(
+                "size-1.5 rounded-full transition-colors",
+                index === activeIndex ? "bg-foreground" : "bg-muted-foreground/30",
+              )}
+            />
+          ))}
         </div>
       )}
 
