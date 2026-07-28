@@ -114,7 +114,7 @@ export function ProductCard({ product }: { product: Product }) {
             fill
             sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
             className={cn(
-              "object-cover transition-opacity duration-500",
+              "object-contain transition-opacity duration-500",
               outOfStock && "grayscale",
               secondImage && "group-hover:opacity-0",
             )}
@@ -126,7 +126,7 @@ export function ProductCard({ product }: { product: Product }) {
               fill
               sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
               className={cn(
-                "object-cover opacity-0 transition-opacity duration-500 group-hover:opacity-100",
+                "object-contain opacity-0 transition-opacity duration-500 group-hover:opacity-100",
                 outOfStock && "grayscale",
               )}
             />
