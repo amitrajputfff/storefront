@@ -97,7 +97,7 @@ export function Gallery({ images }: { images: ProductImage[] }) {
           fill
           sizes="(min-width: 640px) 60vw, 100vw"
           priority
-          className="object-cover transition-transform duration-150 ease-out"
+          className="object-contain transition-transform duration-150 ease-out"
           style={zooming ? zoomStyle : undefined}
         />
       </div>

@@ -4,12 +4,20 @@ const BENEFIT_COUNT = 5;
 
 const cache = new Map<string, string[]>();
 
+/**
+ * Only a safety net for when Gemini is unreachable — splits the description
+ * into distinct clauses rather than ever echoing the title/description back
+ * as a single fake "benefit" (many dropship listings are just one sentence
+ * identical to the title, which reads as embarrassing filler, not a benefit).
+ */
 function fallbackBenefits(product: Product): string[] {
+  const normalizedTitle = product.title.trim().toLowerCase();
   const clauses = product.description
-    .split(/[.•\n]/)
+    .split(/[.•\n,]/)
     .map((s) => s.trim())
-    .filter((s) => s.length > 0 && s.length <= 60);
-  if (clauses.length > 0) return clauses.slice(0, BENEFIT_COUNT);
+    .filter((s) => s.length > 0 && s.length <= 60 && s.toLowerCase() !== normalizedTitle);
+
+  if (clauses.length >= 2) return clauses.slice(0, BENEFIT_COUNT);
   return [product.materialsLine].filter(Boolean);
 }
 
