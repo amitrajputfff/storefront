@@ -8,6 +8,8 @@ import { cn } from "@/lib/utils";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 
+const MAX_VISIBLE_THUMBNAILS = 5;
+
 export function Gallery({ images }: { images: ProductImage[] }) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
@@ -15,6 +17,8 @@ export function Gallery({ images }: { images: ProductImage[] }) {
   const [zooming, setZooming] = useState(false);
 
   const active = images[activeIndex];
+  const visibleThumbnails = images.slice(0, MAX_VISIBLE_THUMBNAILS);
+  const overflowCount = images.length - visibleThumbnails.length;
 
   const goPrev = useCallback(() => {
     setActiveIndex((i) => (i - 1 + images.length) % images.length);
@@ -49,19 +53,32 @@ export function Gallery({ images }: { images: ProductImage[] }) {
   return (
     <div className="flex flex-col gap-4 sm:flex-row">
       <div className="flex gap-2 overflow-x-auto sm:order-1 sm:w-20 sm:flex-col sm:overflow-visible">
-        {images.map((image, index) => (
-          <button
-            key={image.id}
-            type="button"
-            onClick={() => setActiveIndex(index)}
-            className={cn(
-              "relative size-16 shrink-0 overflow-hidden rounded-md border transition-colors sm:size-20",
-              index === activeIndex ? "border-foreground" : "border-border",
-            )}
-          >
-            <Image src={image.url} alt={image.altText} fill sizes="80px" className="object-cover" />
-          </button>
-        ))}
+        {visibleThumbnails.map((image, index) => {
+          const isLastVisible = index === visibleThumbnails.length - 1;
+          const showOverflow = isLastVisible && overflowCount > 0;
+
+          return (
+            <button
+              key={image.id}
+              type="button"
+              onClick={() => {
+                setActiveIndex(index);
+                if (showOverflow) setLightboxOpen(true);
+              }}
+              className={cn(
+                "relative size-16 shrink-0 overflow-hidden rounded-md border transition-colors sm:size-20",
+                index === activeIndex ? "border-foreground" : "border-border",
+              )}
+            >
+              <Image src={image.url} alt={image.altText} fill sizes="80px" className="object-cover" />
+              {showOverflow && (
+                <span className="absolute inset-0 flex items-center justify-center bg-black/50 text-sm font-medium text-white">
+                  +{overflowCount}
+                </span>
+              )}
+            </button>
+          );
+        })}
       </div>
 
       <div
