@@ -70,18 +70,6 @@ export function AddToCartButton({
 
   return (
     <div className="flex flex-col gap-3">
-      <Button
-        variant="outline"
-        size="lg"
-        className={cn("h-11 w-full", status === "success" && "border-foreground bg-foreground text-background")}
-        disabled={disabled}
-        onClick={handleAddToCart}
-      >
-        {status === "loading" && <Loader2 className="size-4 animate-spin" />}
-        {status === "success" && <Check className="size-4" />}
-        <span>{status === "loading" ? "Adding…" : status === "success" ? "Added" : label}</span>
-      </Button>
-
       {showBuyNow && (
         <Button
           size="lg"
@@ -112,6 +100,18 @@ export function AddToCartButton({
           </div>
         </Button>
       )}
+
+      <Button
+        variant="outline"
+        size="lg"
+        className={cn("h-11 w-full", status === "success" && "border-foreground bg-foreground text-background")}
+        disabled={disabled}
+        onClick={handleAddToCart}
+      >
+        {status === "loading" && <Loader2 className="size-4 animate-spin" />}
+        {status === "success" && <Check className="size-4" />}
+        <span>{status === "loading" ? "Adding…" : status === "success" ? "Added" : label}</span>
+      </Button>
     </div>
   );
 }

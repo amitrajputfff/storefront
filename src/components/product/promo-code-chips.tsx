@@ -23,20 +23,20 @@ export function PromoCodeChips({ codes }: { codes: PromoCode[] }) {
   }
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-3 pt-2">
       {codes.map((promo) => (
         <button
           key={promo.code}
           type="button"
           onClick={() => handleCopy(promo.code)}
-          className="hover:bg-muted flex w-full items-center justify-between gap-3 rounded-lg border px-3 py-2 text-left text-sm transition-colors"
+          className="hover:bg-muted relative flex w-full items-center justify-between gap-3 rounded-lg border px-3 py-3.5 text-left text-sm transition-colors"
         >
+          <span className="bg-foreground text-background absolute -top-2.5 left-3 rounded-full px-2 py-0.5 text-[10px] font-semibold tracking-wide">
+            CODE {promo.code}
+          </span>
           <span className="flex min-w-0 items-center gap-2">
             <Ticket className="text-muted-foreground size-4 shrink-0" />
-            <span className="min-w-0 truncate">
-              <span className="font-medium">{promo.label}</span>
-              <span className="text-muted-foreground"> · Code {promo.code}</span>
-            </span>
+            <span className="min-w-0 truncate font-medium">{promo.label}</span>
           </span>
           <span
             className={cn(

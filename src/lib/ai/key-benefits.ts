@@ -87,6 +87,10 @@ Write exactly ${BENEFIT_COUNT} short, scannable key-benefit bullet points a shop
     );
 
     if (!res.ok) {
+      console.error(
+        `Key benefits generation failed for "${product.title}": Gemini returned ${res.status} ${res.statusText}`,
+        await res.text().catch(() => ""),
+      );
       const fallback = fallbackBenefits(product);
       cache.set(product.id, fallback);
       return fallback;
