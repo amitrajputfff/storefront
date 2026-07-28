@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { ProductImage } from "@/types";
@@ -9,6 +9,9 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 
 const MAX_VISIBLE_THUMBNAILS = 5;
+const MIN_ASPECT_RATIO = 3 / 4;
+const MAX_ASPECT_RATIO = 4 / 3;
+const SWIPE_THRESHOLD_PX = 40;
 
 export function Gallery({ images }: { images: ProductImage[] }) {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -19,6 +22,7 @@ export function Gallery({ images }: { images: ProductImage[] }) {
   const active = images[activeIndex];
   const visibleThumbnails = images.slice(0, MAX_VISIBLE_THUMBNAILS);
   const overflowCount = images.length - visibleThumbnails.length;
+  const touchStartX = useRef<number | null>(null);
 
   const goPrev = useCallback(() => {
     setActiveIndex((i) => (i - 1 + images.length) % images.length);
@@ -27,6 +31,19 @@ export function Gallery({ images }: { images: ProductImage[] }) {
   const goNext = useCallback(() => {
     setActiveIndex((i) => (i + 1) % images.length);
   }, [images.length]);
+
+  function handleTouchStart(e: React.TouchEvent<HTMLDivElement>) {
+    touchStartX.current = e.touches[0].clientX;
+  }
+
+  function handleTouchEnd(e: React.TouchEvent<HTMLDivElement>) {
+    if (touchStartX.current === null) return;
+    const delta = e.changedTouches[0].clientX - touchStartX.current;
+    touchStartX.current = null;
+    if (Math.abs(delta) < SWIPE_THRESHOLD_PX) return;
+    if (delta > 0) goPrev();
+    else goNext();
+  }
 
   useEffect(() => {
     if (!lightboxOpen) return;
@@ -82,7 +99,13 @@ export function Gallery({ images }: { images: ProductImage[] }) {
       </div>
 
       <div
-        className="relative aspect-square flex-1 cursor-zoom-in overflow-hidden rounded-lg bg-muted sm:order-2"
+        className="relative flex-1 cursor-zoom-in overflow-hidden rounded-lg bg-muted sm:order-2"
+        style={{
+          aspectRatio: Math.min(
+            Math.max(active.width / active.height, MIN_ASPECT_RATIO),
+            MAX_ASPECT_RATIO,
+          ),
+        }}
         onMouseEnter={() => setZooming(true)}
         onMouseLeave={() => {
           setZooming(false);
@@ -90,6 +113,8 @@ export function Gallery({ images }: { images: ProductImage[] }) {
         }}
         onMouseMove={handleMouseMove}
         onClick={() => setLightboxOpen(true)}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
       >
         <Image
           src={active.url}
@@ -106,6 +131,8 @@ export function Gallery({ images }: { images: ProductImage[] }) {
         <DialogContent
           className="flex h-screen max-h-screen w-screen max-w-none cursor-zoom-out items-center justify-center rounded-none bg-background/95 p-0 sm:max-w-none"
           onClick={() => setLightboxOpen(false)}
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
         >
           <DialogTitle className="sr-only">{active.altText}</DialogTitle>
           <Image

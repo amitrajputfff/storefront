@@ -37,7 +37,9 @@ export function SortDropdown() {
   return (
     <Select value={current} onValueChange={handleChange}>
       <SelectTrigger aria-label="Sort products">
-        <SelectValue />
+        <SelectValue>
+          {(value: string) => SORT_OPTIONS.find((o) => o.value === value)?.label ?? value}
+        </SelectValue>
       </SelectTrigger>
       <SelectContent>
         {SORT_OPTIONS.map((option) => (

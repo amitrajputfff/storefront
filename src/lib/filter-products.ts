@@ -1,8 +1,7 @@
 import { Product } from "@/types";
 
 export interface ProductFilterParams {
-  color?: string;
-  size?: string;
+  category?: string;
   rating?: string;
   priceMin?: string;
   priceMax?: string;
@@ -15,26 +14,13 @@ export function filterAndSortProducts(
 ): Product[] {
   let result = [...products];
 
-  const colors = params.color?.split(",").filter(Boolean) ?? [];
-  const sizes = params.size?.split(",").filter(Boolean) ?? [];
+  const categories = params.category?.split(",").filter(Boolean) ?? [];
   const minRating = params.rating ? Number(params.rating) : undefined;
   const priceMin = params.priceMin ? Number(params.priceMin) : undefined;
   const priceMax = params.priceMax ? Number(params.priceMax) : undefined;
 
-  if (colors.length > 0) {
-    result = result.filter((p) =>
-      p.variants.some((v) =>
-        v.selectedOptions.some((so) => so.name.toLowerCase() === "color" && colors.includes(so.value)),
-      ),
-    );
-  }
-
-  if (sizes.length > 0) {
-    result = result.filter((p) =>
-      p.variants.some((v) =>
-        v.selectedOptions.some((so) => so.name.toLowerCase() === "size" && sizes.includes(so.value)),
-      ),
-    );
+  if (categories.length > 0) {
+    result = result.filter((p) => categories.includes(p.category));
   }
 
   if (minRating !== undefined) {

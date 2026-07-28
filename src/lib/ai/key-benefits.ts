@@ -4,6 +4,17 @@ const BENEFIT_COUNT = 5;
 
 const cache = new Map<string, string[]>();
 
+// Splitting a sentence on commas leaves mid-clause fragments like "A soft" —
+// these all signal "this clause was truncated," not a real standalone benefit.
+const FRAGMENT_START_WORDS = new Set([
+  "a", "an", "the", "for", "with", "in", "of", "and", "or", "to", "at", "by",
+]);
+
+function isCompletePhrase(clause: string): boolean {
+  const firstWord = clause.split(/\s+/)[0]?.toLowerCase();
+  return !FRAGMENT_START_WORDS.has(firstWord);
+}
+
 /**
  * Only a safety net for when Gemini is unreachable — splits the description
  * into distinct clauses rather than ever echoing the title/description back
@@ -15,7 +26,13 @@ function fallbackBenefits(product: Product): string[] {
   const clauses = product.description
     .split(/[.•\n,]/)
     .map((s) => s.trim())
-    .filter((s) => s.length > 0 && s.length <= 60 && s.toLowerCase() !== normalizedTitle);
+    .filter(
+      (s) =>
+        s.length > 0 &&
+        s.length <= 60 &&
+        isCompletePhrase(s) &&
+        s.toLowerCase() !== normalizedTitle,
+    );
 
   if (clauses.length >= 2) return clauses.slice(0, BENEFIT_COUNT);
   return [product.materialsLine].filter(Boolean);

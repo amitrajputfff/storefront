@@ -29,7 +29,7 @@ export function getRecentPurchaseCount(seed: string): number {
   for (let i = 0; i < seed.length; i++) {
     hash = (hash * 31 + seed.charCodeAt(i)) >>> 0;
   }
-  return 1000 + (hash % 1500); // stable per product, always above 1000: 1000-2499
+  return 2000 + (hash % 1500); // stable per product, always above 2000: 2000-3499
 }
 
 /**

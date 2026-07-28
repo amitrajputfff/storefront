@@ -29,14 +29,28 @@ async function buildCollection(
   };
 }
 
+const MIN_BEST_SELLERS = 8;
+
 export async function getBestSellers(): Promise<DerivedCollection> {
-  return buildCollection(
-    "best-sellers",
-    "Best Sellers",
-    "The pieces our customers keep coming back for.",
-    "home-decor",
-    (p) => p.isBestseller,
-  );
+  const all = await getAllProducts();
+  const tagged = all.filter((p) => p.isBestseller);
+
+  // Not enough products actually tagged "best seller" yet — pad with the
+  // highest-rated of the rest rather than leaving the section sparse.
+  const padding = all
+    .filter((p) => !p.isBestseller)
+    .sort((a, b) => b.rating - a.rating || b.reviewCount - a.reviewCount);
+  const matched = [...tagged, ...padding].slice(0, Math.max(MIN_BEST_SELLERS, tagged.length));
+
+  return {
+    id: "gid://mock/Collection/best-sellers",
+    handle: "best-sellers",
+    title: "Best Sellers",
+    description: "The pieces our customers keep coming back for.",
+    image: categoryImages["home-decor"][0],
+    productIds: matched.map((p) => p.id),
+    products: matched,
+  };
 }
 
 export async function getNewArrivals(): Promise<DerivedCollection> {

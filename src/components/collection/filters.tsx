@@ -11,23 +11,19 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { formatPrice } from "@/lib/format";
+import { getCategoryByHandle } from "@/mock/categories";
 
 function collectFacets(products: Product[]) {
-  const colors = new Set<string>();
-  const sizes = new Set<string>();
+  const categories = new Set<string>();
   let maxPrice = 0;
 
   for (const product of products) {
-    for (const option of product.options) {
-      const target = option.name.toLowerCase() === "color" ? colors : option.name.toLowerCase() === "size" ? sizes : null;
-      if (target) option.values.forEach((v) => target.add(v));
-    }
+    categories.add(product.category);
     maxPrice = Math.max(maxPrice, product.priceRange.max.amount);
   }
 
   return {
-    colors: Array.from(colors),
-    sizes: Array.from(sizes),
+    categories: Array.from(categories),
     maxPrice: Math.ceil(maxPrice / 500) * 500 || 5000,
   };
 }
@@ -36,10 +32,9 @@ function FiltersBody({ products }: { products: Product[] }) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const { colors, sizes, maxPrice } = collectFacets(products);
+  const { categories, maxPrice } = collectFacets(products);
 
-  const activeColors = searchParams.get("color")?.split(",").filter(Boolean) ?? [];
-  const activeSizes = searchParams.get("size")?.split(",").filter(Boolean) ?? [];
+  const activeCategories = searchParams.get("category")?.split(",").filter(Boolean) ?? [];
   const activeRating = searchParams.get("rating") ?? "";
   const priceMin = Number(searchParams.get("priceMin") ?? 0);
   const priceMax = Number(searchParams.get("priceMax") ?? maxPrice);
@@ -61,7 +56,7 @@ function FiltersBody({ products }: { products: Product[] }) {
   }
 
   const hasActiveFilters =
-    activeColors.length > 0 || activeSizes.length > 0 || activeRating || searchParams.get("priceMin") || searchParams.get("priceMax");
+    activeCategories.length > 0 || activeRating || searchParams.get("priceMin") || searchParams.get("priceMax");
 
   return (
     <div className="flex flex-col gap-8">
@@ -93,34 +88,17 @@ function FiltersBody({ products }: { products: Product[] }) {
         </p>
       </div>
 
-      {colors.length > 0 && (
+      {categories.length > 0 && (
         <div className="space-y-3">
-          <p className="text-sm font-medium">Color</p>
+          <p className="text-sm font-medium">Category</p>
           <div className="flex flex-col gap-2">
-            {colors.map((color) => (
-              <Label key={color} className="font-normal">
+            {categories.map((handle) => (
+              <Label key={handle} className="font-normal">
                 <Checkbox
-                  checked={activeColors.includes(color)}
-                  onCheckedChange={() => toggleListParam("color", activeColors, color)}
+                  checked={activeCategories.includes(handle)}
+                  onCheckedChange={() => toggleListParam("category", activeCategories, handle)}
                 />
-                {color}
-              </Label>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {sizes.length > 0 && (
-        <div className="space-y-3">
-          <p className="text-sm font-medium">Size</p>
-          <div className="flex flex-col gap-2">
-            {sizes.map((size) => (
-              <Label key={size} className="font-normal">
-                <Checkbox
-                  checked={activeSizes.includes(size)}
-                  onCheckedChange={() => toggleListParam("size", activeSizes, size)}
-                />
-                {size}
+                {getCategoryByHandle(handle)?.name ?? handle}
               </Label>
             ))}
           </div>

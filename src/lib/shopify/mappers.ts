@@ -94,6 +94,13 @@ function metafieldString(field: ShopifyMetafield | null, fallback: string): stri
   return field?.value ?? fallback;
 }
 
+/** Tags are free text in Shopify admin — accept common spelling variants
+ * ("Best Seller" vs "bestseller" vs "best-seller") rather than requiring
+ * one exact string. */
+function hasAnyTag(tags: string[], ...variants: string[]): boolean {
+  return variants.some((variant) => tags.includes(variant));
+}
+
 export function mapShopifyProduct(node: ShopifyProductNode): Product {
   const tags = node.tags.map((t) => t.toLowerCase());
   const images = node.images.edges.map((e, i) => toImage(e.node, `${node.id}-image-${i}`));
@@ -138,11 +145,11 @@ export function mapShopifyProduct(node: ShopifyProductNode): Product {
     reviewCount: node.reviewCount
       ? metafieldNumber(node.reviewCount, getFallbackReviewCount(node.handle))
       : getFallbackReviewCount(node.handle),
-    isBestseller: tags.includes("bestseller"),
-    isTrending: tags.includes("trending"),
+    isBestseller: hasAnyTag(tags, "bestseller", "best seller", "best-seller"),
+    isTrending: hasAnyTag(tags, "trending"),
     isNewArrival,
-    isFeatured: tags.includes("featured"),
-    isLimitedTimeOffer: tags.includes("limited-time"),
+    isFeatured: hasAnyTag(tags, "featured"),
+    isLimitedTimeOffer: hasAnyTag(tags, "limited-time", "limited time", "limitedtime"),
     totalInventory: node.totalInventory,
     createdAt: node.createdAt,
     materialsLine: metafieldString(node.materialsLine, ""),
