@@ -59,11 +59,15 @@ export function VariantSelector({
   selectedOptions: Record<string, string>;
   onChange: (name: string, value: string) => void;
 }) {
+  const selectableOptions = product.options.filter(
+    (option) => option.name.toLowerCase() !== "title" && option.values.length > 1,
+  );
+
+  if (selectableOptions.length === 0) return null;
+
   return (
     <div className="flex flex-col gap-4">
-      {product.options
-        .filter((option) => option.name.toLowerCase() !== "title" && option.values.length > 1)
-        .map((option) => {
+      {selectableOptions.map((option) => {
         const isColor = option.name.toLowerCase() === "color";
         const selectedValue = selectedOptions[option.name];
 
