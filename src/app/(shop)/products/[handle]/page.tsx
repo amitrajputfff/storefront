@@ -92,21 +92,25 @@ export default async function ProductPage({
         <span className="text-foreground">{product.title}</span>
       </nav>
 
-      <div className="grid gap-10 lg:grid-cols-2 lg:gap-16">
-        <Gallery images={product.images} />
+      <div className="grid grid-cols-1 gap-10 lg:grid-cols-2 lg:gap-16">
         <div className="lg:sticky lg:top-24 lg:self-start">
+          <Gallery images={product.images} />
+        </div>
+        <div className="flex flex-col gap-10">
           <ProductPurchasePanel product={product} promoCodes={promoCodes} benefits={benefits} />
+          {product.descriptionHtml ? (
+            <div
+              className="max-w-none text-base leading-relaxed [&_a]:underline [&_a]:underline-offset-2 [&_h2]:mt-2 [&_h2]:text-lg [&_h2]:font-medium [&_h3]:font-medium [&_iframe]:my-4 [&_iframe]:block [&_iframe]:aspect-video [&_iframe]:w-full [&_iframe]:rounded-lg [&_iframe]:border-0 [&_img]:my-4 [&_img]:block [&_img]:h-auto [&_img]:w-full [&_img]:rounded-lg [&_p]:leading-relaxed [&_strong]:font-semibold [&>*+*]:mt-4"
+              dangerouslySetInnerHTML={{ __html: product.descriptionHtml }}
+            />
+          ) : (
+            <p className="text-base leading-relaxed">{product.description}</p>
+          )}
         </div>
       </div>
 
       <div className="mt-16 max-w-2xl md:mt-24">
-        <Accordion defaultValue={["description"]}>
-          <AccordionItem value="description">
-            <AccordionTrigger>Description</AccordionTrigger>
-            <AccordionContent>
-              <p>{product.description}</p>
-            </AccordionContent>
-          </AccordionItem>
+        <Accordion defaultValue={["shipping"]}>
           <AccordionItem value="shipping">
             <AccordionTrigger>Shipping &amp; Returns</AccordionTrigger>
             <AccordionContent>

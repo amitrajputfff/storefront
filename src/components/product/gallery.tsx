@@ -7,11 +7,15 @@ import { ProductImage } from "@/types";
 import { cn } from "@/lib/utils";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  type CarouselApi,
+} from "@/components/ui/carousel";
 
 const MAX_VISIBLE_THUMBNAILS = 5;
 const DOT_WINDOW_SIZE = 5;
-const MIN_ASPECT_RATIO = 3 / 4;
-const MAX_ASPECT_RATIO = 4 / 3;
 const SWIPE_THRESHOLD_PX = 40;
 
 /** Always shows a small sliding window of dots (never one-per-image for
@@ -30,6 +34,7 @@ export function Gallery({ images }: { images: ProductImage[] }) {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [zoomStyle, setZoomStyle] = useState<React.CSSProperties>({});
   const [zooming, setZooming] = useState(false);
+  const [api, setApi] = useState<CarouselApi>();
 
   const active = images[activeIndex];
   const visibleThumbnails = images.slice(0, MAX_VISIBLE_THUMBNAILS);
@@ -43,6 +48,20 @@ export function Gallery({ images }: { images: ProductImage[] }) {
   const goNext = useCallback(() => {
     setActiveIndex((i) => (i + 1) % images.length);
   }, [images.length]);
+
+  useEffect(() => {
+    if (!api) return;
+    const onSelect = () => setActiveIndex(api.selectedScrollSnap());
+    api.on("select", onSelect);
+    return () => {
+      api.off("select", onSelect);
+    };
+  }, [api]);
+
+  useEffect(() => {
+    if (!api) return;
+    if (api.selectedScrollSnap() !== activeIndex) api.scrollTo(activeIndex);
+  }, [activeIndex, api]);
 
   function handleTouchStart(e: React.TouchEvent<HTMLDivElement>) {
     touchStartX.current = e.touches[0].clientX;
@@ -80,8 +99,8 @@ export function Gallery({ images }: { images: ProductImage[] }) {
   if (!active) return null;
 
   return (
-    <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
-      <div className="flex gap-2 overflow-x-auto sm:order-1 sm:w-20 sm:flex-col sm:overflow-visible">
+    <div className="flex w-full min-w-0 flex-col gap-3 sm:flex-row sm:gap-4">
+      <div className="flex min-w-0 gap-2 overflow-x-auto sm:order-1 sm:w-20 sm:flex-col sm:overflow-visible">
         {visibleThumbnails.map((image, index) => {
           const isLastVisible = index === visibleThumbnails.length - 1;
           const showOverflow = isLastVisible && overflowCount > 0;
@@ -95,11 +114,11 @@ export function Gallery({ images }: { images: ProductImage[] }) {
                 if (showOverflow) setLightboxOpen(true);
               }}
               className={cn(
-                "relative size-16 shrink-0 overflow-hidden rounded-md border transition-colors sm:size-20",
+                "relative size-16 shrink-0 overflow-hidden rounded-lg border transition-colors sm:size-20",
                 index === activeIndex ? "border-foreground" : "border-border",
               )}
             >
-              <Image src={image.url} alt={image.altText} fill sizes="80px" className="object-cover" />
+              <Image src={image.url} alt={image.altText} fill sizes="80px" className="object-contain" />
               {showOverflow && (
                 <span className="absolute inset-0 flex items-center justify-center bg-black/50 text-sm font-medium text-white">
                   +{overflowCount}
@@ -110,34 +129,34 @@ export function Gallery({ images }: { images: ProductImage[] }) {
         })}
       </div>
 
-      <div
-        className="relative flex-1 cursor-zoom-in overflow-hidden rounded-lg bg-muted sm:order-2"
-        style={{
-          aspectRatio: Math.min(
-            Math.max(active.width / active.height, MIN_ASPECT_RATIO),
-            MAX_ASPECT_RATIO,
-          ),
-        }}
-        onMouseEnter={() => setZooming(true)}
-        onMouseLeave={() => {
-          setZooming(false);
-          setZoomStyle({});
-        }}
-        onMouseMove={handleMouseMove}
-        onClick={() => setLightboxOpen(true)}
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
-      >
-        <Image
-          src={active.url}
-          alt={active.altText}
-          fill
-          sizes="(min-width: 640px) 60vw, 100vw"
-          priority
-          className="object-contain transition-transform duration-150 ease-out"
-          style={zooming ? zoomStyle : undefined}
-        />
-      </div>
+      <Carousel setApi={setApi} className="w-full min-w-0 flex-1 sm:order-2">
+        <CarouselContent className="-ml-0">
+          {images.map((image, index) => (
+            <CarouselItem key={image.id} className="pl-0">
+              <div
+                className="relative aspect-square cursor-zoom-in overflow-hidden rounded-lg bg-muted"
+                onMouseEnter={() => setZooming(true)}
+                onMouseLeave={() => {
+                  setZooming(false);
+                  setZoomStyle({});
+                }}
+                onMouseMove={handleMouseMove}
+                onClick={() => setLightboxOpen(true)}
+              >
+                <Image
+                  src={image.url}
+                  alt={image.altText}
+                  fill
+                  sizes="(min-width: 640px) 60vw, 100vw"
+                  priority={index === 0}
+                  className="object-contain transition-transform duration-150 ease-out"
+                  style={index === activeIndex && zooming ? zoomStyle : undefined}
+                />
+              </div>
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+      </Carousel>
 
       {images.length > 1 && (
         <div className="flex items-center justify-center gap-1.5 sm:hidden">

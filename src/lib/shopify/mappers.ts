@@ -101,6 +101,36 @@ function hasAnyTag(tags: string[], ...variants: string[]): boolean {
   return variants.some((variant) => tags.includes(variant));
 }
 
+/**
+ * Some merchants paste raw embed code (a GIPHY <iframe>, etc.) straight into
+ * the plain-text description editor instead of a proper HTML block — Shopify
+ * then saves it HTML-entity-escaped inside descriptionHtml, so it renders as
+ * visible "&lt;iframe...&gt;" text instead of an actual embed. Un-escape it
+ * once we detect that pattern.
+ */
+function unescapeEmbeddedMarkup(html: string): string {
+  if (!/&lt;\/?(iframe|a|p|br|div|span|img)\b/i.test(html)) return html;
+  return html
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#0*39;/g, "'")
+    .replace(/&amp;/g, "&");
+}
+
+/** GIPHY's embed snippet ships a "via GIPHY" attribution link — strip it, wrapped or bare. */
+function stripGiphyAttribution(html: string): string {
+  return html
+    .replace(/<p>\s*<a[^>]+giphy\.com[^>]*>\s*via giphy\s*<\/a>\s*<\/p>/gi, "")
+    .replace(/<a[^>]+giphy\.com[^>]*>\s*via giphy\s*<\/a>/gi, "");
+}
+
+/** Shopify's own plaintext description is derived from descriptionHtml, so the
+ * GIPHY attribution's anchor text ("via GIPHY") leaks in there too. */
+function stripGiphyAttributionText(text: string): string {
+  return text.replace(/\s*via giphy\s*/gi, " ").trim();
+}
+
 export function mapShopifyProduct(node: ShopifyProductNode): Product {
   const tags = node.tags.map((t) => t.toLowerCase());
   const images = node.images.edges.map((e, i) => toImage(e.node, `${node.id}-image-${i}`));
@@ -124,8 +154,8 @@ export function mapShopifyProduct(node: ShopifyProductNode): Product {
     id: node.id,
     handle: node.handle,
     title: node.title,
-    description: node.description,
-    descriptionHtml: node.descriptionHtml,
+    description: stripGiphyAttributionText(node.description),
+    descriptionHtml: stripGiphyAttribution(unescapeEmbeddedMarkup(node.descriptionHtml)),
     category: deriveCategory(tags),
     tags: node.tags,
     images,
