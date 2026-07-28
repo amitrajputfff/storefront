@@ -9,8 +9,8 @@ interface Pack {
 }
 
 const PACKS: Pack[] = [
-  { quantity: 1, label: "1 Unit" },
-  { quantity: 2, label: "2 Units" },
+  { quantity: 1, label: "Buy 1" },
+  { quantity: 2, label: "Buy 2" },
 ];
 
 export function QuantityPacks({
