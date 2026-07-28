@@ -61,7 +61,9 @@ export function VariantSelector({
 }) {
   return (
     <div className="flex flex-col gap-4">
-      {product.options.map((option) => {
+      {product.options
+        .filter((option) => option.name.toLowerCase() !== "title" && option.values.length > 1)
+        .map((option) => {
         const isColor = option.name.toLowerCase() === "color";
         const selectedValue = selectedOptions[option.name];
 
