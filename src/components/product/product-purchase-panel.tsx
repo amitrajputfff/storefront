@@ -10,9 +10,11 @@ import { PromoCode } from "@/lib/shopify/discounts";
 export function ProductPurchasePanel({
   product,
   promoCodes,
+  benefits,
 }: {
   product: Product;
   promoCodes: PromoCode[];
+  benefits: string[];
 }) {
   const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>(() =>
     defaultSelectedOptions(product),
@@ -31,6 +33,7 @@ export function ProductPurchasePanel({
       <BuyBox
         product={product}
         promoCodes={promoCodes}
+        benefits={benefits}
         selectedOptions={selectedOptions}
         onSelectedOptionsChange={(name, value) =>
           setSelectedOptions((prev) => ({ ...prev, [name]: value }))

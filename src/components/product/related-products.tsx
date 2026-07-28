@@ -6,7 +6,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { ProductCard } from "@/components/product/product-card";
+import { MinimalProductCard } from "@/components/product/minimal-product-card";
 
 export function RelatedProducts({
   products,
@@ -24,7 +24,7 @@ export function RelatedProducts({
         <CarouselContent>
           {products.map((product) => (
             <CarouselItem key={product.id} className="basis-1/2 sm:basis-1/3 lg:basis-1/4">
-              <ProductCard product={product} />
+              <MinimalProductCard product={product} />
             </CarouselItem>
           ))}
         </CarouselContent>

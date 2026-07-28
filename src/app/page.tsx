@@ -24,8 +24,8 @@ export default async function Home() {
       <Hero />
       <FlashSaleBanner />
       <LogoCloud />
-      <CategoryTabs />
       <BestSellers />
+      <CategoryTabs />
       <FeaturedCollection />
       <LifestyleBanner />
       <ValueProps />

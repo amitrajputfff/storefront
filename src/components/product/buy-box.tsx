@@ -12,6 +12,7 @@ import { QuantityPacks } from "@/components/product/quantity-packs";
 import { AddToCartButton } from "@/components/product/add-to-cart-button";
 import { RecentPurchasesBadge } from "@/components/product/recent-purchases-badge";
 import { StockProgressBar } from "@/components/product/stock-progress-bar";
+import { KeyBenefits } from "@/components/product/key-benefits";
 import { PromoCodeChips } from "@/components/product/promo-code-chips";
 import { estimatedDeliveryLabel } from "@/lib/format";
 import { getFlashSaleEndsAt } from "@/lib/urgency";
@@ -46,6 +47,7 @@ export function BuyBox({
   onQuantityChange,
   activeVariant,
   ctaRef,
+  benefits,
 }: {
   product: Product;
   promoCodes: PromoCode[];
@@ -55,6 +57,7 @@ export function BuyBox({
   onQuantityChange: (quantity: number) => void;
   activeVariant: Variant | undefined;
   ctaRef?: RefObject<HTMLDivElement | null>;
+  benefits: string[];
 }) {
   const price = activeVariant?.price ?? product.priceRange.min;
   const compareAtPrice = activeVariant?.compareAtPrice;
@@ -72,6 +75,8 @@ export function BuyBox({
       </div>
 
       <PriceDisplay price={price} compareAtPrice={compareAtPrice} size="lg" />
+
+      <KeyBenefits benefits={benefits} />
 
       {product.isLimitedTimeOffer && (
         <div className="bg-foreground text-background flex items-center justify-between gap-3 rounded-lg px-3.5 py-2.5">
