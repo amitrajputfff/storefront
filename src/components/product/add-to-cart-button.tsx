@@ -93,8 +93,8 @@ export function AddToCartButton({
               )}
             </div>
             {!buying && (
-              <div className="hidden shrink-0 sm:block">
-                <PaymentIconGroup icons={upiPaymentMethods} size={32} overlap={9} />
+              <div className="shrink-0">
+                <PaymentIconGroup icons={upiPaymentMethods} size={28} overlap={9} />
               </div>
             )}
           </div>

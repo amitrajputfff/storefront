@@ -1,8 +1,64 @@
 import { Product } from "@/types";
+import { adminFetch, isShopifyAdminConfigured } from "@/lib/shopify/admin-client";
 
 const BENEFIT_COUNT = 5;
+const METAFIELD_NAMESPACE = "storefront";
+const METAFIELD_KEY = "key_benefits";
 
 const cache = new Map<string, string[]>();
+
+const KEY_BENEFITS_METAFIELD_QUERY = `
+  query KeyBenefitsMetafield($id: ID!, $namespace: String!, $key: String!) {
+    product(id: $id) {
+      metafield(namespace: $namespace, key: $key) { value }
+    }
+  }
+`;
+
+const SET_KEY_BENEFITS_METAFIELD_MUTATION = `
+  mutation SetKeyBenefitsMetafield($metafields: [MetafieldsSetInput!]!) {
+    metafieldsSet(metafields: $metafields) {
+      userErrors { field message }
+    }
+  }
+`;
+
+/** Reads previously-generated benefits back from a Shopify product metafield,
+ * so a rebuild or cold start doesn't have to re-spend Gemini's daily quota on
+ * a product we've already generated benefits for. */
+async function readKeyBenefitsMetafield(productId: string): Promise<string[] | null> {
+  try {
+    const data = await adminFetch<{ product: { metafield: { value: string } | null } | null }>(
+      KEY_BENEFITS_METAFIELD_QUERY,
+      { id: productId, namespace: METAFIELD_NAMESPACE, key: METAFIELD_KEY },
+    );
+    const raw = data.product?.metafield?.value;
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) && parsed.every((b) => typeof b === "string") ? parsed : null;
+  } catch (error) {
+    console.error("Reading key benefits metafield failed:", error);
+    return null;
+  }
+}
+
+async function writeKeyBenefitsMetafield(productId: string, benefits: string[]): Promise<void> {
+  try {
+    await adminFetch(SET_KEY_BENEFITS_METAFIELD_MUTATION, {
+      metafields: [
+        {
+          ownerId: productId,
+          namespace: METAFIELD_NAMESPACE,
+          key: METAFIELD_KEY,
+          type: "json",
+          value: JSON.stringify(benefits),
+        },
+      ],
+    });
+  } catch (error) {
+    console.error("Saving key benefits metafield failed:", error);
+  }
+}
 
 // Splitting a sentence on commas leaves mid-clause fragments like "A soft" —
 // these all signal "this clause was truncated," not a real standalone benefit.
@@ -52,13 +108,22 @@ function parseBenefits(text: string): string[] {
 }
 
 /**
- * Generated once per product at build time via Gemini, then cached in memory —
- * this runs during static generation, not per-request, so a Map is enough to
- * avoid duplicate calls across the handful of pages that reuse a product.
+ * Generated once per product via Gemini, then persisted to a Shopify product
+ * metafield so future builds/cold starts reuse it instead of re-spending
+ * Gemini's daily quota — the in-memory Map only dedupes calls within a single
+ * process (e.g. the same product rendered on several pages in one build).
  */
 export async function getKeyBenefits(product: Product): Promise<string[]> {
   const cached = cache.get(product.id);
   if (cached) return cached;
+
+  if (isShopifyAdminConfigured()) {
+    const saved = await readKeyBenefitsMetafield(product.id);
+    if (saved) {
+      cache.set(product.id, saved);
+      return saved;
+    }
+  }
 
   const apiKey = process.env.GEMINI_API_KEY;
   const model = process.env.GEMINI_MODEL || "gemini-2.5-flash";
@@ -101,6 +166,9 @@ Write exactly ${BENEFIT_COUNT} short, scannable key-benefit bullet points a shop
     const benefits = text ? parseBenefits(text) : [];
     const result = benefits.length > 0 ? benefits : fallbackBenefits(product);
     cache.set(product.id, result);
+    if (benefits.length > 0 && isShopifyAdminConfigured()) {
+      await writeKeyBenefitsMetafield(product.id, result);
+    }
     return result;
   } catch (error) {
     console.error("Key benefits generation failed:", error);
