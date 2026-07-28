@@ -45,6 +45,18 @@ export function getFallbackReviewCount(seed: string): number {
 }
 
 /**
+ * Purely decorative fallback for products without a real rating metafield —
+ * seeded from the product id so it stays stable across refreshes, 4.2-5.0.
+ */
+export function getFallbackRating(seed: string): number {
+  let hash = 0;
+  for (let i = 0; i < seed.length; i++) {
+    hash = (hash * 43 + seed.charCodeAt(i)) >>> 0;
+  }
+  return 4.2 + (hash % 9) / 10;
+}
+
+/**
  * Purely decorative "selling out" stock bar — seeded from the product id so it stays
  * stable across refreshes, roughly 70-92% claimed.
  */
