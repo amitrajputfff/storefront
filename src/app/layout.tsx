@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, Geist, Geist_Mono } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import { AppProviders } from "@/components/providers/app-providers";
 import { AnnouncementBar } from "@/components/layout/announcement-bar";
@@ -82,6 +83,7 @@ export default async function RootLayout({
           <RecentPurchaseToastMounter productTitles={productTitles} />
           <ChatWidget />
         </AppProviders>
+        <Analytics />
       </body>
     </html>
   );

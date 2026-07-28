@@ -11,8 +11,13 @@ const FRAGMENT_START_WORDS = new Set([
 ]);
 
 function isCompletePhrase(clause: string): boolean {
-  const firstWord = clause.split(/\s+/)[0]?.toLowerCase();
-  return !FRAGMENT_START_WORDS.has(firstWord);
+  const words = clause.split(/\s+/);
+  // A comma-separated list ("...for Plants, Pots, Gardens and Home Plants")
+  // splits into dangling one-or-two-word list items like "Pots" — these
+  // aren't sentence fragments by their starting word, so they slip past the
+  // stopword check above; requiring at least 3 words filters them out too.
+  if (words.length < 3) return false;
+  return !FRAGMENT_START_WORDS.has(words[0].toLowerCase());
 }
 
 /**
@@ -56,7 +61,7 @@ export async function getKeyBenefits(product: Product): Promise<string[]> {
   if (cached) return cached;
 
   const apiKey = process.env.GEMINI_API_KEY;
-  const model = process.env.GEMINI_MODEL || "gemini-3.5-flash";
+  const model = process.env.GEMINI_MODEL || "gemini-2.5-flash";
 
   if (!apiKey) {
     const fallback = fallbackBenefits(product);
