@@ -130,9 +130,9 @@ export function Gallery({ images }: { images: ProductImage[] }) {
       </div>
 
       <Carousel setApi={setApi} className="w-full min-w-0 flex-1 sm:order-2">
-        <CarouselContent className="-ml-0">
+        <CarouselContent className="-ml-3">
           {images.map((image, index) => (
-            <CarouselItem key={image.id} className="pl-0">
+            <CarouselItem key={image.id} className="pl-3">
               <div
                 className="relative aspect-square cursor-zoom-in overflow-hidden rounded-lg bg-muted"
                 onMouseEnter={() => setZooming(true)}
