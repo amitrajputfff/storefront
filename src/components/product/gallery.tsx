@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 
 const MAX_VISIBLE_THUMBNAILS = 5;
+const MAX_DOTS = 8;
 const MIN_ASPECT_RATIO = 3 / 4;
 const MAX_ASPECT_RATIO = 4 / 3;
 const SWIPE_THRESHOLD_PX = 40;
@@ -68,7 +69,7 @@ export function Gallery({ images }: { images: ProductImage[] }) {
   if (!active) return null;
 
   return (
-    <div className="flex flex-col gap-4 sm:flex-row">
+    <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
       <div className="flex gap-2 overflow-x-auto sm:order-1 sm:w-20 sm:flex-col sm:overflow-visible">
         {visibleThumbnails.map((image, index) => {
           const isLastVisible = index === visibleThumbnails.length - 1;
@@ -126,6 +127,29 @@ export function Gallery({ images }: { images: ProductImage[] }) {
           style={zooming ? zoomStyle : undefined}
         />
       </div>
+
+      {images.length > 1 && (
+        <div className="flex items-center justify-center gap-1.5 sm:hidden">
+          {images.length <= MAX_DOTS ? (
+            images.map((image, index) => (
+              <button
+                key={image.id}
+                type="button"
+                aria-label={`Show image ${index + 1}`}
+                onClick={() => setActiveIndex(index)}
+                className={cn(
+                  "size-1.5 rounded-full transition-colors",
+                  index === activeIndex ? "bg-foreground" : "bg-muted-foreground/30",
+                )}
+              />
+            ))
+          ) : (
+            <span className="text-muted-foreground text-xs tabular-nums">
+              {activeIndex + 1} / {images.length}
+            </span>
+          )}
+        </div>
+      )}
 
       <Dialog open={lightboxOpen} onOpenChange={setLightboxOpen}>
         <DialogContent

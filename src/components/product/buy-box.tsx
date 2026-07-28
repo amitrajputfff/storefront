@@ -66,7 +66,7 @@ export function BuyBox({
   const [flashSaleEndsAt, setFlashSaleEndsAt] = useState(() => getFlashSaleEndsAt());
 
   return (
-    <div className="flex flex-col gap-4 max-w-xs sm:max-w-sm lg:max-w-none">
+    <div className="flex flex-col gap-4">
       <div>
         <h1 className="text-2xl font-medium tracking-tight md:text-3xl">{product.title}</h1>
         <a href="#reviews" className="mt-2 inline-flex items-center gap-2">
