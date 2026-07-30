@@ -7,6 +7,7 @@ import { AnimatePresence, motion, useMotionValueEvent, useScroll } from "motion/
 import { Menu, Search, ShoppingBag, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SearchCommand } from "@/components/shared/search-command";
+import { ThemeToggle } from "@/components/shared/theme-toggle";
 import { ZeevaraLockup } from "@/components/shared/zeevara-lockup";
 import { MegaMenu } from "./mega-menu";
 import { MobileNav } from "./mobile-nav";
@@ -73,6 +74,8 @@ export function SiteHeader({ navMenu }: { navMenu: NavMenu }) {
           </nav>
 
           <div className="flex items-center justify-end gap-1">
+            <ThemeToggle />
+
             <Button
               variant="ghost"
               size="icon"
