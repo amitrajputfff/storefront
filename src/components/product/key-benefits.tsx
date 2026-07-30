@@ -9,12 +9,12 @@ export function KeyBenefits({ benefits }: { benefits: string[] }) {
   if (benefits.length === 0) return null;
 
   return (
-    <div className="rounded-r-2xl border-l-4 border-amber-300 bg-amber-50 px-4 py-4 dark:border-amber-700 dark:bg-amber-950/40">
+    <div className="rounded-r-2xl border-l-4 border-green-300 bg-green-50 px-4 py-4 dark:border-green-700 dark:bg-green-950/40">
       <ul className="flex flex-col gap-2.5">
         {benefits.map((benefit) => (
           <li
             key={benefit}
-            className="text-sm font-semibold text-amber-950 dark:text-amber-50"
+            className="text-sm font-semibold text-green-950 dark:text-green-50"
           >
             {formatBenefit(benefit)}
           </li>
