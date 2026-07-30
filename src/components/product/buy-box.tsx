@@ -123,9 +123,13 @@ export function BuyBox({
         </div>
       )}
 
+      <div className="flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-semibold">
+        <Truck className="size-4 shrink-0" />
+        {estimatedDeliveryLabel(new Date(), product.minDeliveryDays, product.maxDeliveryDays)}
+      </div>
+
       <div className="flex flex-wrap gap-2">
         {[
-          { icon: Truck, label: estimatedDeliveryLabel(new Date(), product.minDeliveryDays, product.maxDeliveryDays) },
           { icon: RotateCcw, label: `${RETURN_WINDOW_DAYS} Day Easy Returns` },
           { icon: ShieldCheck, label: "Secure Payments" },
           { icon: CreditCard, label: "Cash on Delivery" },
