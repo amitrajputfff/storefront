@@ -131,6 +131,23 @@ function stripGiphyAttributionText(text: string): string {
   return text.replace(/\s*via giphy\s*/gi, " ").trim();
 }
 
+/**
+ * Embed generators (Kapwing, etc.) wrap their <iframe> in a div with a fixed
+ * pixel width/height baked in ("width: 300px; height: 533.33px"), which clamps
+ * the embed to that exact box no matter how wide the description column is.
+ * Rewrite it to fill the column width while preserving the original aspect
+ * ratio via CSS aspect-ratio, so the video/gif scales without stretching.
+ */
+function makeEmbedsResponsive(html: string): string {
+  return html.replace(/<div style="([^"]*)">/gi, (fullMatch, style: string) => {
+    if (!/position:\s*relative/i.test(style)) return fullMatch;
+    const heightMatch = style.match(/height:\s*([\d.]+)px/i);
+    const widthMatch = style.match(/width:\s*([\d.]+)px/i);
+    if (!heightMatch || !widthMatch) return fullMatch;
+    return `<div style="position: relative; width: 100%; aspect-ratio: ${widthMatch[1]} / ${heightMatch[1]};">`;
+  });
+}
+
 export function mapShopifyProduct(node: ShopifyProductNode): Product {
   const tags = node.tags.map((t) => t.toLowerCase());
   const images = node.images.edges.map((e, i) => toImage(e.node, `${node.id}-image-${i}`));
@@ -155,7 +172,7 @@ export function mapShopifyProduct(node: ShopifyProductNode): Product {
     handle: node.handle,
     title: node.title,
     description: stripGiphyAttributionText(node.description),
-    descriptionHtml: stripGiphyAttribution(unescapeEmbeddedMarkup(node.descriptionHtml)),
+    descriptionHtml: makeEmbedsResponsive(stripGiphyAttribution(unescapeEmbeddedMarkup(node.descriptionHtml))),
     category: deriveCategory(tags),
     tags: node.tags,
     images,

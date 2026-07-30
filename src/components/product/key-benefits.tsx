@@ -1,3 +1,10 @@
+// Strips stray leading symbols (emoji, checkmarks, bullet glyphs) that leak in from
+// the fallback text-splitter or from bullets generated/cached before this formatting existed.
+function formatBenefit(benefit: string): string {
+  const cleaned = benefit.replace(/^[^\p{L}\p{N}]+/u, "").trim();
+  return cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
+}
+
 export function KeyBenefits({ benefits }: { benefits: string[] }) {
   if (benefits.length === 0) return null;
 
@@ -7,10 +14,9 @@ export function KeyBenefits({ benefits }: { benefits: string[] }) {
         {benefits.map((benefit) => (
           <li
             key={benefit}
-            className="flex items-center gap-2.5 text-sm font-semibold text-rose-950 dark:text-rose-50"
+            className="text-sm font-semibold text-rose-950 dark:text-rose-50"
           >
-            <span aria-hidden>👍</span>
-            {benefit}
+            {formatBenefit(benefit)}
           </li>
         ))}
       </ul>
