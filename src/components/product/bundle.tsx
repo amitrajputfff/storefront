@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
 import { Product } from "@/types";
@@ -10,6 +11,7 @@ import { useCart } from "@/hooks/use-cart";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { PriceDisplay } from "@/components/shared/price-display";
+import { routes } from "@/constants/routes";
 
 export function Bundle({
   product,
@@ -61,7 +63,10 @@ export function Bundle({
           <div key={item.id} className="flex shrink-0 items-start gap-3">
             {index > 0 && <Plus className="text-muted-foreground mt-8 size-4 shrink-0" />}
             <div className="flex w-auto shrink-0 flex-col items-center gap-2">
-              <div className="relative size-20 shrink-0 overflow-hidden rounded-md bg-muted">
+              <Link
+                href={routes.product(item.handle)}
+                className="relative size-20 shrink-0 overflow-hidden rounded-md bg-muted"
+              >
                 <Image
                   src={item.images[0]?.url}
                   alt={item.images[0]?.altText ?? item.title}
@@ -69,7 +74,7 @@ export function Bundle({
                   sizes="80px"
                   className="object-cover"
                 />
-              </div>
+              </Link>
               <div className="flex items-start gap-1.5">
                 <Checkbox
                   className="mt-0.5 shrink-0"
@@ -78,9 +83,12 @@ export function Bundle({
                     setChecked((prev) => ({ ...prev, [item.id]: value === true }))
                   }
                 />
-                <span className="line-clamp-2 text-center text-xs leading-tight">
+                <Link
+                  href={routes.product(item.handle)}
+                  className="line-clamp-2 text-center text-xs leading-tight hover:underline"
+                >
                   {item.title}
-                </span>
+                </Link>
               </div>
               <PriceDisplay
                 price={item.priceRange.min}
