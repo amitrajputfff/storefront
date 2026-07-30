@@ -9,6 +9,13 @@ function fbq(...args: unknown[]) {
   window.fbq(...args);
 }
 
+// Meta's catalog (synced by Shopify's Facebook & Instagram channel) keys items by
+// the plain numeric Shopify ID, not the "gid://shopify/..." string the Storefront API returns.
+function toCatalogId(gid: string): string {
+  const match = gid.match(/(\d+)$/);
+  return match ? match[1] : gid;
+}
+
 export function trackPageView() {
   fbq("track", "PageView");
 }
@@ -20,7 +27,7 @@ export function trackViewContent(params: {
   currency: string;
 }) {
   fbq("track", "ViewContent", {
-    content_ids: [params.contentId],
+    content_ids: [toCatalogId(params.contentId)],
     content_name: params.contentName,
     content_type: "product",
     value: params.value,
@@ -35,13 +42,14 @@ export function trackAddToCart(params: {
   currency: string;
   quantity: number;
 }) {
+  const catalogId = toCatalogId(params.contentId);
   fbq("track", "AddToCart", {
-    content_ids: [params.contentId],
+    content_ids: [catalogId],
     content_name: params.contentName,
     content_type: "product",
     value: params.value,
     currency: params.currency,
-    contents: [{ id: params.contentId, quantity: params.quantity }],
+    contents: [{ id: catalogId, quantity: params.quantity }],
   });
 }
 
@@ -52,7 +60,7 @@ export function trackInitiateCheckout(params: {
   numItems: number;
 }) {
   fbq("track", "InitiateCheckout", {
-    content_ids: params.contentIds,
+    content_ids: params.contentIds.map(toCatalogId),
     content_type: "product",
     value: params.value,
     currency: params.currency,

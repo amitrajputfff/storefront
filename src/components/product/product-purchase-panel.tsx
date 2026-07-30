@@ -1,11 +1,12 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Product } from "@/types";
 import { BuyBox, defaultSelectedOptions, getActiveVariant } from "@/components/product/buy-box";
 import { StickyBuyBar } from "@/components/product/sticky-buy-bar";
 import { useInViewport } from "@/hooks/use-in-viewport";
 import { PromoCode } from "@/lib/shopify/discounts";
+import { trackViewContent } from "@/lib/meta-pixel";
 
 export function ProductPurchasePanel({
   product,
@@ -27,6 +28,16 @@ export function ProductPurchasePanel({
     () => getActiveVariant(product, selectedOptions),
     [product, selectedOptions],
   );
+
+  useEffect(() => {
+    if (!activeVariant) return;
+    trackViewContent({
+      contentId: activeVariant.id,
+      contentName: product.title,
+      value: activeVariant.price.amount,
+      currency: activeVariant.price.currencyCode,
+    });
+  }, [activeVariant, product.title]);
 
   return (
     <>
