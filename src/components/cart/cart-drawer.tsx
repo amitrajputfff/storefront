@@ -17,6 +17,7 @@ import { useUiStore } from "@/stores/ui-store";
 import { useCart } from "@/hooks/use-cart";
 import { getAllProducts, getProductsByCategory } from "@/mock/products";
 import { createCheckoutUrl } from "@/lib/shopify/cart";
+import { trackInitiateCheckout } from "@/lib/meta-pixel";
 import { Money, Product } from "@/types";
 import { routes } from "@/constants/routes";
 import { formatMoney } from "@/lib/format";
@@ -45,6 +46,12 @@ export function CartDrawer() {
       const checkoutUrl = await createCheckoutUrl(
         items.map((item) => ({ variantId: item.variantId, quantity: item.quantity })),
       );
+      trackInitiateCheckout({
+        contentIds: items.map((item) => item.variantId),
+        value: total.amount,
+        currency: total.currencyCode,
+        numItems: totalQuantity,
+      });
       window.location.href = checkoutUrl;
     } catch {
       toast.error("Checkout isn't connected to Shopify yet.");

@@ -13,6 +13,7 @@ import { ReservationBanner } from "@/components/cart/reservation-banner";
 import { PromoCodeInput } from "@/components/cart/promo-code-input";
 import { Button } from "@/components/ui/button";
 import { createCheckoutUrl } from "@/lib/shopify/cart";
+import { trackInitiateCheckout } from "@/lib/meta-pixel";
 import { Money } from "@/types";
 
 export default function CartPage() {
@@ -28,6 +29,12 @@ export default function CartPage() {
       const checkoutUrl = await createCheckoutUrl(
         items.map((item) => ({ variantId: item.variantId, quantity: item.quantity })),
       );
+      trackInitiateCheckout({
+        contentIds: items.map((item) => item.variantId),
+        value: total,
+        currency: subtotal.currencyCode,
+        numItems: items.reduce((sum, item) => sum + item.quantity, 0),
+      });
       window.location.href = checkoutUrl;
     } catch {
       toast.error("Checkout isn't connected to Shopify yet.");

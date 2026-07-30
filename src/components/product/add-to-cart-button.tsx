@@ -9,6 +9,7 @@ import { useBuyNow } from "@/hooks/use-buy-now";
 import { Button } from "@/components/ui/button";
 import { PaymentIconGroup } from "@/components/product/payment-icon-badge";
 import { cn } from "@/lib/utils";
+import { trackAddToCart } from "@/lib/meta-pixel";
 
 type Status = "idle" | "loading" | "success";
 
@@ -48,6 +49,13 @@ export function AddToCartButton({
       price: variant.price,
       quantity,
       maxQuantity: variant.inventoryQuantity,
+    });
+    trackAddToCart({
+      contentId: variant.id,
+      contentName: product.title,
+      value: variant.price.amount * quantity,
+      currency: variant.price.currencyCode,
+      quantity,
     });
   }
 
