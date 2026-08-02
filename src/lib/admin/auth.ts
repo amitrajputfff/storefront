@@ -34,6 +34,19 @@ export async function loginAction(
     return { error: GENERIC_ERROR };
   }
 
+  // Temporary diagnostic — logs shape/metadata only, never the actual secret value.
+  for (const [name, value] of [
+    ["SUPABASE_URL", process.env.SUPABASE_URL],
+    ["SUPABASE_SERVICE_ROLE_KEY", process.env.SUPABASE_SERVICE_ROLE_KEY],
+    ["ADMIN_SESSION_SECRET", process.env.ADMIN_SESSION_SECRET],
+  ] as const) {
+    const v = value ?? "";
+    const trimmed = v.trim();
+    console.log(
+      `[admin-login] ${name}: length=${v.length} hasNewline=${/[\n\r]/.test(v)} hasInternalWhitespace=${/\s/.test(trimmed)} hasLeadingOrTrailingWhitespace=${v !== trimmed} hasQuotes=${/['"]/.test(v)} preview="${v.slice(0, 6)}...${v.slice(-4)}"`,
+    );
+  }
+
   const supabase = getSupabaseAdminClient();
   const { data: user, error: queryError } = await supabase
     .from("admin_users")
