@@ -20,7 +20,7 @@ export function filterAndSortProducts(
   const priceMax = params.priceMax ? Number(params.priceMax) : undefined;
 
   if (categories.length > 0) {
-    result = result.filter((p) => categories.includes(p.category));
+    result = result.filter((p) => p.categories.some((c) => categories.includes(c)));
   }
 
   if (minRating !== undefined) {

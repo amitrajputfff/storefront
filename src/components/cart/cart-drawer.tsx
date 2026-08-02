@@ -66,7 +66,7 @@ export function CartDrawer() {
       const allProducts = await getAllProducts();
       const firstItem = items[0];
       const category = firstItem
-        ? allProducts.find((p) => p.id === firstItem.productId)?.category
+        ? allProducts.find((p) => p.id === firstItem.productId)?.categories[0]
         : undefined;
       const pool = category ? await getProductsByCategory(category) : allProducts;
       if (!active) return;

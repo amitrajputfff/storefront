@@ -1,18 +1,6 @@
-import { Product, ProductCategory, ProductImage, SelectedOption, Variant } from "@/types";
+import { Product, ProductImage, SelectedOption, Variant } from "@/types";
 import { getFallbackReviewCount, getFallbackRating } from "@/lib/social-proof";
-
-const CATEGORY_TAGS: ProductCategory[] = [
-  "home-decor",
-  "kitchen",
-  "office",
-  "travel",
-  "accessories",
-  "fitness",
-  "lifestyle",
-  "pets",
-  "beauty",
-  "electronics",
-];
+import { deriveCategories } from "@/lib/product-categories";
 
 interface ShopifyMoney {
   amount: string;
@@ -77,11 +65,6 @@ function toImage(node: ShopifyImageNode, id: string): ProductImage {
     width: node.width,
     height: node.height,
   };
-}
-
-function deriveCategory(tags: string[]): ProductCategory {
-  const lower = tags.map((t) => t.toLowerCase());
-  return CATEGORY_TAGS.find((c) => lower.includes(c)) ?? "lifestyle";
 }
 
 function metafieldNumber(field: ShopifyMetafield | null, fallback: number): number {
@@ -173,7 +156,7 @@ export function mapShopifyProduct(node: ShopifyProductNode): Product {
     title: node.title,
     description: stripGiphyAttributionText(node.description),
     descriptionHtml: makeEmbedsResponsive(stripGiphyAttribution(unescapeEmbeddedMarkup(node.descriptionHtml))),
-    category: deriveCategory(tags),
+    categories: deriveCategories(tags),
     tags: node.tags,
     images,
     options: node.options,

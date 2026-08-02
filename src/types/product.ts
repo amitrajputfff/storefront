@@ -33,17 +33,12 @@ export interface Variant {
   image?: ProductImage;
 }
 
-export type ProductCategory =
-  | "home-decor"
-  | "kitchen"
-  | "office"
-  | "travel"
-  | "accessories"
-  | "fitness"
-  | "lifestyle"
-  | "pets"
-  | "beauty"
-  | "electronics";
+/**
+ * Not a closed set — a product's categories are whatever tags it carries in
+ * Shopify (minus a few functional tags like "bestseller"), so a brand-new tag
+ * becomes a valid category automatically. See lib/product-categories.ts.
+ */
+export type ProductCategory = string;
 
 export interface Product {
   id: string;
@@ -51,7 +46,7 @@ export interface Product {
   title: string;
   description: string;
   descriptionHtml?: string;
-  category: ProductCategory;
+  categories: ProductCategory[];
   tags: string[];
   images: ProductImage[];
   options: ProductOption[];
@@ -80,6 +75,7 @@ export interface AuthoredProduct {
   title: string;
   description: string;
   category: ProductCategory;
+  categories?: ProductCategory[];
   tags?: string[];
   images: ProductImage[];
   options?: ProductOption[];

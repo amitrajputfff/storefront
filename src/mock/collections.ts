@@ -1,6 +1,7 @@
 import { Collection, Product } from "@/types";
 import { categoryImages } from "./images";
 import { getAllProducts } from "./products";
+import { getCategoryByHandle } from "./categories";
 
 export interface DerivedCollection extends Collection {
   products: Product[];
@@ -102,25 +103,34 @@ const NAMED_COLLECTIONS: Record<string, () => Promise<DerivedCollection>> = {
   deals: getDeals,
 };
 
+/**
+ * Category collections aren't limited to the curated list in mock/categories
+ * — any tag present on at least one product resolves here, so a brand-new
+ * Shopify tag gets a working /collections/<tag> page immediately.
+ */
 export async function getCollectionByHandle(
   handle: string,
 ): Promise<DerivedCollection | undefined> {
   if (NAMED_COLLECTIONS[handle]) return NAMED_COLLECTIONS[handle]();
 
-  const { categories } = await import("./categories");
-  const category = categories.find((c) => c.handle === handle);
-  if (!category) return undefined;
+  const all = await getAllProducts();
+  const matched = all.filter((p) => p.categories.includes(handle));
+  if (matched.length === 0) return undefined;
 
-  return buildCollection(
-    category.handle,
-    category.name,
-    category.description,
-    category.handle as keyof typeof categoryImages,
-    (p) => p.category === category.handle,
-  );
+  const category = getCategoryByHandle(handle);
+  return {
+    id: `gid://mock/Collection/${handle}`,
+    handle,
+    title: category.name,
+    description: category.description,
+    image: category.image,
+    productIds: matched.map((p) => p.id),
+    products: matched,
+  };
 }
 
 export async function getAllCollectionHandles(): Promise<string[]> {
-  const { categories } = await import("./categories");
-  return [...Object.keys(NAMED_COLLECTIONS), ...categories.map((c) => c.handle)];
+  const all = await getAllProducts();
+  const present = new Set<string>(all.flatMap((p) => p.categories));
+  return [...Object.keys(NAMED_COLLECTIONS), ...present];
 }

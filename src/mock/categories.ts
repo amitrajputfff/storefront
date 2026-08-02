@@ -64,8 +64,30 @@ export const categories: CategoryDef[] = [
   },
 ];
 
-export function getCategoryByHandle(handle: string): CategoryDef | undefined {
-  return categories.find((c) => c.handle === handle);
+function titleCase(handle: string): string {
+  return handle
+    .split(/[-_]+/)
+    .filter(Boolean)
+    .map((word) => word[0].toUpperCase() + word.slice(1))
+    .join(" ");
+}
+
+/**
+ * Falls back to a generated definition for any category tag outside the
+ * curated list above, so a brand-new Shopify tag still gets a readable nav
+ * label and a working collection page without a code change.
+ */
+export function getCategoryByHandle(handle: string): CategoryDef {
+  const known = categories.find((c) => c.handle === handle);
+  if (known) return known;
+
+  const name = titleCase(handle);
+  return {
+    handle,
+    name,
+    description: `Shop our ${name} picks.`,
+    image: categoryImages.lifestyle[0],
+  };
 }
 
 export const categoryHandles = categories.map((c) => c.handle) as ProductCategory[];

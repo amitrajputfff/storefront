@@ -2,6 +2,7 @@ import {
   AuthoredProduct,
   Money,
   Product,
+  ProductCategory,
   ProductOption,
   Variant,
 } from "@/types";
@@ -23,6 +24,18 @@ function deriveOptions(authored: AuthoredProduct): ProductOption[] {
     name,
     values: Array.from(values),
   }));
+}
+
+/**
+ * Mock catalog entries use free-text descriptive tags ("cast-iron",
+ * "stovetop") rather than category tags, so — unlike the live Shopify
+ * mapper — categories here come from the explicit `category`/`categories`
+ * fields an author sets, not from every tag on the product.
+ */
+function deriveAuthoredCategories(authored: AuthoredProduct): ProductCategory[] {
+  return authored.categories && authored.categories.length > 0
+    ? authored.categories
+    : [authored.category];
 }
 
 export function buildProduct(authored: AuthoredProduct, index: number): Product {
@@ -57,7 +70,7 @@ export function buildProduct(authored: AuthoredProduct, index: number): Product 
     handle: authored.handle,
     title: authored.title,
     description: authored.description,
-    category: authored.category,
+    categories: deriveAuthoredCategories(authored),
     tags: Array.from(tags),
     images: authored.images,
     options: deriveOptions(authored),

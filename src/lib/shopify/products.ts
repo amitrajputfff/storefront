@@ -29,7 +29,7 @@ export async function getProductByHandle(handle: string): Promise<Product | unde
 
 export async function getProductsByCategory(category: string): Promise<Product[]> {
   const all = await fetchAllProducts();
-  return all.filter((p) => p.category === category);
+  return all.filter((p) => p.categories.includes(category));
 }
 
 export async function getProductsByHandles(handles: string[]): Promise<Product[]> {
@@ -40,7 +40,9 @@ export async function getProductsByHandles(handles: string[]): Promise<Product[]
 
 export async function getRelatedProducts(product: Product, limit = 8): Promise<Product[]> {
   const all = await fetchAllProducts();
-  return all.filter((p) => p.category === product.category && p.id !== product.id).slice(0, limit);
+  return all
+    .filter((p) => p.id !== product.id && p.categories.some((c) => product.categories.includes(c)))
+    .slice(0, limit);
 }
 
 export async function searchProducts(query: string): Promise<Product[]> {

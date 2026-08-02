@@ -18,7 +18,7 @@ function collectFacets(products: Product[]) {
   let maxPrice = 0;
 
   for (const product of products) {
-    categories.add(product.category);
+    for (const category of product.categories) categories.add(category);
     maxPrice = Math.max(maxPrice, product.priceRange.max.amount);
   }
 

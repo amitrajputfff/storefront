@@ -51,7 +51,7 @@ export async function getProductByHandle(handle: string): Promise<Product | unde
 
 export async function getProductsByCategory(category: string): Promise<Product[]> {
   if (isShopifyConfigured()) return shopify.getProductsByCategory(category);
-  return allProducts.filter((p) => p.category === category);
+  return allProducts.filter((p) => p.categories.includes(category));
 }
 
 export async function getProductsByHandles(handles: string[]): Promise<Product[]> {
@@ -63,7 +63,7 @@ export async function getProductsByHandles(handles: string[]): Promise<Product[]
 export async function getRelatedProducts(product: Product, limit = 8): Promise<Product[]> {
   if (isShopifyConfigured()) return shopify.getRelatedProducts(product, limit);
   return allProducts
-    .filter((p) => p.category === product.category && p.id !== product.id)
+    .filter((p) => p.id !== product.id && p.categories.some((c) => product.categories.includes(c)))
     .slice(0, limit);
 }
 
@@ -72,7 +72,9 @@ export async function getPopulatedCategoryHandles(limit = 4): Promise<string[]> 
   const products = await getAllProducts();
   const counts = new Map<string, number>();
   for (const p of products) {
-    counts.set(p.category, (counts.get(p.category) ?? 0) + 1);
+    for (const c of p.categories) {
+      counts.set(c, (counts.get(c) ?? 0) + 1);
+    }
   }
   return Array.from(counts.entries())
     .sort((a, b) => b[1] - a[1])
@@ -91,7 +93,7 @@ export async function searchProducts(query: string): Promise<Product[]> {
       let score = 0;
       if (p.title.toLowerCase().includes(q)) score += 3;
       if (p.tags.some((t) => t.toLowerCase().includes(q))) score += 2;
-      if (p.category.toLowerCase().includes(q)) score += 2;
+      if (p.categories.some((c) => c.toLowerCase().includes(q))) score += 2;
       if (p.description.toLowerCase().includes(q)) score += 1;
       return { product: p, score };
     })

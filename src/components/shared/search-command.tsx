@@ -182,7 +182,7 @@ export function SearchCommand({ open, onOpenChange }: SearchCommandProps) {
               <CommandGroup heading="Products">
                 {results.slice(0, MAX_RESULTS_SHOWN).map((product) => {
                   const image = product.images[0];
-                  const category = getCategoryByHandle(product.category);
+                  const category = getCategoryByHandle(product.categories[0]);
                   return (
                     <CommandItem
                       key={product.id}
