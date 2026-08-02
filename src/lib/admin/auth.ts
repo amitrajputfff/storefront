@@ -3,8 +3,9 @@
 import { cookies, draftMode } from "next/headers";
 import { redirect } from "next/navigation";
 import { getSupabaseAdminClient, isSupabaseAdminConfigured } from "@/lib/supabase/admin-client";
-import { verifyPassword } from "./password";
+import { hashPassword, verifyPassword } from "./password";
 import { ADMIN_SESSION_COOKIE, adminSessionCookieOptions, signAdminSession } from "./session";
+import { requireAdminSession } from "./require-session";
 
 const MAX_FAILED_ATTEMPTS = 5;
 const LOCKOUT_MINUTES = 15;
@@ -82,4 +83,38 @@ export async function logoutAction(): Promise<void> {
   const draft = await draftMode();
   draft.disable();
   redirect("/admin/login");
+}
+
+export async function changePasswordAction(
+  _prevState: { error?: string; success?: boolean } | undefined,
+  formData: FormData,
+): Promise<{ error?: string; success?: boolean }> {
+  const session = await requireAdminSession();
+  const currentPassword = String(formData.get("currentPassword") ?? "");
+  const newPassword = String(formData.get("newPassword") ?? "");
+  const confirmPassword = String(formData.get("confirmPassword") ?? "");
+
+  if (newPassword.length < 8) {
+    return { error: "New password must be at least 8 characters." };
+  }
+  if (newPassword !== confirmPassword) {
+    return { error: "New passwords don't match." };
+  }
+
+  const supabase = getSupabaseAdminClient();
+  const { data: user } = await supabase
+    .from("admin_users")
+    .select("id, password_hash")
+    .eq("id", session.sub)
+    .maybeSingle();
+
+  if (!user || !(await verifyPassword(currentPassword, user.password_hash))) {
+    return { error: "Current password is incorrect." };
+  }
+
+  const newHash = await hashPassword(newPassword);
+  const { error } = await supabase.from("admin_users").update({ password_hash: newHash }).eq("id", user.id);
+  if (error) return { error: error.message };
+
+  return { success: true };
 }
