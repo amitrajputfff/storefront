@@ -35,11 +35,15 @@ export async function loginAction(
   }
 
   const supabase = getSupabaseAdminClient();
-  const { data: user } = await supabase
+  const { data: user, error: queryError } = await supabase
     .from("admin_users")
     .select("id, email, password_hash, failed_attempts, locked_until")
     .eq("email", email)
     .maybeSingle();
+
+  if (queryError) {
+    console.error("[admin-login] admin_users query failed:", queryError);
+  }
 
   async function fail(): Promise<{ error: string }> {
     const elapsed = Date.now() - started;
