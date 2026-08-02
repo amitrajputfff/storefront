@@ -1,0 +1,427 @@
+import type {
+  HeroContent,
+  AnnouncementContent,
+  PressContent,
+  ValuePropsContent,
+  TestimonialsContent,
+  LifestyleBannerContent,
+  FeaturedCollectionContent,
+  FlashSaleContent,
+  CategoryTabsContent,
+  FaqContent,
+  ContactIntroContent,
+  AboutPageContent,
+  RichTextPageContent,
+} from "./types";
+
+/**
+ * Every value below is copied VERBATIM from the components it used to live
+ * in — this file is the fallback layer `getContent`/`getPage` return when
+ * Supabase is unconfigured, down, or a row is missing, so the site never
+ * renders blank and (on first deploy, before the seed SQL even runs) looks
+ * byte-identical to today.
+ */
+
+function unsplash(id: string, width: number): string {
+  return `https://images.unsplash.com/photo-${id}?q=80&w=${width}&auto=format&fit=crop`;
+}
+
+export const HERO_DEFAULTS: HeroContent = {
+  headline: "Considered objects for everyday life.",
+  subtext: "Home, kitchen, travel, and more — designed to be used, not just displayed.",
+  primaryCta: { label: "Shop New Arrivals", href: "/collections/new-arrivals" },
+  secondaryCta: { label: "Explore the Edit", href: "/collections" },
+  images: [
+    {
+      mediaId: null,
+      url: unsplash("1586023492125-27b2c045efd7", 1800),
+      altText: "Considered living room styling",
+      width: 1800,
+      height: 1100,
+    },
+    {
+      mediaId: null,
+      url: unsplash("1592194996308-7b43878e84a6", 1800),
+      altText: "Warm, quiet lifestyle interior",
+      width: 1800,
+      height: 1100,
+    },
+    {
+      mediaId: null,
+      url: unsplash("1524758631624-e2822e304c36", 1800),
+      altText: "Sunlit interior with greenery",
+      width: 1800,
+      height: 1100,
+    },
+  ],
+};
+
+export const ANNOUNCEMENT_DEFAULTS: AnnouncementContent = {
+  messages: [
+    "Free shipping across India on every order",
+    "Get an extra 10% off on prepaid orders",
+    "7-day hassle-free returns on every order",
+    "Discover more everyday — loved by 50,000+ customers",
+  ],
+};
+
+export const PRESS_DEFAULTS: PressContent = {
+  eyebrow: "As Featured In",
+  items: [
+    "THE MODERN HOME",
+    "DWELL WEEKLY",
+    "APARTMENT EDIT",
+    "CURATED LIVING",
+    "HOUSE & HABIT",
+    "SLOW LIVING JOURNAL",
+    "SOUTH ON MAIN",
+    "THE CONSIDERED LIFE",
+  ],
+};
+
+export const VALUE_PROPS_DEFAULTS: ValuePropsContent = {
+  eyebrow: "Why ZEEVARA",
+  title: "Why Choose Us",
+  items: [
+    {
+      icon: "gem",
+      title: "Considered Materials",
+      description: "Stoneware, wood, and textiles chosen for how they age, not just how they photograph.",
+    },
+    {
+      icon: "rotate-ccw",
+      title: "7-Day Returns, No Questions",
+      description: "Free returns within 7 days on unused items — simple, no fine print.",
+    },
+    {
+      icon: "leaf",
+      title: "Carbon-Neutral Shipping",
+      description: "Every order ships carbon-neutral across India, at no extra cost to you.",
+    },
+    {
+      icon: "ruler",
+      title: "Design-Led, Not Trend-Led",
+      description: "We ship fewer, better things — built to still look right a year from now.",
+    },
+  ],
+};
+
+export const TESTIMONIALS_DEFAULTS: TestimonialsContent = {
+  title: "What our customers say about us",
+  items: [
+    {
+      id: "t1",
+      author: "Ananya",
+      location: "Bengaluru",
+      rating: 5,
+      quote:
+        "Every order feels considered, right down to the packaging. My home has slowly filled with ZEEVARA pieces over the past year and nothing has disappointed.",
+    },
+    {
+      id: "t2",
+      author: "Kabir",
+      location: "Mumbai",
+      rating: 5,
+      quote:
+        "I was skeptical about buying home goods online without touching them first, but the quality has matched the photos every single time.",
+    },
+    {
+      id: "t3",
+      author: "Meera",
+      location: "Kochi",
+      rating: 4,
+      quote:
+        "Delivery bhi time pe aa gayi aur return process bhi bahut smooth tha — size exchange karne mein koi dikkat nahi hui.",
+    },
+    {
+      id: "t4",
+      author: "Rohan",
+      location: "Delhi",
+      rating: 5,
+      quote:
+        "The kind of brand where you stop comparing prices elsewhere because you already know the quality holds up.",
+    },
+    {
+      id: "t5",
+      author: "Diya",
+      location: "Pune",
+      rating: 5,
+      quote:
+        "Ek friend ke ghar pe dekha tha, ab main bhi order karti rehti hoon. Quality bilkul photos jaisi hi hai, paisa vasool.",
+    },
+    {
+      id: "t6",
+      author: "Aditya",
+      location: "Hyderabad",
+      rating: 4,
+      quote: "Considered design without the markup you'd expect from 'considered design' — that balance is rare.",
+    },
+  ],
+};
+
+export const LIFESTYLE_BANNER_DEFAULTS: LifestyleBannerContent = {
+  quote: `"Discover more everyday" isn't a tagline — it's how we choose what to make.`,
+  image: {
+    mediaId: null,
+    url: unsplash("1567538096630-e0c55bd6374c", 2200),
+    altText: "Full-bleed editorial interior shot",
+    width: 2200,
+    height: 1400,
+  },
+};
+
+export const FEATURED_COLLECTION_DEFAULTS: FeaturedCollectionContent = {
+  eyebrow: "Featured Collection",
+  ctaLabel: "Shop the Edit",
+  image: {
+    mediaId: null,
+    url: unsplash("1493663284031-b7e3aefcae8e", 1600),
+    altText: "The Work-From-Anywhere Edit, editorial banner",
+    width: 1600,
+    height: 2000,
+  },
+};
+
+export const FLASH_SALE_DEFAULTS: FlashSaleContent = {
+  enabled: true,
+  message: "Flash Sale — up to 40% off, ends in",
+  showCountdown: true,
+  windowHours: 6,
+};
+
+export const CATEGORY_TABS_DEFAULTS: CategoryTabsContent = {
+  eyebrow: "Browse",
+  title: "Shop by Category",
+  featured: [
+    { handle: "home-decor", description: "Considered objects for rooms that feel like you." },
+    { handle: "kitchen", description: "Tools designed to be seen, not hidden away." },
+    { handle: "office", description: "A calmer way to get things done." },
+    { handle: "travel", description: "Considered companions for wherever you're headed." },
+    { handle: "fitness", description: "Equipment built for a routine that sticks." },
+    { handle: "beauty", description: "Quiet luxury for a daily routine." },
+  ],
+};
+
+export const FAQ_DEFAULTS: FaqContent = {
+  eyebrow: "Support",
+  title: "Frequently Asked Questions",
+  description: "Can't find what you're looking for? Reach out at support@zeevara.in.",
+  categories: [
+    {
+      id: "faq-orders-shipping",
+      heading: "Orders & Shipping",
+      items: [
+        {
+          id: "faq-q1",
+          question: "How long does delivery take?",
+          answer:
+            "Most orders are processed within 1-2 business days and delivered within 2-5 business days, depending on your location. Metro cities typically see faster delivery, while remote areas may take a day or two longer.",
+        },
+        {
+          id: "faq-q2",
+          question: "Do you offer free shipping?",
+          answer: "Yes — every order ships free across India, with no minimum order value.",
+        },
+        {
+          id: "faq-q3",
+          question: "Can I track my order?",
+          answer:
+            "Once your order ships, you'll receive a tracking link by email and SMS. You can also check order status by contacting our support team with your order number.",
+        },
+        {
+          id: "faq-q4",
+          question: "Is Cash on Delivery available?",
+          answer:
+            "Cash on Delivery is available on most pincodes for orders under ₹5,000. Prepaid orders are processed and dispatched faster, and occasionally carry a small additional discount.",
+        },
+        {
+          id: "faq-q5",
+          question: "Do you ship internationally?",
+          answer:
+            "Not yet — we currently ship only within India. We're evaluating international shipping and will announce it here when it becomes available.",
+        },
+      ],
+    },
+    {
+      id: "faq-returns-exchanges",
+      heading: "Returns & Exchanges",
+      items: [
+        {
+          id: "faq-q6",
+          question: "What is your return policy?",
+          answer:
+            "We accept returns within 7 days of delivery on unused items in their original packaging. See our full Return Policy page for the complete process and exceptions.",
+        },
+        {
+          id: "faq-q7",
+          question: "How do I start a return?",
+          answer:
+            "Contact support@zeevara.in with your order number and reason for return. We'll send a prepaid return label for eligible items and process your refund once the item passes inspection.",
+        },
+        {
+          id: "faq-q8",
+          question: "How long do refunds take?",
+          answer:
+            "Refunds are issued within 5-7 business days of us receiving and inspecting the returned item, back to your original payment method.",
+        },
+        {
+          id: "faq-q9",
+          question: "Can I exchange an item for a different size or color?",
+          answer:
+            "Yes, subject to availability. Request an exchange the same way you'd request a return, and let us know the size or color you'd like instead.",
+        },
+      ],
+    },
+    {
+      id: "faq-product-care",
+      heading: "Product Care",
+      items: [
+        {
+          id: "faq-q10",
+          question: "How should I care for ceramic and stoneware pieces?",
+          answer:
+            "Most of our ceramic pieces are dishwasher and microwave safe unless noted otherwise on the product page. Avoid abrasive scouring pads, which can dull the glaze over time.",
+        },
+        {
+          id: "faq-q11",
+          question: "Are your textiles machine washable?",
+          answer:
+            "Check each product's care instructions — most linen and cotton pieces are machine washable on a cold, gentle cycle, while wool and specialty textiles are spot-clean or dry-clean only.",
+        },
+        {
+          id: "faq-q12",
+          question: "How do I care for wood and metal home pieces?",
+          answer:
+            "Wipe wood pieces with a dry or slightly damp cloth and avoid prolonged direct sunlight. Brass and metal hardware can be polished occasionally with a soft cloth to maintain its finish.",
+        },
+      ],
+    },
+    {
+      id: "faq-payments-pricing",
+      heading: "Payments & Pricing",
+      items: [
+        {
+          id: "faq-q13",
+          question: "What payment methods do you accept?",
+          answer: "We accept all major credit and debit cards, UPI, net banking, and Cash on Delivery on eligible orders.",
+        },
+        {
+          id: "faq-q14",
+          question: "Is it safe to pay online on ZEEVARA?",
+          answer: "Yes — all payments are processed through secure, encrypted checkout. We never store your full card details on our servers.",
+        },
+        {
+          id: "faq-q15",
+          question: "Do prices include taxes?",
+          answer: "Yes, all prices shown are inclusive of applicable taxes. The price you see at checkout is the price you pay, with no hidden fees.",
+        },
+      ],
+    },
+  ],
+};
+
+export const CONTACT_INTRO_DEFAULTS: ContactIntroContent = {
+  eyebrow: "Get in touch",
+  title: "Contact Us",
+  description: "Questions about an order, a product, or anything else — we're here to help.",
+  contactEmail: "support@zeevara.in",
+  contactHours: "Mon–Sat, 10am–6pm IST",
+  faqPrompt: { label: "Check our FAQ", href: "/faq" },
+};
+
+export const ABOUT_PAGE_DEFAULTS: AboutPageContent = {
+  eyebrow: "Our story",
+  title: "Considered objects for everyday life.",
+  heroImage: {
+    mediaId: null,
+    url: unsplash("1524758631624-e2822e304c36", 1800),
+    altText: "ZEEVARA studio, considered objects for everyday life",
+    width: 1800,
+    height: 1200,
+  },
+  bodyHtml:
+    "<p>ZEEVARA started with a simple frustration: most home goods online were either disposable and cheap, or beautiful and absurdly overpriced. We wanted a third option — pieces considered enough to keep for years, priced honestly enough to actually use every day.</p>" +
+    "<p>Today that's grown into a catalog spanning home decor, kitchen, office, travel, fitness, and more — but the standard hasn't changed. Every product we add has to earn its place: it has to be genuinely useful, built to last, and worth the price on the tag. Discover more everyday.</p>",
+  principles: [
+    {
+      title: "Considered Materials",
+      body: "We choose materials for how they age, not just how they photograph — stoneware that develops character, wood that softens with use, textiles that get better after every wash.",
+    },
+    {
+      title: "Design-Led, Not Trend-Led",
+      body: "We'd rather ship fewer, better things than chase every micro-trend. Most of what we sell today looked the same a year ago, and will look the same a year from now.",
+    },
+    {
+      title: "Priced Honestly",
+      body: "No inflated 'original' prices marked down to look generous. What you see is what it costs, with margin only where it's earned.",
+    },
+  ],
+  stats: [
+    { value: 6, suffix: "", label: "Years designing everyday objects" },
+    { value: 50000, suffix: "+", label: "Customers across India" },
+    { value: 12, suffix: "", label: "Product categories" },
+    { value: 4.6, suffix: "/5", label: "Average customer rating", decimals: 1 },
+  ],
+  closing: {
+    heading: "Discover the collection.",
+    ctaLabel: "Shop All",
+    ctaHref: "/collections",
+  },
+};
+
+const CONTACT_EMAIL = "support@zeevara.in";
+
+export const PRIVACY_PAGE_DEFAULTS: RichTextPageContent = {
+  title: "Privacy Policy",
+  lastUpdatedLabel: "Last updated: July 2026",
+  bodyHtml: [
+    "<h2>Information We Collect</h2><p>When you browse ZEEVARA or place an order, we collect information you provide directly (name, email, shipping address, phone number, payment details) and information collected automatically (device type, browser, pages viewed, and approximate location via IP address) to operate and improve the site.</p>",
+    "<h2>How We Use Your Information</h2><ul><li>To process and deliver your orders, and communicate about their status</li><li>To respond to customer support requests</li><li>To send order-related and, if you've opted in, marketing emails</li><li>To improve our product catalog, site performance, and shopping experience</li><li>To detect and prevent fraud</li></ul>",
+    "<h2>Cookies</h2><p>We use cookies and similar technologies to keep you signed in, remember your cart and wishlist, and understand how the site is used. You can disable cookies in your browser settings, though some features may not work correctly as a result.</p>",
+    "<h2>Third-Party Processors</h2><p>When our commerce platform is connected, order and payment information will be shared with the payment processor and shipping/logistics partners solely to fulfil your order. We do not sell your personal information to third parties.</p>",
+    `<h2>Your Rights</h2><p>You can request a copy of the personal data we hold about you, ask us to correct inaccurate information, or request deletion of your account and associated data, subject to legal record-keeping requirements. Contact ${CONTACT_EMAIL} to make a request.</p>`,
+    "<h2>Data Retention &amp; Security</h2><p>We retain order data for as long as needed to comply with tax and accounting obligations, and use industry-standard safeguards to protect it against unauthorized access.</p>",
+    `<h2>Governing Law</h2><p>This policy is governed by the laws of India. For any privacy-related questions or concerns, reach out to ${CONTACT_EMAIL}.</p>`,
+  ].join(""),
+};
+
+export const TERMS_PAGE_DEFAULTS: RichTextPageContent = {
+  title: "Terms of Service",
+  lastUpdatedLabel: "Last updated: July 2026",
+  bodyHtml: [
+    "<h2>Acceptance of Terms</h2><p>By accessing or using ZEEVARA, you agree to be bound by these Terms of Service. If you don't agree with any part of these terms, please don't use the site.</p>",
+    "<h2>Orders &amp; Pricing</h2><p>All prices are listed in Indian Rupees (₹) and are inclusive of applicable taxes unless stated otherwise. We reserve the right to correct pricing errors and to limit order quantities. An order is confirmed only once you receive an order confirmation email.</p>",
+    "<h2>Product Descriptions</h2><p>We aim to describe and photograph every product as accurately as possible. Minor variations in color or finish (particularly for handmade ceramic and wood pieces) are natural and not considered defects.</p>",
+    "<h2>Account Responsibilities</h2><p>If you create an account, you're responsible for maintaining the confidentiality of your login details and for all activity under your account. Notify us immediately of any unauthorized use.</p>",
+    "<h2>Intellectual Property</h2><p>All content on this site — including product photography, copy, and the ZEEVARA name and logo — is the property of ZEEVARA and may not be reproduced without permission.</p>",
+    "<h2>Limitation of Liability</h2><p>ZEEVARA is not liable for indirect or incidental damages arising from the use of our products or site, to the fullest extent permitted by law.</p>",
+    "<h2>Changes to These Terms</h2><p>We may update these terms from time to time. Continued use of the site after changes are posted constitutes acceptance of the updated terms.</p>",
+    `<h2>Governing Law</h2><p>These terms are governed by the laws of India. Questions about these terms can be sent to ${CONTACT_EMAIL}.</p>`,
+  ].join(""),
+};
+
+export const SHIPPING_POLICY_PAGE_DEFAULTS: RichTextPageContent = {
+  title: "Shipping Policy",
+  lastUpdatedLabel: "Last updated: July 2026",
+  bodyHtml: [
+    "<h2>Processing Time</h2><p>Orders are processed within 1-2 business days of being placed. During high-demand periods (like sale events), processing may take up to 3 business days. You'll receive a shipping confirmation email as soon as your order leaves our warehouse.</p>",
+    "<h2>Delivery Estimates by Region</h2><p>Once shipped, delivery typically takes:</p><ul><li>Metro cities (Mumbai, Delhi NCR, Bengaluru, Chennai, Hyderabad, Kolkata, Pune): 2-4 business days</li><li>Other cities and towns: 4-6 business days</li><li>Remote and rural pincodes: 6-8 business days</li></ul>",
+    "<h2>Shipping Costs</h2><p>Every order ships free across India, with no minimum order value.</p>",
+    `<h2>Order Tracking</h2><p>You'll receive a tracking link by email and SMS as soon as your order ships. If you haven't received tracking within 3 business days of ordering, contact us at ${CONTACT_EMAIL} with your order number.</p>`,
+    "<h2>International Shipping</h2><p>We currently ship only within India. We know international shipping is frequently requested, and we're actively evaluating it — this page will be updated when it becomes available.</p>",
+  ].join(""),
+};
+
+export const RETURN_POLICY_PAGE_DEFAULTS: RichTextPageContent = {
+  title: "Return Policy",
+  lastUpdatedLabel: "Last updated: July 2026",
+  bodyHtml: [
+    "<h2>Our Promise</h2><p>If something you ordered doesn't work out, we want to make it right. We accept returns on eligible items within 7 days of delivery, no complicated reasons required.</p>",
+    "<h2>Eligibility Window</h2><p>Returns are accepted within 7 days of the delivery date shown on your tracking confirmation. Items must be unused, in their original packaging, and in resellable condition. Products showing signs of use, damage not caused by shipping, or missing original packaging may not be eligible for a full refund.</p>",
+    `<h2>How to Start a Return</h2><ol><li>Email ${CONTACT_EMAIL} with your order number and the item(s) you'd like to return, along with a brief reason.</li><li>Our support team will confirm eligibility and send a prepaid return shipping label within 1-2 business days.</li><li>Pack the item securely in its original packaging where possible and hand it to the courier using the provided label.</li></ol>`,
+    "<h2>Refund Timelines</h2><p>Once we receive and inspect your return, refunds are processed within 5-7 business days to your original payment method. For Cash on Delivery orders, refunds are issued via bank transfer or store credit, whichever you prefer. You'll receive an email confirmation once your refund has been issued.</p>",
+    "<h2>Exchanges</h2><p>Need a different size or color instead of a refund? Let us know when you request your return and we'll ship the replacement as soon as the original item is on its way back to us, subject to stock availability.</p>",
+    "<h2>Non-Returnable Items</h2><p>For hygiene reasons, opened beauty and personal care items cannot be returned unless defective. Final-sale items (marked as such on the product page) and personalized or made-to-order pieces are also not eligible for return.</p>",
+    "<h2>Damaged or Incorrect Items</h2><p>If your order arrives damaged or you received the wrong item, contact us within 48 hours of delivery with photos of the item and packaging. We'll arrange a free replacement or full refund — no return shipping cost to you.</p>",
+  ].join(""),
+};

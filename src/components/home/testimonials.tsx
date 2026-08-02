@@ -1,29 +1,23 @@
 import { Marquee } from "@/components/ui/marquee";
 import { RatingStars } from "@/components/product/rating-stars";
 import { SectionHeading } from "@/components/shared/section-heading";
-import { testimonials } from "@/mock/testimonials";
+import { getContent } from "@/lib/content/get-content";
 
-function seededRating(seed: string): number {
-  let hash = 0;
-  for (let i = 0; i < seed.length; i++) {
-    hash = (hash * 31 + seed.charCodeAt(i)) % 1000000007;
-  }
-  return 4 + (Math.abs(hash) % 2 === 0 ? 0 : 1) + (Math.abs(hash) % 5 === 0 ? -1 : 0);
-}
+export async function Testimonials() {
+  const { title, items } = await getContent("home.testimonials");
 
-export function Testimonials() {
   return (
     <section className="py-16 md:py-24">
       <div className="mx-auto max-w-7xl px-6">
-        <SectionHeading title="What our customers say about us" align="center" className="mb-10" />
+        <SectionHeading title={title} align="center" className="mb-10" />
       </div>
       <Marquee className="[--duration:45s]">
-        {testimonials.map((t) => (
+        {items.map((t) => (
           <figure
             key={t.id}
             className="w-80 shrink-0 rounded-xl border bg-card p-6"
           >
-            <RatingStars rating={seededRating(t.id)} />
+            <RatingStars rating={t.rating} />
             <blockquote className="mt-3 text-sm leading-relaxed">
               &ldquo;{t.quote}&rdquo;
             </blockquote>

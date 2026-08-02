@@ -5,18 +5,18 @@ import { SectionHeading } from "@/components/shared/section-heading";
 import { categories } from "@/mock/categories";
 import { getProductsByCategory } from "@/mock/products";
 import { routes } from "@/constants/routes";
-
-const FEATURED_HANDLES = [
-  "home-decor",
-  "kitchen",
-  "office",
-  "travel",
-  "fitness",
-  "beauty",
-];
+import { getContent } from "@/lib/content/get-content";
 
 export async function CategoryTabs() {
-  const candidates = categories.filter((c) => FEATURED_HANDLES.includes(c.handle));
+  const content = await getContent("home.category_tabs");
+
+  const candidates = content.featured
+    .map((f) => {
+      const category = categories.find((c) => c.handle === f.handle);
+      return category ? { ...category, description: f.description } : null;
+    })
+    .filter((c): c is NonNullable<typeof c> => c !== null);
+
   const productsByCandidate = await Promise.all(
     candidates.map((c) => getProductsByCategory(c.handle)),
   );
@@ -28,7 +28,7 @@ export async function CategoryTabs() {
 
   return (
     <section className="mx-auto max-w-7xl px-6 py-16 md:py-24">
-      <SectionHeading eyebrow="Browse" title="Shop by Category" className="mb-10" />
+      <SectionHeading eyebrow={content.eyebrow} title={content.title} className="mb-10" />
 
       <Tabs defaultValue={featured[0]?.handle}>
         <TabsList variant="line" className="mb-8 w-full justify-start overflow-x-auto">

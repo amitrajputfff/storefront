@@ -104,32 +104,10 @@ export const categoryImages = {
   ],
 } as const;
 
-export const heroImages = [
-  img("1586023492125-27b2c045efd7", "Considered living room styling", 1800, 1100),
-  img("1592194996308-7b43878e84a6", "Warm, quiet lifestyle interior", 1800, 1100),
-  img("1524758631624-e2822e304c36", "Sunlit interior with greenery", 1800, 1100),
-];
-
-export const lifestyleBannerImage = img(
-  "1567538096630-e0c55bd6374c",
-  "Full-bleed editorial interior shot",
-  2200,
-  1400,
-);
-
-export const featuredCollectionImage = img(
-  "1493663284031-b7e3aefcae8e",
-  "The Work-From-Anywhere Edit, editorial banner",
-  1600,
-  2000,
-);
-
-export const aboutHeroImage = img(
-  "1524758631624-e2822e304c36",
-  "ZEEVARA studio, considered objects for everyday life",
-  1800,
-  1200,
-);
+// heroImages, lifestyleBannerImage, featuredCollectionImage, and aboutHeroImage
+// moved to src/lib/content/defaults.ts as the fallback layer for the /admin
+// CMS — see getContent("home.hero")/getContent("home.lifestyle_banner")/
+// getContent("home.featured_collection")/getPage("about").
 
 export const instagramGallery = [
   img("1618221195710-dd6b41faaea6", "@zeevara.co — styled vase detail", 800, 800),

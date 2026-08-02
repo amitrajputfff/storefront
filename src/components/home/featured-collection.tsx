@@ -4,11 +4,11 @@ import { Button } from "@/components/ui/button";
 import { ProductCard } from "@/components/product/product-card";
 import { Reveal } from "@/components/shared/reveal";
 import { getFeatured } from "@/mock/collections";
-import { featuredCollectionImage } from "@/mock/images";
 import { routes } from "@/constants/routes";
+import { getContent } from "@/lib/content/get-content";
 
 export async function FeaturedCollection() {
-  const collection = await getFeatured();
+  const [collection, content] = await Promise.all([getFeatured(), getContent("home.featured_collection")]);
   if (collection.products.length === 0) return null;
 
   return (
@@ -17,8 +17,8 @@ export async function FeaturedCollection() {
         <Reveal>
           <div className="relative aspect-4/5 overflow-hidden rounded-2xl">
             <Image
-              src={featuredCollectionImage.url}
-              alt={featuredCollectionImage.altText}
+              src={content.image.url}
+              alt={content.image.altText}
               fill
               sizes="(min-width: 1024px) 50vw, 100vw"
               className="object-cover"
@@ -28,7 +28,7 @@ export async function FeaturedCollection() {
         <div>
           <Reveal>
             <p className="text-muted-foreground mb-2 text-xs font-medium tracking-widest uppercase">
-              Featured Collection
+              {content.eyebrow}
             </p>
             <h2 className="text-3xl font-medium tracking-tight md:text-4xl">
               {collection.title}
@@ -39,7 +39,7 @@ export async function FeaturedCollection() {
               render={<Link href={routes.collection(collection.handle)} />}
               nativeButton={false}
             >
-              <span>Shop the Edit</span>
+              <span>{content.ctaLabel}</span>
             </Button>
           </Reveal>
           <div className="mt-10 grid grid-cols-2 gap-4">

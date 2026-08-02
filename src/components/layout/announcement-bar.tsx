@@ -2,11 +2,16 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { Marquee } from "@/components/ui/marquee";
-import { ANNOUNCEMENT_MESSAGES } from "@/constants/site";
 import { useReportHeight } from "@/hooks/use-report-height";
 import { PromoCode } from "@/lib/shopify/discounts";
 
-export function AnnouncementBar({ promoCodes = [] }: { promoCodes?: PromoCode[] }) {
+export function AnnouncementBar({
+  promoCodes = [],
+  messages: contentMessages,
+}: {
+  promoCodes?: PromoCode[];
+  messages: string[];
+}) {
   const [reducedMotion, setReducedMotion] = useState(false);
   const ref = useReportHeight<HTMLDivElement>("--announcement-height");
 
@@ -14,8 +19,8 @@ export function AnnouncementBar({ promoCodes = [] }: { promoCodes?: PromoCode[] 
     const promoMessages = promoCodes.map(
       (promo) => `Use code ${promo.code} — ${promo.label}`,
     );
-    return [...promoMessages, ...ANNOUNCEMENT_MESSAGES];
-  }, [promoCodes]);
+    return [...promoMessages, ...contentMessages];
+  }, [promoCodes, contentMessages]);
 
   useEffect(() => {
     const query = window.matchMedia("(prefers-reduced-motion: reduce)");

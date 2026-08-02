@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+@plugin "@tailwindcss/typography";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -169,5 +170,15 @@
   }
   html {
     @apply font-sans overflow-x-hidden;
+  }
+}
+
+@layer components {
+  /* Shared by the public RichText renderer and the admin Tiptap editor
+   * surface, so the admin edits in the exact typography visitors see.
+   * Referenced by return-policy/page.tsx previously with no definition —
+   * this is the fix. */
+  .prose-content {
+    @apply prose prose-neutral dark:prose-invert max-w-none prose-headings:font-medium prose-headings:tracking-tight prose-p:text-muted-foreground prose-li:text-muted-foreground prose-a:text-foreground prose-a:underline-offset-4;
   }
 }

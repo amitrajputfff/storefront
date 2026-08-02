@@ -4,17 +4,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { MetaPixel } from "@/components/analytics/meta-pixel";
 import "./globals.css";
 import { AppProviders } from "@/components/providers/app-providers";
-import { AnnouncementBar } from "@/components/layout/announcement-bar";
-import { SiteHeader } from "@/components/layout/site-header";
-import { SiteFooter } from "@/components/layout/site-footer";
-import { CartDrawer } from "@/components/cart/cart-drawer";
-import { QuickViewDialog } from "@/components/product/quick-view-dialog";
-import { RecentPurchaseToastMounter } from "@/components/shared/recent-purchase-toast-mounter";
-import { ChatWidget } from "@/components/chat/chat-widget";
 import { JsonLd, buildOrganizationJsonLd } from "@/lib/jsonld";
-import { getNavMenu } from "@/lib/nav-menu";
-import { getAllProducts } from "@/mock/products";
-import { getActivePromoCodes } from "@/lib/shopify/discounts";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_TAGLINE, SITE_URL } from "@/constants/site";
 
 const geistSans = Geist({
@@ -54,18 +44,11 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [navMenu, products, promoCodes] = await Promise.all([
-    getNavMenu(),
-    getAllProducts(),
-    getActivePromoCodes(),
-  ]);
-  const productTitles = products.map((p) => p.title);
-
   return (
     <html
       lang="en"
@@ -74,16 +57,7 @@ export default async function RootLayout({
     >
       <body className="flex min-h-full flex-col">
         <JsonLd data={buildOrganizationJsonLd()} />
-        <AppProviders>
-          <AnnouncementBar promoCodes={promoCodes} />
-          <SiteHeader navMenu={navMenu} />
-          <div className="flex-1">{children}</div>
-          <SiteFooter navMenu={navMenu} />
-          <CartDrawer />
-          <QuickViewDialog />
-          <RecentPurchaseToastMounter productTitles={productTitles} />
-          <ChatWidget />
-        </AppProviders>
+        <AppProviders>{children}</AppProviders>
         <Analytics />
         <MetaPixel />
       </body>
