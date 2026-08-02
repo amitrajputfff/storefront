@@ -61,7 +61,7 @@ export default async function ProductPage({
   const product = await getProductByHandle(handle);
   if (!product) notFound();
 
-  const category = getCategoryByHandle(product.category);
+  const category = getCategoryByHandle(product.categories[0]);
   const [related, promoCodes, benefits] = await Promise.all([
     getRelatedProducts(product, 8),
     getActivePromoCodes(),
@@ -75,7 +75,10 @@ export default async function ProductPage({
       <JsonLd
         data={buildBreadcrumbJsonLd([
           { name: "Home", url: "/" },
-          { name: category?.name ?? product.category, url: routes.collection(product.category) },
+          {
+            name: category?.name ?? product.categories[0],
+            url: routes.collection(product.categories[0]),
+          },
           { name: product.title, url: routes.product(product.handle) },
         ])}
       />
@@ -85,8 +88,8 @@ export default async function ProductPage({
           Home
         </Link>
         <span>/</span>
-        <Link href={routes.collection(product.category)} className="hover:text-foreground">
-          {category?.name ?? product.category}
+        <Link href={routes.collection(product.categories[0])} className="hover:text-foreground">
+          {category?.name ?? product.categories[0]}
         </Link>
         <span>/</span>
         <span className="text-foreground">{product.title}</span>
