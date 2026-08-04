@@ -100,9 +100,9 @@ export function BuyBox({
         </div>
       )}
 
-      <p className="text-muted-foreground flex flex-wrap items-center gap-x-1.5 text-xs">
+      <div className="flex flex-wrap items-center gap-x-1.5">
         <RecentPurchasesBadge product={product} />
-      </p>
+      </div>
 
       {product.options.length > 0 && (
         <VariantSelector

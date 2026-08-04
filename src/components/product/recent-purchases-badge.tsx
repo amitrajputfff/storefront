@@ -9,13 +9,13 @@ export function RecentPurchasesBadge({ product }: { product: Product }) {
       : getRecentPurchaseCount(product.id);
 
   return (
-    <span className="inline-flex items-center gap-1.5">
+    <span className="bg-destructive/10 border-destructive/20 text-destructive inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1">
       <span className="relative flex size-1.5">
         <span className="bg-destructive absolute inline-flex h-full w-full animate-ping rounded-full opacity-75" />
         <span className="bg-destructive relative inline-flex size-1.5 rounded-full" />
       </span>
-      <NumberTicker value={count} className="text-foreground text-xs font-medium tracking-normal" />
-      <span>bought in the last month</span>
+      <NumberTicker value={count} className="text-destructive text-xs font-semibold tracking-normal" />
+      <span className="text-xs font-medium">bought in the last 7 days</span>
     </span>
   );
 }
