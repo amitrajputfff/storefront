@@ -17,6 +17,7 @@ import { PriceDisplay } from "@/components/shared/price-display";
 import { RatingStars } from "@/components/product/rating-stars";
 import { StockBadge } from "@/components/product/stock-badge";
 import { WishlistButton } from "@/components/product/wishlist-button";
+import { trackAddToCart } from "@/lib/meta-pixel";
 
 const COLOR_SWATCH_MAP: Record<string, string> = {
   black: "#111111",
@@ -99,6 +100,13 @@ export function ProductCard({ product }: { product: Product }) {
       price: singleVariant.price,
       quantity: 1,
       maxQuantity: singleVariant.inventoryQuantity,
+    });
+    trackAddToCart({
+      contentId: singleVariant.id,
+      contentName: product.title,
+      value: singleVariant.price.amount,
+      currency: singleVariant.price.currencyCode,
+      quantity: 1,
     });
     toast.success("Added to cart");
     if (thenOpenCart) openCart();

@@ -12,6 +12,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { PriceDisplay } from "@/components/shared/price-display";
 import { routes } from "@/constants/routes";
+import { trackAddToCart } from "@/lib/meta-pixel";
 
 export function Bundle({
   product,
@@ -49,6 +50,13 @@ export function Bundle({
         price: variant.price,
         quantity: 1,
         maxQuantity: variant.inventoryQuantity,
+      });
+      trackAddToCart({
+        contentId: variant.id,
+        contentName: item.title,
+        value: variant.price.amount,
+        currency: variant.price.currencyCode,
+        quantity: 1,
       });
     }
     toast.success("Added to cart");

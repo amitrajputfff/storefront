@@ -17,7 +17,7 @@ import { useUiStore } from "@/stores/ui-store";
 import { useCart } from "@/hooks/use-cart";
 import { getAllProducts, getProductsByCategory } from "@/mock/products";
 import { createCheckoutUrl } from "@/lib/shopify/cart";
-import { trackInitiateCheckout } from "@/lib/meta-pixel";
+import { trackAddToCart, trackInitiateCheckout } from "@/lib/meta-pixel";
 import { Money, Product } from "@/types";
 import { routes } from "@/constants/routes";
 import { formatMoney } from "@/lib/format";
@@ -157,6 +157,13 @@ export function CartDrawer() {
                             price: variant.price,
                             quantity: 1,
                             maxQuantity: variant.inventoryQuantity,
+                          });
+                          trackAddToCart({
+                            contentId: variant.id,
+                            contentName: product.title,
+                            value: variant.price.amount,
+                            currency: variant.price.currencyCode,
+                            quantity: 1,
                           });
                         }}
                         className="flex size-7 shrink-0 items-center justify-center rounded-full border border-border hover:bg-muted"

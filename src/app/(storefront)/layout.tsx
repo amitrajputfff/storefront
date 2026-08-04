@@ -4,6 +4,7 @@ import { SiteFooter } from "@/components/layout/site-footer";
 import { CartDrawer } from "@/components/cart/cart-drawer";
 import { QuickViewDialog } from "@/components/product/quick-view-dialog";
 import { RecentPurchaseToastMounter } from "@/components/shared/recent-purchase-toast-mounter";
+import { WelcomeOfferPopup } from "@/components/shared/welcome-offer-popup";
 import { ChatWidget } from "@/components/chat/chat-widget";
 import { PreviewBanner } from "@/components/admin/preview-banner";
 import { getNavMenu } from "@/lib/nav-menu";
@@ -34,6 +35,7 @@ export default async function StorefrontLayout({
       <CartDrawer />
       <QuickViewDialog />
       <RecentPurchaseToastMounter productTitles={productTitles} />
+      <WelcomeOfferPopup promoCodes={promoCodes} />
       <ChatWidget />
     </>
   );
