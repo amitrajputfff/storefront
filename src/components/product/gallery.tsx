@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import type { ProductBadge } from "@/lib/product-badge";
 import {
   Carousel,
   CarouselContent,
@@ -35,7 +36,7 @@ export function Gallery({
   badge,
 }: {
   images: ProductImage[];
-  badge?: { label: string; className?: string } | null;
+  badge?: ProductBadge | null;
 }) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
@@ -161,9 +162,13 @@ export function Gallery({
                 />
                 {index === 0 && badge && (
                   <Badge
-                    variant={badge.className ? "secondary" : "default"}
-                    className={cn("absolute top-3 left-3 z-10", badge.className)}
+                    className={cn(
+                      "absolute top-3 left-3 z-10",
+                      badge.className,
+                      badge.pulse && "animate-pulse",
+                    )}
                   >
+                    {badge.icon}
                     {badge.label}
                   </Badge>
                 )}

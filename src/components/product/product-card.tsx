@@ -128,9 +128,13 @@ export function ProductCard({ product }: { product: Product }) {
 
         {badge && (
           <Badge
-            variant={badge.className ? "secondary" : "default"}
-            className={cn("absolute top-2 left-2", badge.className)}
+            className={cn(
+              "absolute top-2 left-2",
+              badge.className,
+              badge.pulse && "animate-pulse",
+            )}
           >
+            {badge.icon}
             {badge.label}
           </Badge>
         )}
