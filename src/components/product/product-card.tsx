@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { Product } from "@/types";
 import { routes } from "@/constants/routes";
 import { cn } from "@/lib/utils";
+import { getBadge } from "@/lib/product-badge";
 import { useSocialProof } from "@/hooks/use-social-proof";
 import { getReviewCount } from "@/mock/reviews";
 import { useCart } from "@/hooks/use-cart";
@@ -51,22 +52,6 @@ const COLOR_SWATCH_MAP: Record<string, string> = {
 function swatchColor(value: string): string {
   const key = value.trim().toLowerCase();
   return COLOR_SWATCH_MAP[key] ?? "#bbbbbb";
-}
-
-function getBadge(product: Product): { label: string; className?: string } | null {
-  if (product.totalInventory === 0) {
-    return { label: "Out of Stock", className: "bg-muted text-muted-foreground" };
-  }
-  if (product.isLimitedTimeOffer) {
-    return { label: "Limited Time Offer", className: "bg-destructive text-white" };
-  }
-  const hasDiscount =
-    product.compareAtPriceRange &&
-    product.compareAtPriceRange.min.amount > product.priceRange.min.amount;
-  if (hasDiscount) return { label: "Sale" };
-  if (product.isBestseller) return { label: "Best Seller" };
-  if (product.isNewArrival) return { label: "New" };
-  return null;
 }
 
 export function ProductCard({ product }: { product: Product }) {

@@ -7,6 +7,7 @@ import { ProductImage } from "@/types";
 import { cn } from "@/lib/utils";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   Carousel,
   CarouselContent,
@@ -29,7 +30,13 @@ function getDotWindow(activeIndex: number, total: number): number[] {
   return Array.from({ length: end - start }, (_, i) => start + i);
 }
 
-export function Gallery({ images }: { images: ProductImage[] }) {
+export function Gallery({
+  images,
+  badge,
+}: {
+  images: ProductImage[];
+  badge?: { label: string; className?: string } | null;
+}) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [zoomStyle, setZoomStyle] = useState<React.CSSProperties>({});
@@ -152,6 +159,14 @@ export function Gallery({ images }: { images: ProductImage[] }) {
                   className="object-contain transition-transform duration-150 ease-out"
                   style={index === activeIndex && zooming ? zoomStyle : undefined}
                 />
+                {index === 0 && badge && (
+                  <Badge
+                    variant={badge.className ? "secondary" : "default"}
+                    className={cn("absolute top-3 left-3 z-10", badge.className)}
+                  >
+                    {badge.label}
+                  </Badge>
+                )}
               </div>
             </CarouselItem>
           ))}

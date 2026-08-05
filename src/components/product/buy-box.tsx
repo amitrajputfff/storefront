@@ -13,6 +13,7 @@ import { AddToCartButton } from "@/components/product/add-to-cart-button";
 import { RecentPurchasesBadge } from "@/components/product/recent-purchases-badge";
 import { StockProgressBar } from "@/components/product/stock-progress-bar";
 import { KeyBenefits } from "@/components/product/key-benefits";
+import { GuaranteeBadge } from "@/components/product/guarantee-badge";
 import { PromoCodeChips } from "@/components/product/promo-code-chips";
 import { estimatedDeliveryLabel } from "@/lib/format";
 import { getFlashSaleEndsAt } from "@/lib/urgency";
@@ -67,16 +68,18 @@ export function BuyBox({
 
   return (
     <div className="flex flex-col gap-4 max-w-sm sm:max-w-none">
-      <div>
-        <h1 className="text-2xl font-medium tracking-tight md:text-3xl">{product.title}</h1>
-        <a href="#reviews" className="mt-2 inline-flex items-center gap-2">
-          <RatingStars rating={product.rating} reviewCount={getReviewCount(product)} />
-        </a>
+      <div className="flex flex-col gap-2">
+        <div>
+          <h1 className="text-2xl font-medium tracking-tight md:text-3xl">{product.title}</h1>
+          <a href="#reviews" className="mt-2 inline-flex items-center gap-2">
+            <RatingStars rating={product.rating} reviewCount={getReviewCount(product)} />
+          </a>
+        </div>
+
+        <PriceDisplay price={price} compareAtPrice={compareAtPrice} size="xl" />
+
+        <KeyBenefits benefits={benefits} />
       </div>
-
-      <PriceDisplay price={price} compareAtPrice={compareAtPrice} size="lg" />
-
-      <KeyBenefits benefits={benefits} />
 
       {product.isLimitedTimeOffer && (
         <div className="bg-foreground text-background flex items-center justify-between gap-3 rounded-lg px-3.5 py-2.5">
@@ -152,6 +155,8 @@ export function BuyBox({
           showBuyNow
         />
       </div>
+
+      <GuaranteeBadge />
 
       <StockProgressBar productId={product.id} />
     </div>

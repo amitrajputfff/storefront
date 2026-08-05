@@ -8,7 +8,10 @@ import {
   AccordionContent,
 } from "@/components/ui/accordion";
 import { Gallery } from "@/components/product/gallery";
+import { getBadge } from "@/lib/product-badge";
 import { ProductPurchasePanel } from "@/components/product/product-purchase-panel";
+import { ProductFaq } from "@/components/product/product-faq";
+import { PdpValueProps } from "@/components/product/pdp-value-props";
 import { Reviews } from "@/components/product/reviews";
 import { RelatedProducts } from "@/components/product/related-products";
 import { RecentlyViewed } from "@/components/product/recently-viewed";
@@ -97,7 +100,7 @@ export default async function ProductPage({
 
       <div className="grid grid-cols-1 gap-10 lg:grid-cols-2 lg:gap-16">
         <div className="lg:sticky lg:top-24 lg:self-start">
-          <Gallery images={product.images} />
+          <Gallery images={product.images} badge={getBadge(product)} />
         </div>
         <div className="flex flex-col gap-10">
           <ProductPurchasePanel product={product} promoCodes={promoCodes} benefits={benefits} />
@@ -128,6 +131,14 @@ export default async function ProductPage({
             </AccordionContent>
           </AccordionItem>
         </Accordion>
+      </div>
+
+      <div className="mt-16 md:mt-24">
+        <ProductFaq />
+      </div>
+
+      <div className="mt-16 md:mt-24">
+        <PdpValueProps />
       </div>
 
       {related.length > 0 && (

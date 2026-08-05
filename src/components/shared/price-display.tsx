@@ -11,13 +11,14 @@ export function PriceDisplay({
   price: Money;
   compareAtPrice?: Money;
   className?: string;
-  size?: "sm" | "md" | "lg";
+  size?: "sm" | "md" | "lg" | "xl";
 }) {
   const discount = discountPercent(price, compareAtPrice);
   const sizeClass = {
     sm: "text-sm",
     md: "text-base",
     lg: "text-2xl",
+    xl: "text-3xl md:text-4xl",
   }[size];
 
   return (
@@ -30,7 +31,7 @@ export function PriceDisplay({
           <span className="text-muted-foreground text-sm tabular-nums line-through">
             {formatMoney(compareAtPrice)}
           </span>
-          <span className="text-xs font-medium">{discount}% off</span>
+          <span className="text-gold text-xs font-semibold">{discount}% off</span>
         </>
       )}
     </div>
