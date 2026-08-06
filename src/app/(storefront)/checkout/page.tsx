@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -28,7 +28,7 @@ import { lookupPincode } from "@/lib/pincode";
 import { createCheckoutUrl } from "@/lib/shopify/cart";
 import { createCodOrder } from "@/lib/shopify/create-order";
 import { trackInitiateCheckout } from "@/lib/meta-pixel";
-import { INDIAN_STATES, QUANTITY_TIERS } from "@/constants/india";
+import { INDIAN_STATES } from "@/constants/india";
 import { routes } from "@/constants/routes";
 import { formatMoney } from "@/lib/format";
 import { cn } from "@/lib/utils";
@@ -60,7 +60,6 @@ export default function CheckoutPage() {
   const buyNowItem = useBuyNowStore((s) => s.item);
   const clearBuyNow = useBuyNowStore((s) => s.clear);
   const setLastOrder = useLastOrderStore((s) => s.setSummary);
-  const [tierQuantity, setTierQuantity] = useState<number | null>(null);
   const [pincodeStatus, setPincodeStatus] = useState<"idle" | "loading" | "found" | "not-found">(
     "idle",
   );
@@ -71,13 +70,6 @@ export default function CheckoutPage() {
     : cartItems;
 
   const singleItem = effectiveItems.length === 1 ? effectiveItems[0] : null;
-
-  useEffect(() => {
-    if (singleItem && tierQuantity === null) {
-      const matched = QUANTITY_TIERS.find((t) => t.quantity === singleItem.quantity);
-      setTierQuantity(matched?.quantity ?? QUANTITY_TIERS[0].quantity);
-    }
-  }, [singleItem, tierQuantity]);
 
   const {
     register,
@@ -128,27 +120,14 @@ export default function CheckoutPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedPincode]);
 
-  const availableTiers = useMemo(() => {
-    if (!singleItem) return [];
-    return QUANTITY_TIERS.filter((t) => t.quantity <= singleItem.maxQuantity);
-  }, [singleItem]);
+  const lineItems = effectiveItems.map((item) => ({
+    variantId: item.variantId,
+    quantity: item.quantity,
+  }));
 
-  const selectedTier =
-    availableTiers.find((t) => t.quantity === tierQuantity) ?? availableTiers[0];
-
-  const lineItems = useMemo(() => {
-    if (singleItem && selectedTier) {
-      return [{ variantId: singleItem.variantId, quantity: selectedTier.quantity }];
-    }
-    return effectiveItems.map((item) => ({ variantId: item.variantId, quantity: item.quantity }));
-  }, [effectiveItems, singleItem, selectedTier]);
-
-  const subtotalAmount = singleItem
-    ? singleItem.price.amount * (selectedTier?.quantity ?? singleItem.quantity)
-    : cartSubtotal(effectiveItems).amount;
-  const discountPercent = singleItem ? (selectedTier?.discountPercent ?? 0) : 0;
-  const discountAmount = subtotalAmount * (discountPercent / 100);
-  const total = subtotalAmount - discountAmount;
+  const subtotalAmount = cartSubtotal(effectiveItems).amount;
+  const discountAmount = 0;
+  const total = subtotalAmount;
 
   const initiateCheckoutFired = useRef(false);
   useEffect(() => {
@@ -187,30 +166,19 @@ export default function CheckoutPage() {
 
     const result = await createCodOrder({
       lineItems,
-      discountPercent: discountPercent > 0 ? discountPercent : undefined,
       customer,
     });
 
     if (result.success) {
       setLastOrder({
         orderName: result.orderName,
-        lines: singleItem
-          ? [
-              {
-                title: singleItem.title,
-                variantTitle: singleItem.variantTitle,
-                image: singleItem.image,
-                quantity: selectedTier?.quantity ?? singleItem.quantity,
-                price: singleItem.price,
-              },
-            ]
-          : effectiveItems.map((item) => ({
-              title: item.title,
-              variantTitle: item.variantTitle,
-              image: item.image,
-              quantity: item.quantity,
-              price: item.price,
-            })),
+        lines: effectiveItems.map((item) => ({
+          title: item.title,
+          variantTitle: item.variantTitle,
+          image: item.image,
+          quantity: item.quantity,
+          price: item.price,
+        })),
         subtotal: subtotalAmount,
         discountAmount,
         total,
@@ -252,42 +220,6 @@ export default function CheckoutPage() {
         className="grid gap-10 md:grid-cols-[1fr_360px]"
       >
         <div className="flex flex-col gap-8">
-          {singleItem && availableTiers.length > 1 && (
-            <section className="flex flex-col gap-3">
-              <h2 className="text-sm font-semibold">Quantity</h2>
-              <div className="grid gap-2 sm:grid-cols-3">
-                {availableTiers.map((tier) => {
-                  const selected = tier.quantity === selectedTier?.quantity;
-                  return (
-                    <button
-                      key={tier.quantity}
-                      type="button"
-                      onClick={() => setTierQuantity(tier.quantity)}
-                      className={cn(
-                        "flex flex-col items-start gap-0.5 rounded-lg border px-3 py-2.5 text-left transition-colors",
-                        selected
-                          ? "border-foreground bg-foreground text-background"
-                          : "border-border hover:bg-muted",
-                      )}
-                    >
-                      <span className="text-sm font-semibold">{tier.label}</span>
-                      {tier.badge && (
-                        <span
-                          className={cn(
-                            "text-xs",
-                            selected ? "text-background/80" : "text-success",
-                          )}
-                        >
-                          {tier.badge}
-                        </span>
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
-            </section>
-          )}
-
           <section className="flex flex-col gap-4">
             <h2 className="text-sm font-semibold">Contact &amp; Shipping</h2>
 
@@ -488,7 +420,7 @@ export default function CheckoutPage() {
                 <div className="flex flex-1 flex-col gap-0.5">
                   <span className="text-sm font-medium">{singleItem.title}</span>
                   <span className="text-xs text-muted-foreground">{singleItem.variantTitle}</span>
-                  <span className="text-xs text-muted-foreground">Qty {selectedTier?.quantity ?? singleItem.quantity}</span>
+                  <span className="text-xs text-muted-foreground">Qty {singleItem.quantity}</span>
                 </div>
               </div>
             ) : (
@@ -579,7 +511,7 @@ export default function CheckoutPage() {
               {isSubmitting
                 ? "Placing order…"
                 : paymentMethod === "cod"
-                  ? `Confirm Order — Pay ${formatMoney({ amount: total, currencyCode: "INR" })} on Delivery`
+                  ? "Complete Order"
                   : "Continue to Payment"}
             </span>
           </Button>

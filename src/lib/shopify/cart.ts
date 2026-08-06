@@ -1,7 +1,7 @@
 "use server";
 
 import { shopifyFetch, isShopifyConfigured } from "./client";
-import { CART_CREATE_MUTATION } from "./queries";
+import { CART_CREATE_MUTATION, CART_BILLING_ADDRESS_UPDATE_MUTATION } from "./queries";
 import { INDIAN_STATE_CODES } from "@/constants/india";
 
 interface CartLineInput {
@@ -23,6 +23,13 @@ export interface CheckoutCustomerInfo {
 interface CartCreateResponse {
   cartCreate: {
     cart: { id: string; checkoutUrl: string } | null;
+    userErrors: { field: string[]; message: string }[];
+  };
+}
+
+interface CartBillingAddressUpdateResponse {
+  cartBillingAddressUpdate: {
+    cart: { id: string } | null;
     userErrors: { field: string[]; message: string }[];
   };
 }
@@ -94,6 +101,32 @@ export async function createCheckoutUrl(
 
   if (!cart) {
     throw new Error("Shopify did not return a cart.");
+  }
+
+  if (customer) {
+    // Best-effort — billing defaults to the same address so the shopper isn't asked
+    // to fill it in again on Shopify's checkout. Never block checkout on this.
+    try {
+      await shopifyFetch<CartBillingAddressUpdateResponse>({
+        query: CART_BILLING_ADDRESS_UPDATE_MUTATION,
+        variables: {
+          cartId: cart.id,
+          billingAddress: {
+            ...splitName(customer.fullName),
+            address1: customer.address1,
+            address2: customer.address2 || undefined,
+            city: customer.city,
+            province: customer.state,
+            zip: customer.pincode,
+            country: "India",
+            phone: `+91${customer.phone}`,
+          },
+        },
+        revalidate: 0,
+      });
+    } catch {
+      // Non-fatal — proceed with checkout even if billing prefill fails.
+    }
   }
 
   return cart.checkoutUrl;

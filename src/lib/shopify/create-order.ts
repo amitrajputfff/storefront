@@ -38,7 +38,6 @@ interface DraftOrderCompleteResponse {
 
 export interface CreateCodOrderInput {
   lineItems: { variantId: string; quantity: number }[];
-  discountPercent?: number;
   customer: {
     fullName: string;
     phone: string;
@@ -77,7 +76,6 @@ export async function createCodOrder(input: CreateCodOrderInput): Promise<Create
   }
 
   const { firstName, lastName } = splitName(input.customer.fullName);
-  const totalQuantity = input.lineItems.reduce((sum, line) => sum + line.quantity, 0);
 
   try {
     const createData = await adminFetch<DraftOrderCreateResponse>(DRAFT_ORDER_CREATE_MUTATION, {
@@ -100,15 +98,6 @@ export async function createCodOrder(input: CreateCodOrderInput): Promise<Create
         },
         note: "Cash on Delivery order via storefront checkout",
         tags: ["COD", "storefront-checkout"],
-        ...(input.discountPercent && input.discountPercent > 0
-          ? {
-              appliedDiscount: {
-                value: input.discountPercent,
-                valueType: "PERCENTAGE",
-                title: `Buy ${totalQuantity} discount`,
-              },
-            }
-          : {}),
       },
     });
 

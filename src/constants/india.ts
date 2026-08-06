@@ -76,17 +76,3 @@ export const INDIAN_STATE_CODES: Record<(typeof INDIAN_STATES)[number], string> 
   Lakshadweep: "LD",
   Puducherry: "PY",
 };
-
-export interface QuantityTier {
-  quantity: number;
-  discountPercent: number;
-  label: string;
-  badge?: string;
-}
-
-/** Releasit-style buy-more-save-more tiers, shown on checkout for single-SKU orders. */
-export const QUANTITY_TIERS: QuantityTier[] = [
-  { quantity: 1, discountPercent: 0, label: "Buy 1" },
-  { quantity: 2, discountPercent: 10, label: "Buy 2", badge: "Save 10%" },
-  { quantity: 3, discountPercent: 15, label: "Buy 3", badge: "Save 15%" },
-];

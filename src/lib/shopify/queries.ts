@@ -141,3 +141,17 @@ export const CART_CREATE_MUTATION = /* GraphQL */ `
     }
   }
 `;
+
+export const CART_BILLING_ADDRESS_UPDATE_MUTATION = /* GraphQL */ `
+  mutation CartBillingAddressUpdate($cartId: ID!, $billingAddress: MailingAddressInput) {
+    cartBillingAddressUpdate(cartId: $cartId, billingAddress: $billingAddress) {
+      cart {
+        id
+      }
+      userErrors {
+        field
+        message
+      }
+    }
+  }
+`;
