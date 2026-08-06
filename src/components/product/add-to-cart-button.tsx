@@ -1,17 +1,12 @@
 "use client";
 
-import { useState } from "react";
 import { Check, Loader2 } from "lucide-react";
-import { toast } from "sonner";
 import { Product, Variant } from "@/types";
-import { useCart } from "@/hooks/use-cart";
+import { useAddToCart } from "@/hooks/use-add-to-cart";
 import { useBuyNow } from "@/hooks/use-buy-now";
 import { Button } from "@/components/ui/button";
 import { PaymentIconGroup } from "@/components/product/payment-icon-badge";
 import { cn } from "@/lib/utils";
-import { trackAddToCart } from "@/lib/meta-pixel";
-
-type Status = "idle" | "loading" | "success";
 
 const upiPaymentMethods = [
   { src: "/payments/gpay.png", alt: "Google Pay" },
@@ -31,44 +26,10 @@ export function AddToCartButton({
   quantity: number;
   showBuyNow?: boolean;
 }) {
-  const { addItem } = useCart();
-  const [status, setStatus] = useState<Status>("idle");
+  const { status, handleAddToCart } = useAddToCart(product, variant, quantity);
   const { buyNow, buying } = useBuyNow(variant, quantity);
 
   const disabled = !variant || !variant.availableForSale || status === "loading" || buying;
-
-  function addToCart() {
-    if (!variant) return;
-    addItem({
-      productId: product.id,
-      productHandle: product.handle,
-      variantId: variant.id,
-      title: product.title,
-      variantTitle: variant.title,
-      image: variant.image ?? product.images[0],
-      price: variant.price,
-      quantity,
-      maxQuantity: variant.inventoryQuantity,
-    });
-    trackAddToCart({
-      contentId: variant.id,
-      contentName: product.title,
-      value: variant.price.amount * quantity,
-      currency: variant.price.currencyCode,
-      quantity,
-    });
-  }
-
-  function handleAddToCart() {
-    if (!variant || !variant.availableForSale) return;
-    setStatus("loading");
-    setTimeout(() => {
-      addToCart();
-      toast.success("Added to cart");
-      setStatus("success");
-      setTimeout(() => setStatus("idle"), 1500);
-    }, 500);
-  }
 
   const label = !variant
     ? "Select options"

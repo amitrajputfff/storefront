@@ -1,10 +1,11 @@
 "use client";
 
-import { Loader2 } from "lucide-react";
+import { Check, Loader2 } from "lucide-react";
 import { Product, Variant } from "@/types";
 import { PriceDisplay } from "@/components/shared/price-display";
 import { Button } from "@/components/ui/button";
 import { useBuyNow } from "@/hooks/use-buy-now";
+import { useAddToCart } from "@/hooks/use-add-to-cart";
 import { cn } from "@/lib/utils";
 
 export function StickyBuyBar({
@@ -17,11 +18,14 @@ export function StickyBuyBar({
   quantity: number;
 }) {
   const { buyNow, buying } = useBuyNow(variant, quantity);
+  const { status: addStatus, handleAddToCart } = useAddToCart(product, variant, quantity);
   const price = variant?.price ?? product.priceRange.min;
   const compareAtPrice = variant?.compareAtPrice;
-  const disabled = !variant || !variant.availableForSale || buying;
+  const outOfStock = !variant || !variant.availableForSale;
+  const buyDisabled = outOfStock || buying;
+  const addDisabled = outOfStock || addStatus === "loading" || buying;
 
-  const label = !variant
+  const buyLabel = !variant
     ? "Select options"
     : !variant.availableForSale
       ? "Out of Stock"
@@ -31,17 +35,35 @@ export function StickyBuyBar({
 
   return (
     <div className="bg-background/95 fixed inset-x-0 bottom-0 z-40 border-t p-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] shadow-[0_-8px_24px_rgba(0,0,0,0.12)] backdrop-blur-sm md:hidden">
-      <div className="flex items-center gap-3">
-        <PriceDisplay price={price} compareAtPrice={compareAtPrice} size="md" className="min-w-0 flex-1" />
-        <Button
-          size="lg"
-          className={cn("h-13 shrink-0 px-6 text-base font-bold shadow-md", !disabled && "animate-pulse-glow")}
-          disabled={disabled}
-          onClick={buyNow}
-        >
-          {buying && <Loader2 className="size-4 animate-spin" />}
-          <span>{label}</span>
-        </Button>
+      <div className="flex flex-col gap-2">
+        <PriceDisplay price={price} compareAtPrice={compareAtPrice} size="md" />
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="lg"
+            className={cn(
+              "h-12 flex-1 text-sm font-semibold",
+              addStatus === "success" && "border-foreground bg-foreground text-background",
+            )}
+            disabled={addDisabled}
+            onClick={handleAddToCart}
+          >
+            {addStatus === "loading" && <Loader2 className="size-4 animate-spin" />}
+            {addStatus === "success" && <Check className="size-4" />}
+            <span>
+              {addStatus === "loading" ? "Adding…" : addStatus === "success" ? "Added" : "Add to Cart"}
+            </span>
+          </Button>
+          <Button
+            size="lg"
+            className={cn("h-12 flex-1 text-sm font-bold shadow-md", !buyDisabled && "animate-pulse-glow")}
+            disabled={buyDisabled}
+            onClick={buyNow}
+          >
+            {buying && <Loader2 className="size-4 animate-spin" />}
+            <span>{buyLabel}</span>
+          </Button>
+        </div>
       </div>
     </div>
   );

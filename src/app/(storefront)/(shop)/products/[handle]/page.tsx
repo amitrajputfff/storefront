@@ -17,6 +17,7 @@ import { RelatedProducts } from "@/components/product/related-products";
 import { RecentlyViewed } from "@/components/product/recently-viewed";
 import { RecentlyViewedRecorder } from "@/components/product/recently-viewed-recorder";
 import { Bundle } from "@/components/product/bundle";
+import { SaleTimerBar } from "@/components/product/sale-timer-bar";
 import { JsonLd, buildBreadcrumbJsonLd, buildProductJsonLd } from "@/lib/jsonld";
 import {
   getAllProducts,
@@ -86,7 +87,9 @@ export default async function ProductPage({
         ])}
       />
 
-      <nav className="text-muted-foreground mb-6 flex items-center gap-2 text-xs">
+      <SaleTimerBar className="flex md:hidden" />
+
+      <nav className="text-muted-foreground mb-6 hidden items-center gap-2 text-xs md:flex">
         <Link href={routes.home()} className="hover:text-foreground">
           Home
         </Link>
