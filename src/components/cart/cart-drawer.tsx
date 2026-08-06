@@ -3,9 +3,9 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Loader2, Plus } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Plus } from "lucide-react";
 import { AnimatePresence } from "motion/react";
-import { toast } from "sonner";
 import {
   Sheet,
   SheetContent,
@@ -15,9 +15,9 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { useUiStore } from "@/stores/ui-store";
 import { useCart } from "@/hooks/use-cart";
+import { useBuyNowStore } from "@/stores/buy-now-store";
 import { getAllProducts, getProductsByCategory } from "@/mock/products";
-import { createCheckoutUrl } from "@/lib/shopify/cart";
-import { trackAddToCart, trackInitiateCheckout } from "@/lib/meta-pixel";
+import { trackAddToCart } from "@/lib/meta-pixel";
 import { Money, Product } from "@/types";
 import { routes } from "@/constants/routes";
 import { formatMoney } from "@/lib/format";
@@ -28,35 +28,17 @@ import { PromoCodeInput } from "./promo-code-input";
 import { CartSummary } from "./cart-summary";
 
 export function CartDrawer() {
+  const router = useRouter();
   const { isCartOpen, closeCart } = useUiStore();
   const { items, subtotal, totalQuantity, addItem } = useCart();
+  const clearBuyNow = useBuyNowStore((s) => s.clear);
   const [discount, setDiscount] = useState<Money | null>(null);
-  const [checkingOut, setCheckingOut] = useState(false);
   const [recommended, setRecommended] = useState<Product[]>([]);
 
-  useEffect(() => {
-    if (!isCartOpen) {
-      setCheckingOut(false);
-    }
-  }, [isCartOpen]);
-
-  async function handleCheckout() {
-    setCheckingOut(true);
-    try {
-      const checkoutUrl = await createCheckoutUrl(
-        items.map((item) => ({ variantId: item.variantId, quantity: item.quantity })),
-      );
-      trackInitiateCheckout({
-        contentIds: items.map((item) => item.variantId),
-        value: total.amount,
-        currency: total.currencyCode,
-        numItems: totalQuantity,
-      });
-      window.location.href = checkoutUrl;
-    } catch {
-      toast.error("Checkout isn't connected to Shopify yet.");
-      setCheckingOut(false);
-    }
+  function handleCheckout() {
+    clearBuyNow();
+    closeCart();
+    router.push(routes.checkout());
   }
 
   useEffect(() => {
@@ -191,12 +173,10 @@ export function CartDrawer() {
             <div className="px-6 pb-6">
               <button
                 type="button"
-                disabled={checkingOut}
                 onClick={handleCheckout}
                 className="flex w-full items-center justify-center gap-2 rounded-lg bg-foreground px-4 py-3 text-sm font-medium text-background transition-opacity hover:opacity-90 disabled:opacity-70"
               >
-                {checkingOut && <Loader2 className="size-4 animate-spin" />}
-                <span>{checkingOut ? "Redirecting to checkout…" : `Checkout — ${formatMoney(total)}`}</span>
+                <span>{`Checkout — ${formatMoney(total)}`}</span>
               </button>
             </div>
           </div>

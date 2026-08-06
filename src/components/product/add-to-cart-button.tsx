@@ -27,7 +27,7 @@ export function AddToCartButton({
   showBuyNow?: boolean;
 }) {
   const { status, handleAddToCart } = useAddToCart(product, variant, quantity);
-  const { buyNow, buying } = useBuyNow(variant, quantity);
+  const { buyNow, buying } = useBuyNow(product, variant, quantity);
 
   const disabled = !variant || !variant.availableForSale || status === "loading" || buying;
 

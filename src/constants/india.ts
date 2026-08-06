@@ -1,0 +1,92 @@
+export const INDIAN_STATES = [
+  "Andhra Pradesh",
+  "Arunachal Pradesh",
+  "Assam",
+  "Bihar",
+  "Chhattisgarh",
+  "Goa",
+  "Gujarat",
+  "Haryana",
+  "Himachal Pradesh",
+  "Jharkhand",
+  "Karnataka",
+  "Kerala",
+  "Madhya Pradesh",
+  "Maharashtra",
+  "Manipur",
+  "Meghalaya",
+  "Mizoram",
+  "Nagaland",
+  "Odisha",
+  "Punjab",
+  "Rajasthan",
+  "Sikkim",
+  "Tamil Nadu",
+  "Telangana",
+  "Tripura",
+  "Uttar Pradesh",
+  "Uttarakhand",
+  "West Bengal",
+  "Andaman and Nicobar Islands",
+  "Chandigarh",
+  "Dadra and Nagar Haveli and Daman and Diu",
+  "Delhi",
+  "Jammu and Kashmir",
+  "Ladakh",
+  "Lakshadweep",
+  "Puducherry",
+] as const;
+
+/** ISO 3166-2:IN province codes — Shopify's checkout expects these, not full state names. */
+export const INDIAN_STATE_CODES: Record<(typeof INDIAN_STATES)[number], string> = {
+  "Andhra Pradesh": "AP",
+  "Arunachal Pradesh": "AR",
+  Assam: "AS",
+  Bihar: "BR",
+  Chhattisgarh: "CT",
+  Goa: "GA",
+  Gujarat: "GJ",
+  Haryana: "HR",
+  "Himachal Pradesh": "HP",
+  Jharkhand: "JH",
+  Karnataka: "KA",
+  Kerala: "KL",
+  "Madhya Pradesh": "MP",
+  Maharashtra: "MH",
+  Manipur: "MN",
+  Meghalaya: "ML",
+  Mizoram: "MZ",
+  Nagaland: "NL",
+  Odisha: "OR",
+  Punjab: "PB",
+  Rajasthan: "RJ",
+  Sikkim: "SK",
+  "Tamil Nadu": "TN",
+  Telangana: "TG",
+  Tripura: "TR",
+  "Uttar Pradesh": "UP",
+  Uttarakhand: "UT",
+  "West Bengal": "WB",
+  "Andaman and Nicobar Islands": "AN",
+  Chandigarh: "CH",
+  "Dadra and Nagar Haveli and Daman and Diu": "DN",
+  Delhi: "DL",
+  "Jammu and Kashmir": "JK",
+  Ladakh: "LA",
+  Lakshadweep: "LD",
+  Puducherry: "PY",
+};
+
+export interface QuantityTier {
+  quantity: number;
+  discountPercent: number;
+  label: string;
+  badge?: string;
+}
+
+/** Releasit-style buy-more-save-more tiers, shown on checkout for single-SKU orders. */
+export const QUANTITY_TIERS: QuantityTier[] = [
+  { quantity: 1, discountPercent: 0, label: "Buy 1" },
+  { quantity: 2, discountPercent: 10, label: "Buy 2", badge: "Save 10%" },
+  { quantity: 3, discountPercent: 15, label: "Buy 3", badge: "Save 15%" },
+];

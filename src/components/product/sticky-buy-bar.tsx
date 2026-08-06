@@ -17,7 +17,7 @@ export function StickyBuyBar({
   variant: Variant | undefined;
   quantity: number;
 }) {
-  const { buyNow, buying } = useBuyNow(variant, quantity);
+  const { buyNow, buying } = useBuyNow(product, variant, quantity);
   const { status: addStatus, handleAddToCart } = useAddToCart(product, variant, quantity);
   const price = variant?.price ?? product.priceRange.min;
   const compareAtPrice = variant?.compareAtPrice;

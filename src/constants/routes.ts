@@ -6,6 +6,7 @@ export const routes = {
   search: (query?: string) =>
     query ? `/search?q=${encodeURIComponent(query)}` : "/search",
   cart: () => "/cart",
+  checkout: () => "/checkout",
   wishlist: () => "/wishlist",
   trackOrder: () => "/track-order",
   about: () => "/about",
