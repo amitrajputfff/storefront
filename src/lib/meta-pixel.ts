@@ -67,3 +67,24 @@ export function trackInitiateCheckout(params: {
     num_items: params.numItems,
   });
 }
+
+export function trackPurchase(params: {
+  orderId: string;
+  contentIds: string[];
+  value: number;
+  currency: string;
+  numItems: number;
+}) {
+  fbq(
+    "track",
+    "Purchase",
+    {
+      content_ids: params.contentIds.map(toCatalogId),
+      content_type: "product",
+      value: params.value,
+      currency: params.currency,
+      num_items: params.numItems,
+    },
+    { eventID: params.orderId },
+  );
+}

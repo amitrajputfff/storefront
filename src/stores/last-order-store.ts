@@ -3,6 +3,7 @@ import { persist, createJSONStorage } from "zustand/middleware";
 import { Money, ProductImage } from "@/types";
 
 export interface LastOrderLine {
+  variantId: string;
   title: string;
   variantTitle: string;
   image: ProductImage;
