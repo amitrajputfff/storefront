@@ -82,7 +82,7 @@ export function BuyBox({
       </div>
 
       {product.isLimitedTimeOffer && (
-        <div className="bg-foreground text-background flex items-center justify-between gap-3 rounded-lg px-3.5 py-2.5">
+        <div className="flex items-center justify-between gap-3 rounded-xl border border-rose-300/70 bg-gradient-to-r from-rose-600 via-rose-500 to-orange-500 px-3.5 py-2.5 text-white shadow-md">
           <span className="inline-flex items-center gap-1.5 text-xs font-semibold">
             <Zap className="size-3.5 shrink-0" />
             Limited Time Offer
@@ -90,7 +90,7 @@ export function BuyBox({
           <CountdownTimer
             endsAt={flashSaleEndsAt}
             size="sm"
-            className="bg-background text-foreground"
+            className="bg-white text-rose-700 shadow-sm"
             onExpire={() => setFlashSaleEndsAt(getFlashSaleEndsAt())}
           />
         </div>
