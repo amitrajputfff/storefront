@@ -96,13 +96,6 @@ export function BuyBox({
         </div>
       )}
 
-      {inventory <= 5 && (
-        <div className="bg-gold/10 border-gold/30 text-foreground flex items-center gap-1.5 rounded-lg border px-3 py-2 text-xs font-medium">
-          <TriangleAlert className="text-gold size-3.5 shrink-0" />
-          Only {inventory} left in stock — order soon
-        </div>
-      )}
-
       <div className="flex flex-wrap items-center gap-x-1.5">
         <RecentPurchasesBadge product={product} />
       </div>
@@ -146,6 +139,13 @@ export function BuyBox({
           </span>
         ))}
       </div>
+
+      {inventory <= 5 && (
+        <div className="bg-gold/10 border-gold/30 text-foreground flex items-center gap-1.5 rounded-lg border px-3 py-2 text-xs font-medium">
+          <TriangleAlert className="text-gold size-3.5 shrink-0" />
+          Only {inventory} left in stock — order soon
+        </div>
+      )}
 
       <div ref={ctaRef}>
         <AddToCartButton

@@ -46,7 +46,7 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
 import { PaymentIconGroup } from "@/components/product/payment-icon-badge";
-import { SaleTimerBar } from "@/components/product/sale-timer-bar";
+import { CheckoutPriceLockTimer } from "@/components/checkout/price-lock-timer";
 import { AddressSearchInput } from "@/components/checkout/address-search-input";
 
 const onlinePaymentIcons = [
@@ -234,7 +234,6 @@ export default function CheckoutPage() {
   return (
     <main className="mx-auto max-w-4xl px-6 py-10 md:py-16">
       <h1 className="mb-8 text-2xl font-medium md:text-3xl">Checkout</h1>
-      <SaleTimerBar />
 
       <form
         onSubmit={handleSubmit(onSubmit)}
@@ -526,6 +525,8 @@ export default function CheckoutPage() {
             <span>Total</span>
             <span className="tabular-nums">{formatMoney({ amount: total, currencyCode: "INR" })}</span>
           </div>
+
+          <CheckoutPriceLockTimer />
 
           <Button type="submit" size="lg" className="w-full" disabled={isSubmitting}>
             {isSubmitting && <Loader2 className="size-4 animate-spin" />}
