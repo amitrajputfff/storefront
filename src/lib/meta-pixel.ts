@@ -4,9 +4,27 @@ declare global {
   }
 }
 
+const FBQ_RETRY_DELAY_MS = 250;
+const FBQ_MAX_RETRIES = 20;
+
 function fbq(...args: unknown[]) {
-  if (typeof window === "undefined" || !window.fbq) return;
-  window.fbq(...args);
+  if (typeof window === "undefined") return;
+  if (window.fbq) {
+    window.fbq(...args);
+    return;
+  }
+  retryFbq(args, 1);
+}
+
+function retryFbq(args: unknown[], attempt: number) {
+  if (typeof window === "undefined" || attempt > FBQ_MAX_RETRIES) return;
+  window.setTimeout(() => {
+    if (window.fbq) {
+      window.fbq(...args);
+      return;
+    }
+    retryFbq(args, attempt + 1);
+  }, FBQ_RETRY_DELAY_MS);
 }
 
 // Meta's catalog (synced by Shopify's Facebook & Instagram channel) keys items by
