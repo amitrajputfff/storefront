@@ -61,6 +61,14 @@ function splitName(fullName: string): { firstName: string; lastName: string } {
   return { firstName, lastName };
 }
 
+function toE164IndianPhone(phone: string): string {
+  const digits = phone.replace(/\D/g, "");
+  if (digits.length === 10) return `+91${digits}`;
+  if (digits.length === 12 && digits.startsWith("91")) return `+${digits}`;
+  if (phone.startsWith("+")) return phone;
+  return `+${digits}`;
+}
+
 /** Places a COD order directly in Shopify via a draft order completed with payment pending
  * (i.e. unpaid until cash is collected on delivery) — bypasses Shopify's hosted checkout. */
 export async function createCodOrder(input: CreateCodOrderInput): Promise<CreateCodOrderResult> {
@@ -76,6 +84,7 @@ export async function createCodOrder(input: CreateCodOrderInput): Promise<Create
   }
 
   const { firstName, lastName } = splitName(input.customer.fullName);
+  const phone = toE164IndianPhone(input.customer.phone);
 
   try {
     const createData = await adminFetch<DraftOrderCreateResponse>(DRAFT_ORDER_CREATE_MUTATION, {
@@ -85,6 +94,7 @@ export async function createCodOrder(input: CreateCodOrderInput): Promise<Create
           quantity: line.quantity,
         })),
         email: input.customer.email || undefined,
+        phone,
         shippingAddress: {
           firstName,
           lastName,
@@ -94,7 +104,7 @@ export async function createCodOrder(input: CreateCodOrderInput): Promise<Create
           province: input.customer.state,
           zip: input.customer.pincode,
           country: "India",
-          phone: input.customer.phone,
+          phone,
         },
         note: "Cash on Delivery order via storefront checkout",
         tags: ["COD", "storefront-checkout"],

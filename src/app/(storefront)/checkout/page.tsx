@@ -173,6 +173,7 @@ export default function CheckoutPage() {
       setLastOrder({
         orderName: result.orderName,
         lines: effectiveItems.map((item) => ({
+          variantId: item.variantId,
           title: item.title,
           variantTitle: item.variantTitle,
           image: item.image,

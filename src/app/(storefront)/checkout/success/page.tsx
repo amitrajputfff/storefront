@@ -21,6 +21,7 @@ import { Separator } from "@/components/ui/separator";
 import { Confetti, type ConfettiRef } from "@/components/ui/confetti";
 import { routes } from "@/constants/routes";
 import { formatMoney, estimatedDeliveryLabel } from "@/lib/format";
+import { trackPurchase } from "@/lib/meta-pixel";
 import { useLastOrderStore } from "@/stores/last-order-store";
 
 export default function CheckoutSuccessPage() {
@@ -64,6 +65,21 @@ function CheckoutSuccessContent() {
     ];
     return () => timers.forEach(clearTimeout);
   }, [orderName]);
+
+  useEffect(() => {
+    if (!summaryMatches || !summary || !orderName) return;
+    const dedupeKey = `meta-pixel-purchase:${orderName}`;
+    if (sessionStorage.getItem(dedupeKey) === "1") return;
+
+    trackPurchase({
+      orderId: orderName,
+      contentIds: summary.lines.map((line) => line.variantId),
+      value: summary.total,
+      currency: "INR",
+      numItems: summary.lines.reduce((sum, line) => sum + line.quantity, 0),
+    });
+    sessionStorage.setItem(dedupeKey, "1");
+  }, [summaryMatches, summary, orderName]);
 
   function copyOrderName() {
     if (!orderName) return;
