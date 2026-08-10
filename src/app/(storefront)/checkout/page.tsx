@@ -19,7 +19,7 @@ import {
   Plus,
 } from "lucide-react";
 import { useCart } from "@/hooks/use-cart";
-import { useBuyNowStore } from "@/stores/buy-now-store";
+import { BuyNowItem, useBuyNowStore } from "@/stores/buy-now-store";
 import { useLastOrderStore } from "@/stores/last-order-store";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { cartSubtotal } from "@/stores/cart-store";
@@ -56,7 +56,7 @@ const onlinePaymentIcons = [
 
 export default function CheckoutPage() {
   const router = useRouter();
-  const { items: cartItems, clearCart, updateQuantity, removeItem } = useCart();
+  const { items: cartItems, addItem, clearCart, updateQuantity, removeItem } = useCart();
   const buyNowItem = useBuyNowStore((s) => s.item);
   const clearBuyNow = useBuyNowStore((s) => s.clear);
   const setLastOrder = useLastOrderStore((s) => s.setSummary);
@@ -68,6 +68,11 @@ export default function CheckoutPage() {
   const effectiveItems: CartItem[] = isBuyNow
     ? [{ ...buyNowItem, id: "buy-now", addedAt: 0 }]
     : cartItems;
+  const shouldMoveBuyNowToCartOnExit = useRef(false);
+  const buyNowItemRef = useRef<BuyNowItem | null>(null);
+
+  buyNowItemRef.current = buyNowItem;
+  shouldMoveBuyNowToCartOnExit.current = isBuyNow;
 
   const singleItem = effectiveItems.length === 1 ? effectiveItems[0] : null;
 
@@ -170,6 +175,7 @@ export default function CheckoutPage() {
     });
 
     if (result.success) {
+      shouldMoveBuyNowToCartOnExit.current = false;
       setLastOrder({
         orderName: result.orderName,
         lines: effectiveItems.map((item) => ({
@@ -193,6 +199,15 @@ export default function CheckoutPage() {
       } else {
         clearCart();
       }
+
+      useEffect(() => {
+        return () => {
+          if (shouldMoveBuyNowToCartOnExit.current && buyNowItemRef.current) {
+            addItem(buyNowItemRef.current);
+            clearBuyNow();
+          }
+        };
+      }, [addItem, clearBuyNow]);
       router.push(`/checkout/success?order=${encodeURIComponent(result.orderName)}`);
     } else {
       toast.error(result.error);
