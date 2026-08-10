@@ -70,9 +70,13 @@ export default function CheckoutPage() {
     : cartItems;
   const shouldMoveBuyNowToCartOnExit = useRef(false);
   const buyNowItemRef = useRef<BuyNowItem | null>(null);
+  const addItemRef = useRef(addItem);
+  const clearBuyNowRef = useRef(clearBuyNow);
 
   buyNowItemRef.current = buyNowItem;
   shouldMoveBuyNowToCartOnExit.current = isBuyNow;
+  addItemRef.current = addItem;
+  clearBuyNowRef.current = clearBuyNow;
 
   const singleItem = effectiveItems.length === 1 ? effectiveItems[0] : null;
 
@@ -199,20 +203,20 @@ export default function CheckoutPage() {
       } else {
         clearCart();
       }
-
-      useEffect(() => {
-        return () => {
-          if (shouldMoveBuyNowToCartOnExit.current && buyNowItemRef.current) {
-            addItem(buyNowItemRef.current);
-            clearBuyNow();
-          }
-        };
-      }, [addItem, clearBuyNow]);
       router.push(`/checkout/success?order=${encodeURIComponent(result.orderName)}`);
     } else {
       toast.error(result.error);
     }
   }
+
+  useEffect(() => {
+    return () => {
+      if (shouldMoveBuyNowToCartOnExit.current && buyNowItemRef.current) {
+        addItemRef.current(buyNowItemRef.current);
+        clearBuyNowRef.current();
+      }
+    };
+  }, []);
 
   if (effectiveItems.length === 0) {
     return (
