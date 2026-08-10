@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Product, Variant } from "@/types";
 import { useBuyNowStore } from "@/stores/buy-now-store";
 import { routes } from "@/constants/routes";
+import { trackAddToCart } from "@/lib/meta-pixel";
 
 export function useBuyNow(product: Product, variant: Variant | undefined, quantity: number) {
   const router = useRouter();
@@ -24,6 +25,13 @@ export function useBuyNow(product: Product, variant: Variant | undefined, quanti
       price: variant.price,
       quantity,
       maxQuantity: variant.inventoryQuantity,
+    });
+    trackAddToCart({
+      contentId: variant.id,
+      contentName: product.title,
+      value: variant.price.amount * quantity,
+      currency: variant.price.currencyCode,
+      quantity,
     });
     router.push(routes.checkout());
   }

@@ -87,7 +87,7 @@ export default async function ProductPage({
         ])}
       />
 
-      <SaleTimerBar className="flex md:hidden" />
+      <SaleTimerBar />
 
       <nav className="text-muted-foreground mb-6 hidden items-center gap-2 text-xs md:flex">
         <Link href={routes.home()} className="hover:text-foreground">

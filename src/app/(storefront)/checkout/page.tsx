@@ -19,7 +19,7 @@ import {
   Plus,
 } from "lucide-react";
 import { useCart } from "@/hooks/use-cart";
-import { useBuyNowStore } from "@/stores/buy-now-store";
+import { BuyNowItem, useBuyNowStore } from "@/stores/buy-now-store";
 import { useLastOrderStore } from "@/stores/last-order-store";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { cartSubtotal } from "@/stores/cart-store";
@@ -46,6 +46,7 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
 import { PaymentIconGroup } from "@/components/product/payment-icon-badge";
+import { SaleTimerBar } from "@/components/product/sale-timer-bar";
 import { AddressSearchInput } from "@/components/checkout/address-search-input";
 
 const onlinePaymentIcons = [
@@ -56,7 +57,7 @@ const onlinePaymentIcons = [
 
 export default function CheckoutPage() {
   const router = useRouter();
-  const { items: cartItems, clearCart, updateQuantity, removeItem } = useCart();
+  const { items: cartItems, addItem, clearCart, updateQuantity, removeItem } = useCart();
   const buyNowItem = useBuyNowStore((s) => s.item);
   const clearBuyNow = useBuyNowStore((s) => s.clear);
   const setLastOrder = useLastOrderStore((s) => s.setSummary);
@@ -68,6 +69,15 @@ export default function CheckoutPage() {
   const effectiveItems: CartItem[] = isBuyNow
     ? [{ ...buyNowItem, id: "buy-now", addedAt: 0 }]
     : cartItems;
+  const shouldMoveBuyNowToCartOnExit = useRef(false);
+  const buyNowItemRef = useRef<BuyNowItem | null>(null);
+  const addItemRef = useRef(addItem);
+  const clearBuyNowRef = useRef(clearBuyNow);
+
+  buyNowItemRef.current = buyNowItem;
+  shouldMoveBuyNowToCartOnExit.current = isBuyNow;
+  addItemRef.current = addItem;
+  clearBuyNowRef.current = clearBuyNow;
 
   const singleItem = effectiveItems.length === 1 ? effectiveItems[0] : null;
 
@@ -170,6 +180,7 @@ export default function CheckoutPage() {
     });
 
     if (result.success) {
+      shouldMoveBuyNowToCartOnExit.current = false;
       setLastOrder({
         orderName: result.orderName,
         lines: effectiveItems.map((item) => ({
@@ -199,6 +210,15 @@ export default function CheckoutPage() {
     }
   }
 
+  useEffect(() => {
+    return () => {
+      if (shouldMoveBuyNowToCartOnExit.current && buyNowItemRef.current) {
+        addItemRef.current(buyNowItemRef.current);
+        clearBuyNowRef.current();
+      }
+    };
+  }, []);
+
   if (effectiveItems.length === 0) {
     return (
       <main className="mx-auto max-w-3xl px-6 py-16 text-center">
@@ -214,6 +234,7 @@ export default function CheckoutPage() {
   return (
     <main className="mx-auto max-w-4xl px-6 py-10 md:py-16">
       <h1 className="mb-8 text-2xl font-medium md:text-3xl">Checkout</h1>
+      <SaleTimerBar />
 
       <form
         onSubmit={handleSubmit(onSubmit)}
