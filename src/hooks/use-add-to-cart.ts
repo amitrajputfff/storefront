@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { Product, Variant } from "@/types";
 import { useCart } from "@/hooks/use-cart";
@@ -11,9 +11,14 @@ type Status = "idle" | "loading" | "success";
 export function useAddToCart(product: Product, variant: Variant | undefined, quantity: number) {
   const { addItem } = useCart();
   const [status, setStatus] = useState<Status>("idle");
+  // Synchronous guard — `status === "loading"` can't block a second click fired
+  // in the same tick, before React re-renders the disabled button.
+  const inFlightRef = useRef(false);
 
   function handleAddToCart() {
     if (!variant || !variant.availableForSale) return;
+    if (inFlightRef.current) return;
+    inFlightRef.current = true;
     setStatus("loading");
     setTimeout(() => {
       addItem({
@@ -36,6 +41,7 @@ export function useAddToCart(product: Product, variant: Variant | undefined, qua
       });
       toast.success("Added to cart");
       setStatus("success");
+      inFlightRef.current = false;
       setTimeout(() => setStatus("idle"), 1500);
     }, 500);
   }

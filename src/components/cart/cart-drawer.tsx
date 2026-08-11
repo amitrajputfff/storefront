@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -34,6 +34,7 @@ export function CartDrawer() {
   const clearBuyNow = useBuyNowStore((s) => s.clear);
   const [discount, setDiscount] = useState<Money | null>(null);
   const [recommended, setRecommended] = useState<Product[]>([]);
+  const addGuardRef = useRef<Set<string>>(new Set());
 
   function handleCheckout() {
     clearBuyNow();
@@ -128,6 +129,11 @@ export function CartDrawer() {
                         type="button"
                         aria-label={`Add ${product.title} to cart`}
                         onClick={() => {
+                          // Guards against a fast double-click firing addItem + trackAddToCart twice.
+                          if (addGuardRef.current.has(product.id)) return;
+                          addGuardRef.current.add(product.id);
+                          setTimeout(() => addGuardRef.current.delete(product.id), 800);
+
                           const variant = product.variants[0];
                           addItem({
                             productId: product.id,

@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useRef } from "react";
 import { Zap } from "lucide-react";
 import { toast } from "sonner";
 import { Product } from "@/types";
@@ -69,12 +70,19 @@ export function ProductCard({ product }: { product: Product }) {
   const socialProof = useSocialProof(product.id);
 
   const singleVariant = product.variants.length <= 1 ? product.variants[0] : undefined;
+  const addGuardRef = useRef(false);
 
   function addDefaultVariant(thenOpenCart: boolean) {
     if (!singleVariant) {
       openQuickView(product.handle);
       return;
     }
+    // Guards against a fast double-click/double-tap firing addItem + trackAddToCart twice.
+    if (addGuardRef.current) return;
+    addGuardRef.current = true;
+    setTimeout(() => {
+      addGuardRef.current = false;
+    }, 800);
     addItem({
       productId: product.id,
       productHandle: product.handle,

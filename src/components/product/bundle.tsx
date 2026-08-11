@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Plus } from "lucide-react";
@@ -27,6 +27,7 @@ export function Bundle({
   const [checked, setChecked] = useState<Record<string, boolean>>(() =>
     Object.fromEntries(items.map((item) => [item.id, true])),
   );
+  const addGuardRef = useRef(false);
 
   const total = items.reduce(
     (sum, item) => sum + (checked[item.id] ? item.priceRange.min.amount : 0),
@@ -36,6 +37,13 @@ export function Bundle({
   if (relatedProducts.length === 0) return null;
 
   function handleAddSelected() {
+    // Guards against a fast double-click firing addItem + trackAddToCart twice per item.
+    if (addGuardRef.current) return;
+    addGuardRef.current = true;
+    setTimeout(() => {
+      addGuardRef.current = false;
+    }, 800);
+
     const selected = items.filter((item) => checked[item.id]);
     for (const item of selected) {
       const variant = item.variants.find((v) => v.availableForSale) ?? item.variants[0];

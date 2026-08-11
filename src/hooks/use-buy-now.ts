@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Product, Variant } from "@/types";
 import { useBuyNowStore } from "@/stores/buy-now-store";
@@ -11,9 +11,14 @@ export function useBuyNow(product: Product, variant: Variant | undefined, quanti
   const router = useRouter();
   const setBuyNowItem = useBuyNowStore((s) => s.setItem);
   const [buying, setBuying] = useState(false);
+  // Synchronous guard — `buying` can't block a second click fired in the same
+  // tick, before React re-renders the disabled button.
+  const inFlightRef = useRef(false);
 
   function buyNow() {
     if (!variant || !variant.availableForSale) return;
+    if (inFlightRef.current) return;
+    inFlightRef.current = true;
     setBuying(true);
     setBuyNowItem({
       productId: product.id,
