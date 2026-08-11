@@ -27,7 +27,7 @@ import { checkoutSchema, checkoutDefaultValues, CheckoutValues } from "@/lib/che
 import { lookupPincode } from "@/lib/pincode";
 import { createCheckoutUrl } from "@/lib/shopify/cart";
 import { createCodOrder } from "@/lib/shopify/create-order";
-import { trackInitiateCheckout } from "@/lib/meta-pixel";
+import { trackInitiateCheckout, getFbCookies } from "@/lib/meta-pixel";
 import { INDIAN_STATES } from "@/constants/india";
 import { routes } from "@/constants/routes";
 import { formatMoney } from "@/lib/format";
@@ -139,10 +139,18 @@ export default function CheckoutPage() {
   const discountAmount = 0;
   const total = subtotalAmount;
 
-  const initiateCheckoutFired = useRef(false);
   useEffect(() => {
-    if (initiateCheckoutFired.current || effectiveItems.length === 0) return;
-    initiateCheckoutFired.current = true;
+    if (effectiveItems.length === 0) return;
+    // Dedupe per cart contents, not just per mount — otherwise reloading /checkout
+    // or navigating back to it (items still in localStorage) refires this every time.
+    const checkoutSignature = effectiveItems
+      .map((item) => `${item.variantId}:${item.quantity}`)
+      .sort()
+      .join("|");
+    const dedupeKey = `meta-pixel-initiate-checkout:${checkoutSignature}`;
+    if (sessionStorage.getItem(dedupeKey) === "1") return;
+    sessionStorage.setItem(dedupeKey, "1");
+
     trackInitiateCheckout({
       contentIds: effectiveItems.map((item) => item.variantId),
       value: subtotalAmount,
@@ -164,9 +172,11 @@ export default function CheckoutPage() {
       pincode: values.pincode,
     };
 
+    const metaCookies = getFbCookies();
+
     if (values.paymentMethod === "online") {
       try {
-        const checkoutUrl = await createCheckoutUrl(lineItems, customer);
+        const checkoutUrl = await createCheckoutUrl(lineItems, customer, metaCookies);
         window.location.href = checkoutUrl;
       } catch {
         toast.error("Couldn't start checkout — please try again.");
@@ -177,6 +187,7 @@ export default function CheckoutPage() {
     const result = await createCodOrder({
       lineItems,
       customer,
+      metaCookies,
     });
 
     if (result.success) {
