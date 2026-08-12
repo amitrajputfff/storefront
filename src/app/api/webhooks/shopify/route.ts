@@ -51,8 +51,15 @@ async function handleOrderCreate(rawBody: string) {
 }
 
 export async function POST(request: NextRequest) {
-  const secret = process.env.SHOPIFY_WEBHOOK_SECRET;
-  if (!secret) {
+  // Different webhook topics can be signed with different secrets depending on
+  // how they were registered — e.g. topics set up via Settings > Notifications
+  // use the account-level signing secret shown there, while topics registered
+  // by the app itself (Dev Dashboard webhook config / Admin API subscriptions)
+  // are signed with the app's Client Secret. Accept either.
+  const candidateSecrets = [process.env.SHOPIFY_WEBHOOK_SECRET, process.env.SHOPIFY_ADMIN_CLIENT_SECRET].filter(
+    (s): s is string => Boolean(s),
+  );
+  if (candidateSecrets.length === 0) {
     return NextResponse.json({ error: "Webhook secret not configured" }, { status: 500 });
   }
 
@@ -61,7 +68,7 @@ export async function POST(request: NextRequest) {
 
   const topic = request.headers.get("x-shopify-topic") ?? "unknown";
 
-  if (!verifyShopifyHmac(rawBody, hmacHeader, secret)) {
+  if (!candidateSecrets.some((secret) => verifyShopifyHmac(rawBody, hmacHeader, secret))) {
     console.error(`[shopify-webhook] HMAC verification failed for topic "${topic}"`, {
       webhookId: request.headers.get("x-shopify-webhook-id"),
       apiVersion: request.headers.get("x-shopify-api-version"),
