@@ -66,9 +66,15 @@ export default function CheckoutPage() {
   );
 
   const isBuyNow = !!buyNowItem;
-  const effectiveItems: CartItem[] = isBuyNow
-    ? [{ ...buyNowItem, id: "buy-now", addedAt: 0 }]
-    : cartItems;
+  // Set the instant the order succeeds, before clearBuyNow()/clearCart() run —
+  // those clear the global store synchronously, which would otherwise
+  // re-render this still-mounted page showing whatever's left in the cart
+  // (e.g. an unrelated item from days ago) for a flash before the redirect
+  // to /checkout/success completes.
+  const placedItemsRef = useRef<CartItem[] | null>(null);
+  const effectiveItems: CartItem[] =
+    placedItemsRef.current ??
+    (isBuyNow ? [{ ...buyNowItem, id: "buy-now", addedAt: 0 }] : cartItems);
   const shouldMoveBuyNowToCartOnExit = useRef(false);
   const buyNowItemRef = useRef<BuyNowItem | null>(null);
   const addItemRef = useRef(addItem);
@@ -189,6 +195,7 @@ export default function CheckoutPage() {
 
     if (result.success) {
       shouldMoveBuyNowToCartOnExit.current = false;
+      placedItemsRef.current = effectiveItems;
       setLastOrder({
         orderName: result.orderName,
         lines: effectiveItems.map((item) => ({
@@ -212,7 +219,9 @@ export default function CheckoutPage() {
       } else {
         clearCart();
       }
-      router.push(`/checkout/success?order=${encodeURIComponent(result.orderName)}`);
+      // replace, not push — a completed order shouldn't leave a live, stale
+      // checkout form one "back" tap away.
+      router.replace(`/checkout/success?order=${encodeURIComponent(result.orderName)}`);
     } else {
       toast.error(result.error);
     }
