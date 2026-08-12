@@ -13,6 +13,7 @@ import {
   FileText,
   Images,
   Settings,
+  Star,
 } from "lucide-react";
 
 export interface AdminNavItem {
@@ -47,6 +48,7 @@ export const ADMIN_NAV: AdminNavGroup[] = [
     items: [
       { label: "FAQ", href: "/admin/faq", icon: HelpCircle, description: "Frequently asked questions, by category." },
       { label: "Pages", href: "/admin/pages", icon: FileText, description: "About, Contact, and policy pages." },
+      { label: "Reviews", href: "/admin/reviews", icon: Star, description: "Moderate and add customer reviews." },
     ],
   },
   {

@@ -1,3 +1,9 @@
+export interface ReviewImage {
+  id: string;
+  url: string;
+  altText: string;
+}
+
 export interface Review {
   id: string;
   productId: string;
@@ -9,6 +15,8 @@ export interface Review {
   createdAt: string;
   verified: boolean;
   helpfulCount: number;
+  images?: ReviewImage[];
+  source?: "customer" | "mock";
 }
 
 export interface RatingBreakdown {

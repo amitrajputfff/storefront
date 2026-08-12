@@ -53,6 +53,8 @@
   --color-error: var(--error);
   --color-error-foreground: var(--error-foreground);
   --color-gold: #f2b705;
+  --color-footer: oklch(0.19 0.02 50);
+  --color-footer-foreground: oklch(0.94 0.02 80);
   --shadow-soft: 0 2px 10px rgb(0 0 0 / 0.06);
   --shadow-soft-lg: 0 12px 32px rgb(0 0 0 / 0.08);
   --animate-marquee: marquee var(--duration) infinite linear;
@@ -85,24 +87,24 @@
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
+  --background: oklch(0.967 0.014 84);
+  --foreground: oklch(0.24 0.022 50);
+  --card: oklch(0.99 0.008 85);
+  --card-foreground: oklch(0.24 0.022 50);
+  --popover: oklch(0.99 0.008 85);
+  --popover-foreground: oklch(0.24 0.022 50);
+  --primary: oklch(0.6 0.15 38);
+  --primary-foreground: oklch(0.98 0.012 85);
+  --secondary: oklch(0.885 0.045 135);
+  --secondary-foreground: oklch(0.32 0.05 135);
+  --muted: oklch(0.935 0.018 78);
+  --muted-foreground: oklch(0.5 0.025 55);
+  --accent: oklch(0.9 0.045 80);
+  --accent-foreground: oklch(0.33 0.05 65);
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
+  --border: oklch(0.87 0.022 72);
+  --input: oklch(0.87 0.022 72);
+  --ring: oklch(0.6 0.15 38);
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
@@ -124,24 +126,24 @@
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
+  --background: oklch(0.19 0.02 50);
+  --foreground: oklch(0.94 0.02 80);
+  --card: oklch(0.235 0.022 50);
+  --card-foreground: oklch(0.94 0.02 80);
+  --popover: oklch(0.235 0.022 50);
+  --popover-foreground: oklch(0.94 0.02 80);
+  --primary: oklch(0.68 0.15 38);
+  --primary-foreground: oklch(0.19 0.02 50);
+  --secondary: oklch(0.32 0.04 135);
+  --secondary-foreground: oklch(0.92 0.02 100);
+  --muted: oklch(0.28 0.02 60);
+  --muted-foreground: oklch(0.72 0.025 75);
+  --accent: oklch(0.32 0.045 70);
+  --accent-foreground: oklch(0.92 0.02 85);
   --destructive: oklch(0.704 0.191 22.216);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
+  --ring: oklch(0.68 0.15 38);
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
@@ -165,8 +167,12 @@
   * {
     @apply border-border outline-ring/50;
   }
+  /* overflow-x-hidden lives ONLY on html, not body — setting it on both makes
+   * body its own scroll-container (per the CSS overflow-x/-y coupling rule),
+   * which breaks `position: sticky` for any descendant (e.g. the PDP gallery)
+   * since its containing block ends up being body instead of the viewport. */
   body {
-    @apply bg-background text-foreground overflow-x-hidden;
+    @apply bg-background text-foreground;
   }
   html {
     @apply font-sans overflow-x-hidden;

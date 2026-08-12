@@ -1,28 +1,71 @@
 "use client";
 
 import { useState } from "react";
-import { Product } from "@/types";
-import { getRatingBreakdown, getReviewsForProduct } from "@/mock/reviews";
+import Image from "next/image";
+import { Product, RatingBreakdown, Review } from "@/types";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { RatingStars } from "@/components/product/rating-stars";
 import { ReviewForm } from "@/components/product/review-form";
 
 const PAGE_SIZE = 5;
 
-export function Reviews({ product }: { product: Product }) {
+function ReviewImages({ images }: { images: NonNullable<Review["images"]> }) {
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const active = lightboxIndex !== null ? images[lightboxIndex] : null;
+
+  return (
+    <>
+      <div className="mt-1 flex flex-wrap gap-2">
+        {images.map((image, index) => (
+          <button
+            key={image.id}
+            type="button"
+            onClick={() => setLightboxIndex(index)}
+            className="relative size-16 shrink-0 overflow-hidden rounded-lg border border-border"
+          >
+            <Image src={image.url} alt={image.altText} fill sizes="64px" className="object-cover" />
+          </button>
+        ))}
+      </div>
+
+      <Dialog open={active !== null} onOpenChange={(open) => !open && setLightboxIndex(null)}>
+        <DialogContent
+          className="flex h-screen max-h-screen w-screen max-w-none cursor-zoom-out items-center justify-center rounded-none bg-background/95 p-0 sm:max-w-none"
+          onClick={() => setLightboxIndex(null)}
+        >
+          <DialogTitle className="sr-only">{active?.altText || "Review photo"}</DialogTitle>
+          {active && (
+            <Image
+              src={active.url}
+              alt={active.altText}
+              width={1200}
+              height={1200}
+              sizes="90vw"
+              className="max-h-[90vh] max-w-[90vw] cursor-default object-contain"
+              onClick={(e) => e.stopPropagation()}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+}
+
+export function Reviews({
+  product,
+  reviews,
+  breakdown,
+}: {
+  product: Product;
+  reviews: Review[];
+  breakdown: RatingBreakdown;
+}) {
   const [formOpen, setFormOpen] = useState(false);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
-  const reviews = getReviewsForProduct(product);
-  const breakdown = getRatingBreakdown(product);
   const visibleReviews = reviews.slice(0, visibleCount);
 
   return (
@@ -47,7 +90,7 @@ export function Reviews({ product }: { product: Product }) {
               <div key={level} className="flex items-center gap-2 text-xs">
                 <span className="text-muted-foreground w-8 shrink-0">{level} star</span>
                 <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted">
-                  <div className="h-full bg-foreground" style={{ width: `${percent}%` }} />
+                  <div className="h-full bg-primary" style={{ width: `${percent}%` }} />
                 </div>
                 <span className="text-muted-foreground w-8 shrink-0 text-right tabular-nums">
                   {percent}%
@@ -77,6 +120,7 @@ export function Reviews({ product }: { product: Product }) {
             <RatingStars rating={review.rating} size="sm" />
             <p className="text-sm font-medium">{review.title}</p>
             <p className="text-muted-foreground text-sm">{review.body}</p>
+            {review.images && review.images.length > 0 && <ReviewImages images={review.images} />}
           </div>
         ))}
       </div>
@@ -96,7 +140,7 @@ export function Reviews({ product }: { product: Product }) {
           <DialogHeader>
             <DialogTitle>Write a Review</DialogTitle>
           </DialogHeader>
-          <ReviewForm productId={product.id} onSubmitted={() => setFormOpen(false)} />
+          <ReviewForm productHandle={product.handle} onSubmitted={() => setFormOpen(false)} />
         </DialogContent>
       </Dialog>
     </section>

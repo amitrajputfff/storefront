@@ -132,7 +132,7 @@ export function BuyBox({
         ].map(({ icon: Icon, label }) => (
           <span
             key={label}
-            className="text-muted-foreground flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs"
+            className="bg-accent text-accent-foreground flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium"
           >
             <Icon className="size-3.5 shrink-0" />
             {label}

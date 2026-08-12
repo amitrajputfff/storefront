@@ -27,6 +27,7 @@ import {
 import { getCategoryByHandle } from "@/mock/categories";
 import { getActivePromoCodes } from "@/lib/shopify/discounts";
 import { getKeyBenefits } from "@/lib/ai/key-benefits";
+import { getBlendedReviewsAndBreakdown } from "@/lib/reviews/reviews-data";
 import { routes } from "@/constants/routes";
 import { SITE_NAME, SITE_URL } from "@/constants/site";
 
@@ -66,10 +67,11 @@ export default async function ProductPage({
   if (!product) notFound();
 
   const category = getCategoryByHandle(product.categories[0]);
-  const [related, promoCodes, benefits] = await Promise.all([
+  const [related, promoCodes, benefits, { reviews, breakdown }] = await Promise.all([
     getRelatedProducts(product, 8),
     getActivePromoCodes(),
     getKeyBenefits(product),
+    getBlendedReviewsAndBreakdown(product),
   ]);
 
   return (
@@ -151,7 +153,7 @@ export default async function ProductPage({
       )}
 
       <div id="reviews" className="mt-16 max-w-3xl scroll-mt-24 md:mt-24">
-        <Reviews product={product} />
+        <Reviews product={product} reviews={reviews} breakdown={breakdown} />
       </div>
 
       {related.length > 0 && (
