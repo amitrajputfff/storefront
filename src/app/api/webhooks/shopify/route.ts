@@ -59,11 +59,16 @@ export async function POST(request: NextRequest) {
   const rawBody = await request.text();
   const hmacHeader = request.headers.get("x-shopify-hmac-sha256");
 
+  const topic = request.headers.get("x-shopify-topic") ?? "unknown";
+
   if (!verifyShopifyHmac(rawBody, hmacHeader, secret)) {
+    console.error(`[shopify-webhook] HMAC verification failed for topic "${topic}"`, {
+      webhookId: request.headers.get("x-shopify-webhook-id"),
+      apiVersion: request.headers.get("x-shopify-api-version"),
+      triggeredAt: request.headers.get("x-shopify-triggered-at"),
+    });
     return NextResponse.json({ error: "Invalid HMAC signature" }, { status: 401 });
   }
-
-  const topic = request.headers.get("x-shopify-topic") ?? "unknown";
 
   if (topic === "orders/create") {
     await handleOrderCreate(rawBody);
