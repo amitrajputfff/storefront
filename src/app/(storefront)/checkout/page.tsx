@@ -249,10 +249,11 @@ export default function CheckoutPage() {
   }
 
   return (
-    <main className="mx-auto max-w-4xl px-6 py-10 md:py-16">
+    <main className="mx-auto max-w-4xl px-6 py-10 md:py-16 md:pb-16 pb-24">
       <h1 className="mb-8 text-2xl font-medium md:text-3xl">Checkout</h1>
 
       <form
+        id="checkout-form"
         onSubmit={handleSubmit(onSubmit)}
         noValidate
         className="grid gap-10 md:grid-cols-[1fr_360px]"
@@ -562,6 +563,31 @@ export default function CheckoutPage() {
           </div>
         </div>
       </form>
+
+      {/* Mobile only — on mobile the Order Summary sits below the whole form
+       * (grid stacks to 1 column under md), so without this the total and
+       * Complete Order button are the very last thing on the page, behind a
+       * long scroll of fields. Keeping them pinned removes that friction. */}
+      <div className="bg-background/95 fixed inset-x-0 bottom-0 z-40 border-t p-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] shadow-[0_-8px_24px_rgba(0,0,0,0.12)] backdrop-blur-sm md:hidden">
+        <div className="flex items-center gap-3">
+          <div className="flex flex-col">
+            <span className="text-muted-foreground text-xs">Total</span>
+            <span className="text-base font-semibold tabular-nums">
+              {formatMoney({ amount: total, currencyCode: "INR" })}
+            </span>
+          </div>
+          <Button type="submit" form="checkout-form" size="lg" className="h-12 flex-1" disabled={isSubmitting}>
+            {isSubmitting && <Loader2 className="size-4 animate-spin" />}
+            <span>
+              {isSubmitting
+                ? "Placing order…"
+                : paymentMethod === "cod"
+                  ? "Complete Order"
+                  : "Continue to Payment"}
+            </span>
+          </Button>
+        </div>
+      </div>
     </main>
   );
 }
