@@ -167,12 +167,17 @@
   * {
     @apply border-border outline-ring/50;
   }
-  /* overflow-x-hidden lives ONLY on html, not body — setting it on both makes
-   * body its own scroll-container (per the CSS overflow-x/-y coupling rule),
-   * which breaks `position: sticky` for any descendant (e.g. the PDP gallery)
-   * since its containing block ends up being body instead of the viewport. */
+  /* `clip`, not `hidden` — mobile Safari needs SOME horizontal-overflow guard
+   * on body itself (html's alone isn't enough there), but overflow-x:hidden
+   * on both html and body turns body into its own scroll-container (per the
+   * CSS overflow-x/-y coupling rule), which breaks `position: sticky` for any
+   * descendant (e.g. the PDP gallery) since its containing block ends up
+   * being body instead of the viewport. `clip` blocks horizontal scroll the
+   * same way but — unlike `hidden` — doesn't establish a scroll container,
+   * so sticky stays anchored to the viewport as expected. */
   body {
     @apply bg-background text-foreground;
+    overflow-x: clip;
   }
   html {
     @apply font-sans overflow-x-hidden;
