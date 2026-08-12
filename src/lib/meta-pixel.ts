@@ -34,6 +34,19 @@ function toCatalogId(gid: string): string {
   return match ? match[1] : gid;
 }
 
+function readCookie(name: string): string | undefined {
+  if (typeof document === "undefined") return undefined;
+  const match = document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]*)`));
+  return match ? decodeURIComponent(match[1]) : undefined;
+}
+
+/** The pixel script sets these once it loads (_fbc only if the visit came from a
+ * Meta ad click). Threaded through to checkout so the order webhook can attach
+ * them to the server-side Purchase event for attribution matching. */
+export function getFbCookies(): { fbp?: string; fbc?: string } {
+  return { fbp: readCookie("_fbp"), fbc: readCookie("_fbc") };
+}
+
 export function trackPageView() {
   fbq("track", "PageView");
 }

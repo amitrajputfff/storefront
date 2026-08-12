@@ -128,8 +128,8 @@ export const SEARCH_PRODUCTS_QUERY = /* GraphQL */ `
 `;
 
 export const CART_CREATE_MUTATION = /* GraphQL */ `
-  mutation CartCreate($lines: [CartLineInput!]!, $buyerIdentity: CartBuyerIdentityInput, $delivery: CartDeliveryInput) {
-    cartCreate(input: { lines: $lines, buyerIdentity: $buyerIdentity, delivery: $delivery }) {
+  mutation CartCreate($lines: [CartLineInput!]!, $buyerIdentity: CartBuyerIdentityInput, $delivery: CartDeliveryInput, $attributes: [AttributeInput!]) {
+    cartCreate(input: { lines: $lines, buyerIdentity: $buyerIdentity, delivery: $delivery, attributes: $attributes }) {
       cart {
         id
         checkoutUrl

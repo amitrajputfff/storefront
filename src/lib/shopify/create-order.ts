@@ -1,5 +1,6 @@
 "use server";
 
+import { headers } from "next/headers";
 import { adminFetch, isShopifyAdminConfigured } from "./admin-client";
 
 const DRAFT_ORDER_CREATE_MUTATION = `
@@ -48,6 +49,7 @@ export interface CreateCodOrderInput {
     state: string;
     pincode: string;
   };
+  metaCookies?: { fbp?: string; fbc?: string };
 }
 
 export type CreateCodOrderResult =
@@ -86,6 +88,19 @@ export async function createCodOrder(input: CreateCodOrderInput): Promise<Create
   const { firstName, lastName } = splitName(input.customer.fullName);
   const phone = toE164IndianPhone(input.customer.phone);
 
+  // COD orders are completed via the Admin API, not Shopify's hosted checkout, so
+  // there's no browser session for Shopify to capture client_details from. We carry
+  // our own capture through as note attributes for the orders/create CAPI webhook.
+  const requestHeaders = await headers();
+  const clientIp = requestHeaders.get("x-forwarded-for")?.split(",")[0]?.trim();
+  const clientUserAgent = requestHeaders.get("user-agent") ?? undefined;
+  const customAttributes = [
+    input.metaCookies?.fbp ? { key: "fbp", value: input.metaCookies.fbp } : null,
+    input.metaCookies?.fbc ? { key: "fbc", value: input.metaCookies.fbc } : null,
+    clientIp ? { key: "client_ip", value: clientIp } : null,
+    clientUserAgent ? { key: "client_user_agent", value: clientUserAgent } : null,
+  ].filter((a): a is { key: string; value: string } => a !== null);
+
   try {
     const createData = await adminFetch<DraftOrderCreateResponse>(DRAFT_ORDER_CREATE_MUTATION, {
       input: {
@@ -108,6 +123,7 @@ export async function createCodOrder(input: CreateCodOrderInput): Promise<Create
         },
         note: "Cash on Delivery order via storefront checkout",
         tags: ["COD", "storefront-checkout"],
+        customAttributes,
       },
     });
 
