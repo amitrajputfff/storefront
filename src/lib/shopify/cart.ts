@@ -46,7 +46,6 @@ function splitName(fullName: string): { firstName: string; lastName: string } {
 export async function createCheckoutUrl(
   lines: CartLineInput[],
   customer?: CheckoutCustomerInfo,
-  metaCookies?: { fbp?: string; fbc?: string },
 ): Promise<string> {
   if (!isShopifyConfigured()) {
     throw new Error("Shopify Storefront API is not configured yet.");
@@ -84,20 +83,12 @@ export async function createCheckoutUrl(
       }
     : undefined;
 
-  // Carried through to the completed order's note_attributes so the orders/create
-  // webhook can attach them to the server-side Purchase event for attribution matching.
-  const attributes = [
-    metaCookies?.fbp ? { key: "fbp", value: metaCookies.fbp } : null,
-    metaCookies?.fbc ? { key: "fbc", value: metaCookies.fbc } : null,
-  ].filter((a): a is { key: string; value: string } => a !== null);
-
   const data = await shopifyFetch<CartCreateResponse>({
     query: CART_CREATE_MUTATION,
     variables: {
       lines: lines.map((line) => ({ merchandiseId: line.variantId, quantity: line.quantity })),
       buyerIdentity,
       delivery,
-      attributes: attributes.length > 0 ? attributes : undefined,
     },
     revalidate: 0,
   });

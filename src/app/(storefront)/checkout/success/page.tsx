@@ -21,7 +21,6 @@ import { Separator } from "@/components/ui/separator";
 import { Confetti, type ConfettiRef } from "@/components/ui/confetti";
 import { routes } from "@/constants/routes";
 import { formatMoney, estimatedDeliveryLabel } from "@/lib/format";
-import { trackPurchase } from "@/lib/meta-pixel";
 import { useLastOrderStore } from "@/stores/last-order-store";
 
 export default function CheckoutSuccessPage() {
@@ -66,20 +65,12 @@ function CheckoutSuccessContent() {
     return () => timers.forEach(clearTimeout);
   }, [orderName]);
 
-  useEffect(() => {
-    if (!summaryMatches || !summary || !orderName) return;
-    const dedupeKey = `meta-pixel-purchase:${orderName}`;
-    if (sessionStorage.getItem(dedupeKey) === "1") return;
-
-    trackPurchase({
-      orderId: orderName,
-      contentIds: summary.lines.map((line) => line.variantId),
-      value: summary.total,
-      currency: "INR",
-      numItems: summary.lines.reduce((sum, line) => sum + line.quantity, 0),
-    });
-    sessionStorage.setItem(dedupeKey, "1");
-  }, [summaryMatches, summary, orderName]);
+  // Purchase is intentionally NOT tracked from here. Shopify's native Facebook &
+  // Instagram sales channel already reports Purchase server-side for every order
+  // (COD and online), and its event ID doesn't reliably match ours — pairing our
+  // own browser-side Purchase alongside it left ~36% of orders double-counted in
+  // Meta (confirmed via Events Manager's deduplication panel). Shopify's channel
+  // is the single source of truth for this event.
 
   function copyOrderName() {
     if (!orderName) return;

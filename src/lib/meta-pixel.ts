@@ -34,19 +34,6 @@ function toCatalogId(gid: string): string {
   return match ? match[1] : gid;
 }
 
-function readCookie(name: string): string | undefined {
-  if (typeof document === "undefined") return undefined;
-  const match = document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]*)`));
-  return match ? decodeURIComponent(match[1]) : undefined;
-}
-
-/** The pixel script sets these once it loads (_fbc only if the visit came from a
- * Meta ad click). Threaded through to checkout so the order webhook can attach
- * them to the server-side Purchase event for attribution matching. */
-export function getFbCookies(): { fbp?: string; fbc?: string } {
-  return { fbp: readCookie("_fbp"), fbc: readCookie("_fbc") };
-}
-
 export function trackPageView() {
   fbq("track", "PageView");
 }
@@ -99,23 +86,5 @@ export function trackInitiateCheckout(params: {
   });
 }
 
-export function trackPurchase(params: {
-  orderId: string;
-  contentIds: string[];
-  value: number;
-  currency: string;
-  numItems: number;
-}) {
-  fbq(
-    "track",
-    "Purchase",
-    {
-      content_ids: params.contentIds.map(toCatalogId),
-      content_type: "product",
-      value: params.value,
-      currency: params.currency,
-      num_items: params.numItems,
-    },
-    { eventID: params.orderId },
-  );
-}
+// Purchase is intentionally NOT tracked from the browser — see the comment in
+// checkout/success/page.tsx for why.

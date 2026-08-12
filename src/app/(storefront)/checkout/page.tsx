@@ -27,7 +27,7 @@ import { checkoutSchema, checkoutDefaultValues, CheckoutValues } from "@/lib/che
 import { lookupPincode } from "@/lib/pincode";
 import { createCheckoutUrl } from "@/lib/shopify/cart";
 import { createCodOrder } from "@/lib/shopify/create-order";
-import { trackInitiateCheckout, getFbCookies } from "@/lib/meta-pixel";
+import { trackInitiateCheckout } from "@/lib/meta-pixel";
 import { INDIAN_STATES } from "@/constants/india";
 import { routes } from "@/constants/routes";
 import { formatMoney } from "@/lib/format";
@@ -172,11 +172,9 @@ export default function CheckoutPage() {
       pincode: values.pincode,
     };
 
-    const metaCookies = getFbCookies();
-
     if (values.paymentMethod === "online") {
       try {
-        const checkoutUrl = await createCheckoutUrl(lineItems, customer, metaCookies);
+        const checkoutUrl = await createCheckoutUrl(lineItems, customer);
         window.location.href = checkoutUrl;
       } catch {
         toast.error("Couldn't start checkout — please try again.");
@@ -187,7 +185,6 @@ export default function CheckoutPage() {
     const result = await createCodOrder({
       lineItems,
       customer,
-      metaCookies,
     });
 
     if (result.success) {
