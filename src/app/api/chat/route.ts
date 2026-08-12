@@ -26,7 +26,7 @@ interface ChatMessage {
 
 export async function POST(request: NextRequest) {
   const apiKey = process.env.GEMINI_API_KEY;
-  const model = process.env.GEMINI_MODEL || "gemini-2.5-flash";
+  const model = process.env.GEMINI_MODEL || "gemini-flash-latest";
 
   if (!apiKey) {
     return NextResponse.json(

@@ -126,7 +126,7 @@ export async function getKeyBenefits(product: Product): Promise<string[]> {
   }
 
   const apiKey = process.env.GEMINI_API_KEY;
-  const model = process.env.GEMINI_MODEL || "gemini-2.5-flash";
+  const model = process.env.GEMINI_MODEL || "gemini-flash-latest";
 
   if (!apiKey) {
     const fallback = fallbackBenefits(product);

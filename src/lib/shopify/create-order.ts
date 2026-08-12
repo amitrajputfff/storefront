@@ -153,7 +153,8 @@ export async function createCodOrder(input: CreateCodOrderInput): Promise<Create
     }
 
     return { success: true, orderName: order.name };
-  } catch {
+  } catch (error) {
+    console.error("Creating COD order failed:", error);
     return {
       success: false,
       error: "Something went wrong placing your order — please try again.",
