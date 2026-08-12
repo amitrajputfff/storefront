@@ -14,6 +14,7 @@ import {
   Images,
   Settings,
   Star,
+  Package,
 } from "lucide-react";
 
 export interface AdminNavItem {
@@ -41,6 +42,12 @@ export const ADMIN_NAV: AdminNavGroup[] = [
       { label: "Featured Collection", href: "/admin/homepage/featured-collection", icon: ShoppingBag, description: "The split-image collection callout." },
       { label: "Flash Sale Banner", href: "/admin/homepage/flash-sale", icon: Zap, description: "The sticky countdown strip." },
       { label: "Category Tabs", href: "/admin/homepage/category-tabs", icon: LayoutGrid, description: "The \"Shop by Category\" tab section." },
+    ],
+  },
+  {
+    label: "Catalog",
+    items: [
+      { label: "Products", href: "/admin/products", icon: Package, description: "Override a product's title, description, and images." },
     ],
   },
   {

@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { MediaUploader } from "@/components/admin/media/media-uploader";
+import { ProductPicker } from "@/components/admin/products/product-picker";
 import { createReview, type AdminReview } from "@/lib/admin/review-actions";
 import type { MediaItem } from "@/lib/admin/media-actions";
 
@@ -17,6 +18,7 @@ export function AddReviewDialog({ onCreated }: { onCreated: (review: AdminReview
   const [open, setOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [productHandle, setProductHandle] = useState("");
+  const [productTitle, setProductTitle] = useState("");
   const [authorName, setAuthorName] = useState("");
   const [authorLocation, setAuthorLocation] = useState("");
   const [rating, setRating] = useState(5);
@@ -27,6 +29,7 @@ export function AddReviewDialog({ onCreated }: { onCreated: (review: AdminReview
 
   function reset() {
     setProductHandle("");
+    setProductTitle("");
     setAuthorName("");
     setAuthorLocation("");
     setRating(5);
@@ -93,12 +96,14 @@ export function AddReviewDialog({ onCreated }: { onCreated: (review: AdminReview
         </DialogHeader>
         <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="review-product-handle">Product handle</Label>
-            <Input
-              id="review-product-handle"
-              placeholder="e.g. nimbus-true-wireless-earbuds"
+            <Label>Product</Label>
+            <ProductPicker
               value={productHandle}
-              onChange={(e) => setProductHandle(e.target.value)}
+              valueLabel={productTitle}
+              onChange={(product) => {
+                setProductHandle(product.handle);
+                setProductTitle(product.title);
+              }}
             />
           </div>
 
