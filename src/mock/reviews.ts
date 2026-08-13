@@ -1,4 +1,4 @@
-import { Product, RatingBreakdown, Review } from "@/types";
+import { Product, RatingBreakdown, Review, ReviewImage } from "@/types";
 
 const REVIEWER_NAMES = [
   "Ananya Rao", "Kabir Mehta", "Priya Nair", "Arjun Sharma", "Sana Iqbal",
@@ -101,6 +101,26 @@ function getRatingWeights(product: Product): Record<1 | 2 | 3 | 4 | 5, number> {
   };
 }
 
+/** Roughly 1 in 3 reviews gets photos, reusing the product's own shots as
+ * stand-ins for customer photos — seeded so it's stable per product/review
+ * rather than reshuffling on every render. */
+function getMockReviewImages(product: Product, index: number): ReviewImage[] | undefined {
+  if (product.images.length === 0) return undefined;
+  if (seededIndex(product.handle, index + 800, 3) !== 0) return undefined;
+
+  const photoCount = Math.min(product.images.length, 1 + seededIndex(product.handle, index + 810, 2));
+  const startIdx = seededIndex(product.handle, index + 820, product.images.length);
+
+  return Array.from({ length: photoCount }, (_, i) => {
+    const image = product.images[(startIdx + i) % product.images.length];
+    return {
+      id: `${image.id}-review-${product.handle}-${index}-${i}`,
+      url: image.url,
+      altText: image.altText || product.title,
+    };
+  });
+}
+
 export function getReviewsForProduct(product: Product): Review[] {
   const count = getRenderedReviewCount();
   const reviews: Review[] = [];
@@ -132,6 +152,7 @@ export function getReviewsForProduct(product: Product): Review[] {
       createdAt: createdAt.toISOString(),
       verified: seededIndex(product.handle, i + 600, 10) > 1,
       helpfulCount: seededIndex(product.handle, i + 700, 40),
+      images: getMockReviewImages(product, i),
     });
   }
 

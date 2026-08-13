@@ -95,7 +95,7 @@ export const PRODUCT_FRAGMENT = /* GraphQL */ `
 export const ALL_PRODUCTS_QUERY = /* GraphQL */ `
   ${PRODUCT_FRAGMENT}
   query AllProducts($first: Int = 250) {
-    products(first: $first) {
+    products(first: $first, sortKey: CREATED_AT) {
       edges {
         node {
           ...ProductFragment

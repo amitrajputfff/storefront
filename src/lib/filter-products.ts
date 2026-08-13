@@ -52,7 +52,11 @@ export function filterAndSortProducts(
       result.sort((a, b) => Number(b.isBestseller) - Number(a.isBestseller));
       break;
     default:
-      result.sort((a, b) => Number(b.isFeatured) - Number(a.isFeatured));
+      result.sort(
+        (a, b) =>
+          Number(b.isFeatured) - Number(a.isFeatured) ||
+          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+      );
   }
 
   return result;

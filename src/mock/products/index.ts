@@ -100,9 +100,12 @@ const authoredProducts = [
   ...electronics,
 ];
 
-const allProducts: Product[] = authoredProducts.map((authored, index) =>
-  buildProduct(authored, index),
-);
+// Ordered by date added (earliest first) by default so every consumer that
+// reads this array directly (collections, related products, admin list)
+// inherits date-added order without needing its own sort.
+const allProducts: Product[] = authoredProducts
+  .map((authored, index) => buildProduct(authored, index))
+  .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
 
 /**
  * Reads from the live Shopify Storefront API once SHOPIFY_STORE_DOMAIN and

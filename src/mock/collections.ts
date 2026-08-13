@@ -37,10 +37,9 @@ export async function getBestSellers(): Promise<DerivedCollection> {
   const tagged = all.filter((p) => p.isBestseller);
 
   // Not enough products actually tagged "best seller" yet — pad with the
-  // highest-rated of the rest rather than leaving the section sparse.
-  const padding = all
-    .filter((p) => !p.isBestseller)
-    .sort((a, b) => b.rating - a.rating || b.reviewCount - a.reviewCount);
+  // rest (already date-added order from getAllProducts) rather than leaving
+  // the section sparse.
+  const padding = all.filter((p) => !p.isBestseller);
   const matched = [...tagged, ...padding].slice(0, Math.max(MIN_BEST_SELLERS, tagged.length));
 
   return {
@@ -60,7 +59,7 @@ export async function getNewArrivals(): Promise<DerivedCollection> {
     "New Arrivals",
     "Freshly landed — the latest additions to the ZEEVARA catalog.",
     "lifestyle",
-    (p) => p.isNewArrival,
+    () => true,
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
   );
 }
