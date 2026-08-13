@@ -19,15 +19,15 @@ function ReviewImages({ images }: { images: NonNullable<Review["images"]> }) {
 
   return (
     <>
-      <div className="mt-1 flex flex-wrap gap-2">
+      <div className="mt-2 flex flex-wrap gap-2.5">
         {images.map((image, index) => (
           <button
             key={image.id}
             type="button"
             onClick={() => setLightboxIndex(index)}
-            className="relative size-16 shrink-0 overflow-hidden rounded-lg border border-border"
+            className="relative size-24 shrink-0 overflow-hidden rounded-lg border border-border sm:size-28"
           >
-            <Image src={image.url} alt={image.altText} fill sizes="64px" className="object-cover" />
+            <Image src={image.url} alt={image.altText} fill sizes="112px" className="object-cover" />
           </button>
         ))}
       </div>

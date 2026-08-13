@@ -26,6 +26,7 @@ export function AddReviewDialog({ onCreated }: { onCreated: (review: AdminReview
   const [body, setBody] = useState("");
   const [images, setImages] = useState<MediaItem[]>([]);
   const [showUploader, setShowUploader] = useState(false);
+  const [pendingPhotoCount, setPendingPhotoCount] = useState(0);
 
   function reset() {
     setProductHandle("");
@@ -37,11 +38,16 @@ export function AddReviewDialog({ onCreated }: { onCreated: (review: AdminReview
     setBody("");
     setImages([]);
     setShowUploader(false);
+    setPendingPhotoCount(0);
   }
 
   async function handleSubmit() {
     if (!productHandle.trim() || !authorName.trim() || !title.trim() || body.trim().length < 10) {
       toast.error("Fill in the product handle, author name, title, and a review of at least 10 characters.");
+      return;
+    }
+    if (pendingPhotoCount > 0) {
+      toast.error("Finish uploading your photos (or remove them) before adding the review.");
       return;
     }
     setSubmitting(true);
@@ -176,16 +182,18 @@ export function AddReviewDialog({ onCreated }: { onCreated: (review: AdminReview
             {showUploader && (
               <MediaUploader
                 folder="reviews"
-                onUploaded={(item) => {
-                  setImages((prev) => [...prev, item]);
-                  setShowUploader(false);
-                }}
+                onUploaded={(item) => setImages((prev) => [...prev, item])}
+                onPendingCountChange={setPendingPhotoCount}
               />
             )}
           </div>
 
-          <Button onClick={handleSubmit} disabled={submitting}>
-            {submitting ? "Adding…" : "Add review"}
+          <Button onClick={handleSubmit} disabled={submitting || pendingPhotoCount > 0}>
+            {submitting
+              ? "Adding…"
+              : pendingPhotoCount > 0
+                ? "Finish uploading photos…"
+                : "Add review"}
           </Button>
         </div>
       </DialogContent>

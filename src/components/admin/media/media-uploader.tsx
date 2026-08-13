@@ -53,11 +53,30 @@ async function downscaleIfNeeded(file: File): Promise<{ file: File; width: numbe
   return { file: new File([blob], file.name, { type: file.type }), width: targetWidth, height: targetHeight };
 }
 
-export function MediaUploader({ folder = "general", onUploaded }: { folder?: string; onUploaded: (item: MediaItem) => void }) {
+export function MediaUploader({
+  folder = "general",
+  onUploaded,
+  onPendingCountChange,
+}: {
+  folder?: string;
+  onUploaded: (item: MediaItem) => void;
+  /** Lets a parent (e.g. a review/form dialog) know whether files are staged
+   * here but not yet uploaded, so it can block submission until they finish
+   * — otherwise a submit before the upload completes silently drops them. */
+  onPendingCountChange?: (count: number) => void;
+}) {
   const [pending, setPending] = useState<PendingFile[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  function setPendingAndNotify(updater: (prev: PendingFile[]) => PendingFile[]) {
+    setPending((prev) => {
+      const next = updater(prev);
+      onPendingCountChange?.(next.length);
+      return next;
+    });
+  }
 
   function addFiles(fileList: FileList | null) {
     if (!fileList) return;
@@ -79,7 +98,7 @@ export function MediaUploader({ folder = "general", onUploaded }: { folder?: str
         status: "pending",
       });
     }
-    setPending((prev) => [...prev, ...accepted]);
+    setPendingAndNotify((prev) => [...prev, ...accepted]);
   }
 
   function updateAlt(id: string, altText: string) {
@@ -87,7 +106,7 @@ export function MediaUploader({ folder = "general", onUploaded }: { folder?: str
   }
 
   function removePending(id: string) {
-    setPending((prev) => prev.filter((p) => p.id !== id));
+    setPendingAndNotify((prev) => prev.filter((p) => p.id !== id));
   }
 
   const canUpload = pending.length > 0 && pending.every((p) => p.altText.trim().length > 0);
@@ -128,7 +147,7 @@ export function MediaUploader({ folder = "general", onUploaded }: { folder?: str
       }
     }
     setIsUploading(false);
-    setPending((prev) => prev.filter((p) => p.status !== "done"));
+    setPendingAndNotify((prev) => prev.filter((p) => p.status !== "done"));
   }
 
   return (
