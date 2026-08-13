@@ -21,10 +21,12 @@ export interface CapiPurchaseInput {
   clientUserAgent?: string;
 }
 
-/** The sole source of Purchase tracking (client-side trackPurchase was removed —
- * see checkout/success/page.tsx). Fired from the orders/create webhook, so it
- * covers both COD orders (no real Shopify checkout session) and online-payment
- * orders alike. */
+/** Client-side trackPurchase was removed (see checkout/success/page.tsx) since
+ * Shopify's native Facebook & Instagram sales channel already reports Purchase
+ * for orders placed through its hosted checkout. This is fired from the
+ * orders/create webhook for COD orders ONLY (see isCodOrder() in the webhook
+ * route) — the one case that native channel doesn't see, since COD orders are
+ * completed via the Admin API and never touch that checkout. */
 export async function sendPurchaseCapiEvent(input: CapiPurchaseInput): Promise<void> {
   const pixelId = process.env.NEXT_PUBLIC_META_PIXEL_ID;
   const accessToken = process.env.META_CAPI_ACCESS_TOKEN;

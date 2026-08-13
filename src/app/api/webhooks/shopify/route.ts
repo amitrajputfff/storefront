@@ -1,7 +1,8 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { revalidateTag } from "next/cache";
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse, after } from "next/server";
 import { sendPurchaseCapiEvent } from "@/lib/shopify/meta-capi";
+import { getSupabaseAdminClient, isSupabaseAdminConfigured } from "@/lib/supabase/admin-client";
 import { SITE_URL } from "@/constants/site";
 
 function verifyShopifyHmac(rawBody: string, hmacHeader: string | null, secret: string): boolean {
@@ -19,6 +20,7 @@ interface ShopifyOrderWebhookPayload {
   phone?: string;
   total_price: string;
   currency: string;
+  tags?: string;
   line_items: { variant_id: number | null; product_id: number | null; quantity: number }[];
   note_attributes?: { name: string; value: string }[];
   client_details?: { browser_ip?: string; user_agent?: string } | null;
@@ -28,10 +30,50 @@ function noteAttribute(payload: ShopifyOrderWebhookPayload, name: string): strin
   return payload.note_attributes?.find((a) => a.name === name)?.value;
 }
 
+/** True for orders placed via our own COD flow (see create-order.ts, which
+ * tags every draft order it completes with "COD"). */
+function isCodOrder(order: ShopifyOrderWebhookPayload): boolean {
+  return (order.tags ?? "")
+    .split(",")
+    .map((t) => t.trim().toLowerCase())
+    .includes("cod");
+}
+
 async function handleOrderCreate(rawBody: string) {
   const order: ShopifyOrderWebhookPayload = JSON.parse(rawBody);
 
-  await sendPurchaseCapiEvent({
+  // Shopify's native Facebook & Instagram sales channel already reports
+  // Purchase for orders placed through its own hosted checkout — confirmed
+  // live in Events Manager. Sending our own event for those too creates a
+  // second, unmatched Purchase (different event_id) that Meta can't dedupe
+  // against the native one, double-counting the order. COD orders are placed
+  // via the Admin API and never touch that checkout, so the native channel
+  // doesn't see them at all — we're the only source for those, and only those.
+  if (!isCodOrder(order)) {
+    console.log(`[shopify-webhook] orders/create ${order.name} — skipped Meta CAPI (non-COD, native channel covers it)`);
+    return;
+  }
+
+  // Belt-and-braces idempotency: Shopify's webhook delivery is at-least-once
+  // and can redeliver the same orders/create payload (e.g. after a timeout),
+  // which would otherwise fire a second Purchase event for the same order.
+  if (isSupabaseAdminConfigured()) {
+    const { error: dedupeError } = await getSupabaseAdminClient()
+      .from("meta_purchase_events")
+      .insert({ shopify_order_id: order.id, order_name: order.name });
+
+    if (dedupeError) {
+      const alreadySent = dedupeError.code === "23505"; // unique_violation
+      console.log(
+        `[shopify-webhook] orders/create ${order.name} — skipped Meta CAPI (${
+          alreadySent ? "already sent" : `dedupe check failed: ${dedupeError.message}`
+        })`,
+      );
+      return;
+    }
+  }
+
+  const capiInput = {
     eventId: order.name,
     eventSourceUrl: `${SITE_URL}/checkout/success?order=${encodeURIComponent(order.name)}`,
     value: Number(order.total_price),
@@ -42,11 +84,23 @@ async function handleOrderCreate(rawBody: string) {
     phone: order.phone,
     fbp: noteAttribute(order, "fbp"),
     fbc: noteAttribute(order, "fbc"),
-    // Real checkout orders (online payment) carry Shopify's own browser session
-    // details; COD orders (completed via Admin API, no checkout session) fall
-    // back to what we captured ourselves at submit time — see create-order.ts.
+    // COD orders are completed via the Admin API, so there's no browser
+    // session for Shopify to capture client_details from — fall back to what
+    // we captured ourselves at submit time (see create-order.ts).
     clientIp: order.client_details?.browser_ip ?? noteAttribute(order, "client_ip"),
     clientUserAgent: order.client_details?.user_agent ?? noteAttribute(order, "client_user_agent"),
+  };
+
+  // Ack Shopify immediately rather than making it wait on Meta's API — a slow
+  // Meta call could otherwise trip Shopify's delivery timeout and trigger a
+  // retry (i.e. a second delivery) while the first is still in flight.
+  after(async () => {
+    try {
+      await sendPurchaseCapiEvent(capiInput);
+      console.log(`[shopify-webhook] ${order.name} — sent Purchase CAPI event`);
+    } catch (error) {
+      console.error(`[shopify-webhook] ${order.name} — Purchase CAPI event failed`, error);
+    }
   });
 }
 
@@ -78,8 +132,10 @@ export async function POST(request: NextRequest) {
   }
 
   if (topic === "orders/create") {
+    // handleOrderCreate logs its own outcome (sent / skipped / deduped) — the
+    // Meta send itself runs after this response via after(), so awaiting it
+    // here only covers the fast dedupe check, not the slow API call.
     await handleOrderCreate(rawBody);
-    console.log(`[shopify-webhook] ${topic} — sent Purchase CAPI event`);
     return NextResponse.json({ topic });
   }
 
