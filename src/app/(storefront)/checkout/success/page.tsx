@@ -65,14 +65,14 @@ function CheckoutSuccessContent() {
     return () => timers.forEach(clearTimeout);
   }, [orderName]);
 
-  // Purchase is intentionally NOT tracked from here. It's sent server-side instead,
-  // from the orders/create Shopify webhook (see src/lib/shopify/meta-capi.ts) —
-  // that's the only reliable signal for COD orders, which are completed via the
-  // Admin API and never touch Shopify's hosted checkout (no browser session for
-  // Shopify's own native Facebook & Instagram channel to observe). Pairing our own
-  // browser-side Purchase alongside a server-side one previously left ~36% of
-  // orders double-counted in Meta (confirmed via Events Manager's deduplication
-  // panel) — don't re-add a client-side trackPurchase() call here.
+  // Purchase is intentionally NOT tracked from here, or anywhere in our own
+  // code — Shopify's native Facebook & Instagram sales channel reports it
+  // server-side for every order, COD included (confirmed live: a COD order
+  // placed through our own orders/create webhook -> Conversions API still
+  // produced a second, unmatched Purchase in Events Manager alongside the
+  // native one — different event_id, un-dedupeable, so running both always
+  // double-counts). Don't re-add a client-side trackPurchase() call or a
+  // server-side one here; Shopify's channel is the sole source.
 
   function copyOrderName() {
     if (!orderName) return;
