@@ -61,7 +61,7 @@ export async function adminFetch<T>(query: string, variables?: Record<string, un
       "X-Shopify-Access-Token": token,
     },
     body: JSON.stringify({ query, variables }),
-    cache: "no-store",
+    next: { revalidate: 300, tags: ["shopify-admin"] },
   });
 
   const json = await res.json();

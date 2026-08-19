@@ -11,6 +11,23 @@ import { createMediaUploadUrl, registerMedia, type MediaItem } from "@/lib/admin
 const ACCEPTED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/avif"];
 const MAX_SIZE_BYTES = 8 * 1024 * 1024;
 const MAX_DIMENSION = 2400;
+const UPLOAD_STEP_TIMEOUT_MS = 30_000;
+
+function withTimeout<T>(promise: Promise<T>, ms: number, message: string): Promise<T> {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error(message)), ms);
+    promise.then(
+      (value) => {
+        clearTimeout(timer);
+        resolve(value);
+      },
+      (error) => {
+        clearTimeout(timer);
+        reject(error);
+      },
+    );
+  });
+}
 
 interface PendingFile {
   id: string;
@@ -73,7 +90,10 @@ export function MediaUploader({
   function setPendingAndNotify(updater: (prev: PendingFile[]) => PendingFile[]) {
     setPending((prev) => {
       const next = updater(prev);
-      onPendingCountChange?.(next.length);
+      // Errored items stay in the list (so the admin can see what failed and
+      // remove/retry it) but shouldn't keep counting as "still uploading" —
+      // otherwise a single failed photo permanently blocks form submission.
+      onPendingCountChange?.(next.filter((p) => p.status !== "error").length);
       return next;
     });
   }
@@ -118,24 +138,34 @@ export function MediaUploader({
       setPending((prev) => prev.map((p) => (p.id === item.id ? { ...p, status: "uploading" } : p)));
       try {
         const { file, width, height } = await downscaleIfNeeded(item.file);
-        const urlResult = await createMediaUploadUrl({ fileName: file.name, contentType: file.type, folder });
+        const urlResult = await withTimeout(
+          createMediaUploadUrl({ fileName: file.name, contentType: file.type, folder }),
+          UPLOAD_STEP_TIMEOUT_MS,
+          "Timed out preparing upload — check your connection and try again",
+        );
         if (!urlResult.ok) throw new Error(urlResult.error);
 
         const supabase = getSupabaseBrowserClient();
-        const { error: uploadError } = await supabase.storage
-          .from("site-media")
-          .uploadToSignedUrl(urlResult.data.path, urlResult.data.token, file);
+        const { error: uploadError } = await withTimeout(
+          supabase.storage.from("site-media").uploadToSignedUrl(urlResult.data.path, urlResult.data.token, file),
+          UPLOAD_STEP_TIMEOUT_MS,
+          "Upload timed out — check your connection and try again",
+        );
         if (uploadError) throw uploadError;
 
-        const registerResult = await registerMedia({
-          path: urlResult.data.path,
-          altText: item.altText.trim(),
-          width,
-          height,
-          mimeType: file.type,
-          sizeBytes: file.size,
-          folder,
-        });
+        const registerResult = await withTimeout(
+          registerMedia({
+            path: urlResult.data.path,
+            altText: item.altText.trim(),
+            width,
+            height,
+            mimeType: file.type,
+            sizeBytes: file.size,
+            folder,
+          }),
+          UPLOAD_STEP_TIMEOUT_MS,
+          "Timed out finishing upload — check your connection and try again",
+        );
         if (!registerResult.ok) throw new Error(registerResult.error);
 
         setPending((prev) => prev.map((p) => (p.id === item.id ? { ...p, status: "done" } : p)));

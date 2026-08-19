@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, Geist, Geist_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { MetaPixel } from "@/components/analytics/meta-pixel";
 import "./globals.css";
 import { AppProviders } from "@/components/providers/app-providers";
@@ -59,6 +60,7 @@ export default function RootLayout({
         <JsonLd data={buildOrganizationJsonLd()} />
         <AppProviders>{children}</AppProviders>
         <Analytics />
+        <SpeedInsights />
         <MetaPixel />
       </body>
     </html>
